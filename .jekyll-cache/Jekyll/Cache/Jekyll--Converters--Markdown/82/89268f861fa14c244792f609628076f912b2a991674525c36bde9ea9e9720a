@@ -1,0 +1,979 @@
+I"��<h1 id="react-admin-tutorial">React-Admin Tutorial</h1>
+
+<p>This 30 minutes tutorial will expose how to create a new admin app based on an existing REST API.</p>
+
+<h2 id="setting-up">Setting Up</h2>
+
+<p>React-admin uses React. We’ll use <a href="https://github.com/facebookincubator/create-react-app">create-react-app</a> to create an empty React app, and install the <code class="language-plaintext highlighter-rouge">react-admin</code> package:</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>yarn create react-app test-admin
+<span class="nb">cd </span>test-admin/
+yarn add react-admin ra-data-json-server prop-types
+yarn start
+</code></pre></div></div>
+
+<p>You should be up and running with an empty React application on port 3000.</p>
+
+<h2 id="using-an-api-as-data-source">Using an API As Data Source</h2>
+
+<p>React-admin runs in the browser, and relies on data it fetches from APIs.</p>
+
+<p>We’ll be using <a href="https://jsonplaceholder.typicode.com/">JSONPlaceholder</a>, a fake REST API designed for testing and prototyping, as the datasource for the application. Here is what it looks like:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl https://jsonplaceholder.typicode.com/users/2
+</code></pre></div></div>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+  </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Ervin Howell"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"username"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Antonette"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"email"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Shanna@melissa.tv"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"address"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"street"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Victor Plains"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"suite"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Suite 879"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"city"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Wisokyburgh"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"zipcode"</span><span class="p">:</span><span class="w"> </span><span class="s2">"90566-7771"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"geo"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="nl">"lat"</span><span class="p">:</span><span class="w"> </span><span class="s2">"-43.9509"</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"lng"</span><span class="p">:</span><span class="w"> </span><span class="s2">"-34.4618"</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">},</span><span class="w">
+  </span><span class="nl">"phone"</span><span class="p">:</span><span class="w"> </span><span class="s2">"010-692-6593 x09125"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"website"</span><span class="p">:</span><span class="w"> </span><span class="s2">"anastasia.net"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"company"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Deckow-Crist"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"catchPhrase"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Proactive didactic contingency"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"bs"</span><span class="p">:</span><span class="w"> </span><span class="s2">"synergize scalable supply-chains"</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p>JSONPlaceholder provides endpoints for users, posts, and comments. The admin we’ll build should allow to Create, Retrieve, Update, and Delete (CRUD) these resources.</p>
+
+<h2 id="making-contact-with-the-api-using-a-data-provider">Making Contact With The API Using a Data Provider</h2>
+
+<p>Bootstrap the admin app by replacing the <code class="language-plaintext highlighter-rouge">src/App.js</code> by the following code:</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// in src/App.js</span>
+<span class="k">import</span> <span class="o">*</span> <span class="k">as</span> <span class="nx">React</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">react</span><span class="dl">"</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">Admin</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react-admin</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">jsonServerProvider</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">ra-data-json-server</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">const</span> <span class="nx">dataProvider</span> <span class="o">=</span> <span class="nx">jsonServerProvider</span><span class="p">(</span><span class="dl">'</span><span class="s1">https://jsonplaceholder.typicode.com</span><span class="dl">'</span><span class="p">);</span>
+<span class="kd">const</span> <span class="nx">App</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">&lt;</span><span class="nc">Admin</span> <span class="na">dataProvider</span><span class="p">=</span><span class="si">{</span><span class="nx">dataProvider</span><span class="si">}</span> <span class="p">/&gt;;</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="nx">App</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>That’s enough for react-admin to render an empty app and confirm that the setup is done:</p>
+
+<p><img src="./img/tutorial_empty.png" alt="Empty Admin" /></p>
+
+<p>The <code class="language-plaintext highlighter-rouge">App</code> component renders an <code class="language-plaintext highlighter-rouge">&lt;Admin&gt;</code> component, which is the root component of a react-admin application. This component expects a <code class="language-plaintext highlighter-rouge">dataProvider</code> prop - a function capable of fetching data from an API. Since there is no standard for data exchanges between computers, you will probably have to write a custom provider to connect react-admin to your own APIs - but we’ll dive into Data Providers later. For now, let’s take advantage of the <code class="language-plaintext highlighter-rouge">ra-data-json-server</code> data provider, which speaks the same REST dialect as JSONPlaceholder.</p>
+
+<p>Now it’s time to add features!</p>
+
+<h2 id="mapping-api-endpoints-with-resources">Mapping API Endpoints With Resources</h2>
+
+<p>We’ll start by adding a list of users.</p>
+
+<p>The <code class="language-plaintext highlighter-rouge">&lt;Admin&gt;</code> component expects one or more <code class="language-plaintext highlighter-rouge">&lt;Resource&gt;</code> child components. Each resource maps a name to an endpoint in the API. Edit the <code class="language-plaintext highlighter-rouge">App.js</code> file to add a resource named <code class="language-plaintext highlighter-rouge">users</code>:</p>
+
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">//</span> in src/App.js
+<span class="p">import * as React from "react";
+</span><span class="gd">-import { Admin } from 'react-admin';
+</span><span class="gi">+import { Admin, Resource, ListGuesser } from 'react-admin';
+</span><span class="p">import jsonServerProvider from 'ra-data-json-server';
+</span>
+const dataProvider = jsonServerProvider('https://jsonplaceholder.typicode.com');
+<span class="gd">-const App = () =&gt; &lt;Admin dataProvider={dataProvider} /&gt;;
+</span><span class="gi">+const App = () =&gt; (
++    &lt;Admin dataProvider={dataProvider}&gt;
++        &lt;Resource name="users" list={ListGuesser} /&gt;
++    &lt;/Admin&gt;
++);
+</span>
+export default App;
+</code></pre></div></div>
+
+<p>The line <code class="language-plaintext highlighter-rouge">&lt;Resource name="users" /&gt;</code> informs react-admin to fetch the “users” records from the <a href="https://jsonplaceholder.typicode.com/users">https://jsonplaceholder.typicode.com/users</a> URL. <code class="language-plaintext highlighter-rouge">&lt;Resource&gt;</code> also defines the React components to use for each CRUD operation (<code class="language-plaintext highlighter-rouge">list</code>, <code class="language-plaintext highlighter-rouge">create</code>, <code class="language-plaintext highlighter-rouge">edit</code>, and <code class="language-plaintext highlighter-rouge">show</code>).</p>
+
+<p>The <code class="language-plaintext highlighter-rouge">list={ListGuesser}</code> prop means that react-admin should use the <code class="language-plaintext highlighter-rouge">&lt;ListGuesser&gt;</code> component to display the list of posts. This component <em>guesses</em> the format to use for the columns of the list based on the data fetched from the API.</p>
+
+<p>The app can now display a list of users:</p>
+
+<p><img src="./img/tutorial_users_list.png" alt="Users List" /></p>
+
+<p>If you look at the network tab in the browser developer tools, you’ll notice that the application fetched the <code class="language-plaintext highlighter-rouge">https://jsonplaceholder.typicode.com/users</code> URL, then used the results to build the Datagrid. That’s basically how react-admin works.</p>
+
+<p>The list is already functional: you can reorder it by clicking on column headers, or change pages by using the bottom pagination controls. The <code class="language-plaintext highlighter-rouge">ra-data-json-server</code> data provider translates these actions to a query string that JSONPlaceholder understands.</p>
+
+<h2 id="selecting-columns">Selecting Columns</h2>
+
+<p>The <code class="language-plaintext highlighter-rouge">&lt;ListGuesser&gt;</code> component is not meant to be used in production - it’s just a way to quickly bootstrap an admin. That means you’ll have to replace the <code class="language-plaintext highlighter-rouge">ListGuesser</code> component in the <code class="language-plaintext highlighter-rouge">users</code> resource by a custom React component. Fortunately, <code class="language-plaintext highlighter-rouge">ListGuesser</code> dumps the code of the list it has guessed to the console:</p>
+
+<p><img src="./img/tutorial_guessed_list.png" alt="Guessed Users List" /></p>
+
+<p>Let’s copy this code, and create a new <code class="language-plaintext highlighter-rouge">UserList</code> component, in a new file named <code class="language-plaintext highlighter-rouge">users.js</code>:</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// in src/users.js</span>
+<span class="k">import</span> <span class="o">*</span> <span class="k">as</span> <span class="nx">React</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">react</span><span class="dl">"</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">List</span><span class="p">,</span> <span class="nx">Datagrid</span><span class="p">,</span> <span class="nx">TextField</span><span class="p">,</span> <span class="nx">EmailField</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react-admin</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="k">export</span> <span class="kd">const</span> <span class="nx">UserList</span> <span class="o">=</span> <span class="nx">props</span> <span class="o">=&gt;</span> <span class="p">(</span>
+    <span class="p">&lt;</span><span class="nc">List</span> <span class="si">{</span><span class="p">...</span><span class="nx">props</span><span class="si">}</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nc">Datagrid</span> <span class="na">rowClick</span><span class="p">=</span><span class="s">"edit"</span><span class="p">&gt;</span>
+            <span class="p">&lt;</span><span class="nc">TextField</span> <span class="na">source</span><span class="p">=</span><span class="s">"id"</span> <span class="p">/&gt;</span>
+            <span class="p">&lt;</span><span class="nc">TextField</span> <span class="na">source</span><span class="p">=</span><span class="s">"name"</span> <span class="p">/&gt;</span>
+            <span class="p">&lt;</span><span class="nc">TextField</span> <span class="na">source</span><span class="p">=</span><span class="s">"username"</span> <span class="p">/&gt;</span>
+            <span class="p">&lt;</span><span class="nc">EmailField</span> <span class="na">source</span><span class="p">=</span><span class="s">"email"</span> <span class="p">/&gt;</span>
+            <span class="p">&lt;</span><span class="nc">TextField</span> <span class="na">source</span><span class="p">=</span><span class="s">"address.street"</span> <span class="p">/&gt;</span>
+            <span class="p">&lt;</span><span class="nc">TextField</span> <span class="na">source</span><span class="p">=</span><span class="s">"phone"</span> <span class="p">/&gt;</span>
+            <span class="p">&lt;</span><span class="nc">TextField</span> <span class="na">source</span><span class="p">=</span><span class="s">"website"</span> <span class="p">/&gt;</span>
+            <span class="p">&lt;</span><span class="nc">TextField</span> <span class="na">source</span><span class="p">=</span><span class="s">"company.name"</span> <span class="p">/&gt;</span>
+        <span class="p">&lt;/</span><span class="nc">Datagrid</span><span class="p">&gt;</span>
+    <span class="p">&lt;/</span><span class="nc">List</span><span class="p">&gt;</span>
+<span class="p">);</span>
+</code></pre></div></div>
+
+<p>Then, edit the <code class="language-plaintext highlighter-rouge">App.js</code> file to use this new component instead of <code class="language-plaintext highlighter-rouge">ListGuesser</code>:</p>
+
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">//</span> in src/App.js
+<span class="gd">-import { Admin, Resource, ListGuesser } from 'react-admin';
+</span><span class="gi">+import { Admin, Resource } from 'react-admin';
++import { UserList } from './users';
+</span>
+const App = () =&gt; (
+    &lt;Admin dataProvider={dataProvider}&gt;
+<span class="gd">-       &lt;Resource name="users" list={ListGuesser} /&gt;
+</span><span class="gi">+       &lt;Resource name="users" list={UserList} /&gt;
+</span>    &lt;/Admin&gt;
+<span class="err">);</span>
+</code></pre></div></div>
+
+<p><img src="./img/tutorial_users_list.png" alt="Users List" /></p>
+
+<p>There is no visible change in the browser - except now, the app uses a component that you can customize.</p>
+
+<p>The main component of the users list is a <code class="language-plaintext highlighter-rouge">&lt;List&gt;</code> component, responsible for grabbing the information from the API, displaying the page title, and handling pagination. This component then delegates the display of the actual list of users to its child. In this case, that’s a <code class="language-plaintext highlighter-rouge">&lt;Datagrid&gt;</code> component, which renders a table with one row for each record. The Datagrid uses its child components (here, a list of <code class="language-plaintext highlighter-rouge">&lt;TextField&gt;</code> and <code class="language-plaintext highlighter-rouge">&lt;EmailField&gt;</code>) to determine the columns to render. Each Field component maps a different field in the API response, specified by the <code class="language-plaintext highlighter-rouge">source</code> prop.</p>
+
+<p>The <code class="language-plaintext highlighter-rouge">ListGuesser</code> created one column for every field in the response. That’s a bit too much for a usable grid, so let’s remove a couple <code class="language-plaintext highlighter-rouge">&lt;TextField&gt;</code> from the Datagrid and see the effect:</p>
+
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">//</span> in src/users.js
+<span class="p">import * as React from "react";
+import { List, Datagrid, TextField, EmailField } from 'react-admin';
+</span>
+export const UserList = props =&gt; (
+    &lt;List {...props}&gt;
+        &lt;Datagrid rowClick="edit"&gt;
+            &lt;TextField source="id" /&gt;
+            &lt;TextField source="name" /&gt;
+<span class="gd">-           &lt;TextField source="username" /&gt;
+</span>            &lt;EmailField source="email" /&gt;
+<span class="gd">-           &lt;TextField source="address.street" /&gt;
+</span>            &lt;TextField source="phone" /&gt;
+            &lt;TextField source="website" /&gt;
+            &lt;TextField source="company.name" /&gt;
+        &lt;/Datagrid&gt;
+    &lt;/List&gt;
+<span class="err">);</span>
+</code></pre></div></div>
+
+<p><img src="./img/tutorial_users_list_selected_columns.png" alt="Users List" /></p>
+
+<p>What you’ve just done reflects the early stages of development with react-admin: let the guesser do the job, select only the fields you want, and start customizing types.</p>
+
+<h2 id="using-field-types">Using Field Types</h2>
+
+<p>You’ve just met the <code class="language-plaintext highlighter-rouge">&lt;TextField&gt;</code> and the <code class="language-plaintext highlighter-rouge">&lt;EmailField&gt;</code> components. React-admin provides <a href="./Fields.md">many more Field components</a>, mapping various data types: number, date, image, HTML, array, reference, etc.</p>
+
+<p>For instance, the <code class="language-plaintext highlighter-rouge">website</code> field looks like a URL. Instead of displaying it as text, why not display it using a clickable link? That’s exactly what the <code class="language-plaintext highlighter-rouge">&lt;UrlField&gt;</code> does:</p>
+
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">//</span> in src/users.js
+<span class="p">import * as React from "react";
+</span><span class="gd">-import { List, Datagrid, TextField, EmailField } from 'react-admin';
+</span><span class="gi">+import { List, Datagrid, TextField, EmailField, UrlField } from 'react-admin';
+</span>
+export const UserList = props =&gt; (
+    &lt;List {...props}&gt;
+        &lt;Datagrid rowClick="edit"&gt;
+            &lt;TextField source="id" /&gt;
+            &lt;TextField source="name" /&gt;
+            &lt;EmailField source="email" /&gt;
+            &lt;TextField source="phone" /&gt;
+<span class="gd">-           &lt;TextField source="website" /&gt;
+</span><span class="gi">+           &lt;UrlField source="website" /&gt;
+</span>            &lt;TextField source="company.name" /&gt;
+        &lt;/Datagrid&gt;
+    &lt;/List&gt;
+<span class="err">);</span>
+</code></pre></div></div>
+
+<p><img src="./img/tutorial_url_field.png" alt="Url Field" /></p>
+
+<p>In react-admin, fields are simple React components. At runtime, they grab the <code class="language-plaintext highlighter-rouge">record</code> fetched from the API (e.g. <code class="language-plaintext highlighter-rouge">{ "id": 2, "name": "Ervin Howell", "website": "anastasia.net", ... }</code>) with a custom hook, and use the <code class="language-plaintext highlighter-rouge">source</code> field (e.g. <code class="language-plaintext highlighter-rouge">website</code>) to get the value they should display (e.g. “anastasia.net”).</p>
+
+<p>That means that writing a custom Field component is really straightforward. For instance, here is a simplified version of the <code class="language-plaintext highlighter-rouge">UrlField</code>:</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// in src/MyUrlField.js</span>
+<span class="k">import</span> <span class="o">*</span> <span class="k">as</span> <span class="nx">React</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">react</span><span class="dl">"</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">useRecordContext</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react-admin</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">const</span> <span class="nx">MyUrlField</span> <span class="o">=</span> <span class="p">({</span> <span class="nx">source</span> <span class="p">})</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">record</span> <span class="o">=</span> <span class="nx">useRecordContext</span><span class="p">();</span>
+    <span class="k">return</span> <span class="nx">record</span> <span class="p">?</span> <span class="p">(</span>
+        <span class="p">&lt;</span><span class="nt">a</span> <span class="na">href</span><span class="p">=</span><span class="si">{</span><span class="nx">record</span><span class="p">[</span><span class="nx">source</span><span class="p">]</span><span class="si">}</span><span class="p">&gt;</span>
+            <span class="si">{</span><span class="nx">record</span><span class="p">[</span><span class="nx">source</span><span class="p">]</span><span class="si">}</span>
+        <span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;</span>
+    <span class="p">)</span> <span class="p">:</span> <span class="kc">null</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="nx">MyUrlField</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>You can use this component in <code class="language-plaintext highlighter-rouge">&lt;UserList&gt;</code>, instead of react-admin’s <code class="language-plaintext highlighter-rouge">&lt;UrlField&gt;</code> component, and it will work just the same.</p>
+
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">//</span> in src/users.js
+<span class="p">import * as React from "react";
+</span><span class="gd">-import { List, Datagrid, TextField, EmailField, UrlField } from 'react-admin';
+</span><span class="gi">+import { List, Datagrid, TextField, EmailField } from 'react-admin';
++import MyUrlField from './MyUrlField';
+</span>
+export const UserList = props =&gt; (
+    &lt;List {...props}&gt;
+        &lt;Datagrid rowClick="edit"&gt;
+            &lt;TextField source="id" /&gt;
+            &lt;TextField source="name" /&gt;
+            &lt;EmailField source="email" /&gt;
+            &lt;TextField source="phone" /&gt;
+<span class="gd">-           &lt;UrlField source="website" /&gt;
+</span><span class="gi">+           &lt;MyUrlField source="website" /&gt;
+</span>            &lt;TextField source="company.name" /&gt;
+        &lt;/Datagrid&gt;
+    &lt;/List&gt;
+<span class="err">);</span>
+</code></pre></div></div>
+
+<p>Yes, you can replace any of react-admin’s components with your own! That means react-admin never blocks you: if one react-admin component doesn’t perfectly suit your needs, you can easily swap it with your own version.</p>
+
+<h2 id="customizing-styles">Customizing Styles</h2>
+
+<p>The <code class="language-plaintext highlighter-rouge">MyUrlField</code> component is a perfect opportunity to illustrate how to customize styles. React-admin relies on <a href="https://material-ui.com/">material-ui</a>, a set of React components modeled after Google’s <a href="https://material.io/">Material Design UI Guidelines</a>. Material-ui uses <a href="https://github.com/cssinjs/jss">JSS</a>, a CSS-in-JS solution, for styling components. Let’s take advantage of the capabilities of JSS to remove the underline from the link and add an icon:</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// in src/MyUrlField.js</span>
+<span class="k">import</span> <span class="o">*</span> <span class="k">as</span> <span class="nx">React</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">react</span><span class="dl">"</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">useRecordContext</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react-admin</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">makeStyles</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">@material-ui/core/styles</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">LaunchIcon</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">@material-ui/icons/Launch</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">const</span> <span class="nx">useStyles</span> <span class="o">=</span> <span class="nx">makeStyles</span><span class="p">({</span>
+    <span class="na">link</span><span class="p">:</span> <span class="p">{</span>
+        <span class="na">textDecoration</span><span class="p">:</span> <span class="dl">'</span><span class="s1">none</span><span class="dl">'</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="na">icon</span><span class="p">:</span> <span class="p">{</span>
+        <span class="na">width</span><span class="p">:</span> <span class="dl">'</span><span class="s1">0.5em</span><span class="dl">'</span><span class="p">,</span>
+        <span class="na">height</span><span class="p">:</span> <span class="dl">'</span><span class="s1">0.5em</span><span class="dl">'</span><span class="p">,</span>
+        <span class="na">paddingLeft</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="p">},</span>
+<span class="p">});</span>
+
+<span class="kd">const</span> <span class="nx">MyUrlField</span> <span class="o">=</span> <span class="p">({</span> <span class="nx">source</span> <span class="p">})</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">record</span> <span class="o">=</span> <span class="nx">useRecordContext</span><span class="p">();</span>
+    <span class="kd">const</span> <span class="nx">classes</span> <span class="o">=</span> <span class="nx">useStyles</span><span class="p">();</span>
+    <span class="k">return</span> <span class="nx">record</span> <span class="p">?</span> <span class="p">(</span>
+        <span class="p">&lt;</span><span class="nt">a</span> <span class="na">href</span><span class="p">=</span><span class="si">{</span><span class="nx">record</span><span class="p">[</span><span class="nx">source</span><span class="p">]</span><span class="si">}</span> <span class="na">className</span><span class="p">=</span><span class="si">{</span><span class="nx">classes</span><span class="p">.</span><span class="nx">link</span><span class="si">}</span><span class="p">&gt;</span>
+            <span class="si">{</span><span class="nx">record</span><span class="p">[</span><span class="nx">source</span><span class="p">]</span><span class="si">}</span>
+            <span class="p">&lt;</span><span class="nc">LaunchIcon</span> <span class="na">className</span><span class="p">=</span><span class="si">{</span><span class="nx">classes</span><span class="p">.</span><span class="nx">icon</span><span class="si">}</span> <span class="p">/&gt;</span>
+        <span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;</span>
+    <span class="p">)</span> <span class="p">:</span> <span class="kc">null</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="nx">MyUrlField</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p><img src="./img/tutorial_custom_styles.png" alt="Custom styles" /></p>
+
+<p>In JSS, you define styles as a JavaScript object, using the JS variants of the CSS property names (e.g. <code class="language-plaintext highlighter-rouge">textDecoration</code> instead of <code class="language-plaintext highlighter-rouge">text-decoration</code>). To pass these styles to the component, use <code class="language-plaintext highlighter-rouge">makeStyles</code> to build a React hook. The hook will create new class names for these styles, and return the new class names in the <code class="language-plaintext highlighter-rouge">classes</code> object. Then, use these names in a <code class="language-plaintext highlighter-rouge">className</code> prop, as you would with a regular CSS class.</p>
+
+<p><strong>Tip</strong>: There is much more to JSS than what this tutorial covers. Read the <a href="https://material-ui.com/styles/basics">material-ui documentation</a> to learn more about theming, vendor prefixes, responsive utilities, etc.</p>
+
+<p><strong>Tip</strong>: Material-ui supports other CSS-in-JS solutions, including <a href="https://material-ui.com/styles/basics/#styled-components-api">Styled components</a>.</p>
+
+<h2 id="handling-relationships">Handling Relationships</h2>
+
+<p>In JSONPlaceholder, each <code class="language-plaintext highlighter-rouge">post</code> record includes a <code class="language-plaintext highlighter-rouge">userId</code> field, which points to a <code class="language-plaintext highlighter-rouge">user</code>:</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+    </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"sunt aut facere repellat provident occaecati excepturi optio reprehenderit"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"body"</span><span class="p">:</span><span class="w"> </span><span class="s2">"quia et suscipit</span><span class="se">\n</span><span class="s2">suscipit recusandae consequuntur expedita et cum</span><span class="se">\n</span><span class="s2">reprehenderit molestiae ut ut quas totam</span><span class="se">\n</span><span class="s2">nostrum rerum est autem sunt rem eveniet architecto"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"userId"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p>React-admin knows how to take advantage of these foreign keys to fetch references. Let’s see how the <code class="language-plaintext highlighter-rouge">ListGuesser</code> manages them by creating a new <code class="language-plaintext highlighter-rouge">&lt;Resource&gt;</code> for the <code class="language-plaintext highlighter-rouge">/posts</code> API endpoint:</p>
+
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">//</span> in src/App.js
+<span class="p">import * as React from "react";
+</span><span class="gd">-import { Admin, Resource } from 'react-admin';
+</span><span class="gi">+import { Admin, Resource, ListGuesser } from 'react-admin';
+</span><span class="p">import jsonServerProvider from 'ra-data-json-server';
+import { UserList } from './users';
+</span>
+const App = () =&gt; (
+    &lt;Admin dataProvider={dataProvider}&gt;
+<span class="gi">+       &lt;Resource name="posts" list={ListGuesser} /&gt;
+</span>        &lt;Resource name="users" list={UserList} /&gt;
+    &lt;/Admin&gt;
+<span class="err">);</span>
+
+<span class="p">export default App;
+</span></code></pre></div></div>
+
+<p><img src="./img/tutorial_guessed_post_list.png" alt="Guessed Post List" /></p>
+
+<p>The <code class="language-plaintext highlighter-rouge">ListGuesser</code> suggests using a <code class="language-plaintext highlighter-rouge">&lt;ReferenceField&gt;</code> for the <code class="language-plaintext highlighter-rouge">userId</code> field. Let’s play with this new field by creating the <code class="language-plaintext highlighter-rouge">PostList</code> component based on the code dumped by the guesser:</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// in src/posts.js</span>
+<span class="k">import</span> <span class="o">*</span> <span class="k">as</span> <span class="nx">React</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">react</span><span class="dl">"</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">List</span><span class="p">,</span> <span class="nx">Datagrid</span><span class="p">,</span> <span class="nx">TextField</span><span class="p">,</span> <span class="nx">ReferenceField</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react-admin</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="k">export</span> <span class="kd">const</span> <span class="nx">PostList</span> <span class="o">=</span> <span class="nx">props</span> <span class="o">=&gt;</span> <span class="p">(</span>
+    <span class="p">&lt;</span><span class="nc">List</span> <span class="si">{</span><span class="p">...</span><span class="nx">props</span><span class="si">}</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nc">Datagrid</span> <span class="na">rowClick</span><span class="p">=</span><span class="s">"edit"</span><span class="p">&gt;</span>
+            <span class="p">&lt;</span><span class="nc">ReferenceField</span> <span class="na">source</span><span class="p">=</span><span class="s">"userId"</span> <span class="na">reference</span><span class="p">=</span><span class="s">"users"</span><span class="p">&gt;</span>
+                <span class="p">&lt;</span><span class="nc">TextField</span> <span class="na">source</span><span class="p">=</span><span class="s">"id"</span> <span class="p">/&gt;</span>
+            <span class="p">&lt;/</span><span class="nc">ReferenceField</span><span class="p">&gt;</span>
+            <span class="p">&lt;</span><span class="nc">TextField</span> <span class="na">source</span><span class="p">=</span><span class="s">"id"</span> <span class="p">/&gt;</span>
+            <span class="p">&lt;</span><span class="nc">TextField</span> <span class="na">source</span><span class="p">=</span><span class="s">"title"</span> <span class="p">/&gt;</span>
+            <span class="p">&lt;</span><span class="nc">TextField</span> <span class="na">source</span><span class="p">=</span><span class="s">"body"</span> <span class="p">/&gt;</span>
+        <span class="p">&lt;/</span><span class="nc">Datagrid</span><span class="p">&gt;</span>
+    <span class="p">&lt;/</span><span class="nc">List</span><span class="p">&gt;</span>
+<span class="p">);</span>
+</code></pre></div></div>
+
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">//</span> in src/App.js
+<span class="gd">-import { Admin, Resource, ListGuesser } from 'react-admin';
+</span><span class="gi">+import { Admin, Resource } from 'react-admin';
++import { PostList } from './posts';
+</span><span class="p">import { UserList } from './users';
+</span>
+const App = () =&gt; (
+    &lt;Admin dataProvider={dataProvider}&gt;
+<span class="gd">-       &lt;Resource name="posts" list={ListGuesser} /&gt;
+</span><span class="gi">+       &lt;Resource name="posts" list={PostList} /&gt;
+</span>        &lt;Resource name="users" list={UserList} /&gt;
+    &lt;/Admin&gt;
+<span class="err">);</span>
+</code></pre></div></div>
+
+<p>When displaying the posts list, the app displays the <code class="language-plaintext highlighter-rouge">id</code> of the post author as a <code class="language-plaintext highlighter-rouge">&lt;TextField&gt;</code>. This <code class="language-plaintext highlighter-rouge">id</code> field doesn’t mean much, let’s use the user <code class="language-plaintext highlighter-rouge">name</code> instead:</p>
+
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">//</span> in src/posts.js
+<span class="p">export const PostList = props =&gt; (
+</span>    &lt;List {...props}&gt;
+        &lt;Datagrid rowClick="edit"&gt;
+            &lt;ReferenceField source="userId" reference="users"&gt;
+<span class="gd">-               &lt;TextField source="id" /&gt;
+</span><span class="gi">+               &lt;TextField source="name" /&gt;
+</span>            &lt;/ReferenceField&gt;
+            &lt;TextField source="id" /&gt;
+            &lt;TextField source="title" /&gt;
+            &lt;TextField source="body" /&gt;
+        &lt;/Datagrid&gt;
+    &lt;/List&gt;
+<span class="err">);</span>
+</code></pre></div></div>
+
+<p>The post list now displays the user names on each line.</p>
+
+<p><img src="./img/tutorial_list_user_name.png" alt="Post List With User Names" /></p>
+
+<p><strong>Tip</strong>: The <code class="language-plaintext highlighter-rouge">&lt;ReferenceField&gt;</code> component alone doesn’t display anything. It just fetches the reference data, and passes it as a <code class="language-plaintext highlighter-rouge">record</code> to its child component (a <code class="language-plaintext highlighter-rouge">&lt;TextField&gt;</code> in our case). Just like the <code class="language-plaintext highlighter-rouge">&lt;List&gt;</code> component, all <code class="language-plaintext highlighter-rouge">&lt;Reference&gt;</code> components are only responsible for fetching and preparing data, and delegate rendering to their children.</p>
+
+<p><strong>Tip</strong>: Look at the network tab of your browser again: react-admin deduplicates requests for users, and aggregates them in order to make only <em>one</em> HTTP request to the <code class="language-plaintext highlighter-rouge">/users</code> endpoint for the whole Datagrid. That’s one of many optimizations that keep the UI fast and responsive.</p>
+
+<p>To finish the post list, place the post <code class="language-plaintext highlighter-rouge">id</code> field as first column, and remove the <code class="language-plaintext highlighter-rouge">body</code> field. From a UX point of view, fields containing large chunks of text should not appear in a Datagrid, only in detail views. Also, to make the Edit action stand out, let’s replace the <code class="language-plaintext highlighter-rouge">rowClick</code> action by an explicit action button:</p>
+
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">//</span> in src/posts.js
+<span class="p">import * as React from "react";
+</span><span class="gd">-import { List, Datagrid, TextField, ReferenceField } from 'react-admin';
+</span><span class="gi">+import { List, Datagrid, TextField, ReferenceField, EditButton } from 'react-admin';
+</span>
+export const PostList = props =&gt; (
+    &lt;List {...props}&gt;
+<span class="gd">-       &lt;Datagrid rowClick="edit"&gt;
+</span><span class="gi">+       &lt;Datagrid&gt;
++           &lt;TextField source="id" /&gt;
+</span>            &lt;ReferenceField source="userId" reference="users"&gt;
+                &lt;TextField source="name" /&gt;
+            &lt;/ReferenceField&gt;
+<span class="gd">-           &lt;TextField source="id" /&gt;
+</span>            &lt;TextField source="title" /&gt;
+<span class="gd">-           &lt;TextField source="body" /&gt;
+</span><span class="gi">+           &lt;EditButton /&gt;
+</span>        &lt;/Datagrid&gt;
+    &lt;/List&gt;
+<span class="err">);</span>
+</code></pre></div></div>
+
+<p><img src="./img/tutorial_post_list_less_columns.png" alt="Post List With Less Columns" /></p>
+
+<h2 id="adding-creation-and-editing-capabilities">Adding Creation and Editing Capabilities</h2>
+
+<p>An admin interface isn’t just about displaying remote data, it should also allow editing records. React-admin provides an <code class="language-plaintext highlighter-rouge">&lt;Edit&gt;</code> components for that purpose ; let’s use the <code class="language-plaintext highlighter-rouge">&lt;EditGuesser&gt;</code> to help bootstrap it.</p>
+
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">//</span> in src/App.js
+<span class="gd">-import { Admin, Resource } from 'react-admin';
+</span><span class="gi">+import { Admin, Resource, EditGuesser } from 'react-admin';
+</span><span class="p">import { PostList } from './posts';
+import { UserList } from './users';
+</span>
+const App = () =&gt; (
+    &lt;Admin dataProvider={dataProvider}&gt;
+<span class="gd">-       &lt;Resource name="posts" list={PostList} /&gt;
+</span><span class="gi">+       &lt;Resource name="posts" list={PostList} edit={EditGuesser} /&gt;
+</span>        &lt;Resource name="users" list={UserList} /&gt;
+    &lt;/Admin&gt;
+<span class="err">);</span>
+</code></pre></div></div>
+
+<p><img src="./img/tutorial_edit_guesser.gif" alt="Post Edit Guesser" /></p>
+
+<p>Users can display the edit page just by clicking on the Edit button. The form rendered is already functional; it issues <code class="language-plaintext highlighter-rouge">PUT</code> requests to the REST API upon submission.</p>
+
+<p>Copy the <code class="language-plaintext highlighter-rouge">PostEdit</code> code dumped by the guesser in the console to the <code class="language-plaintext highlighter-rouge">posts.js</code> file so that you can customize the view. Don’t forget to <code class="language-plaintext highlighter-rouge">import</code> the new components from react-admin:</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// in src/posts.js</span>
+<span class="k">import</span> <span class="o">*</span> <span class="k">as</span> <span class="nx">React</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">react</span><span class="dl">"</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span>
+    <span class="nx">List</span><span class="p">,</span>
+    <span class="nx">Datagrid</span><span class="p">,</span>
+    <span class="nx">TextField</span><span class="p">,</span>
+    <span class="nx">ReferenceField</span><span class="p">,</span>
+    <span class="nx">EditButton</span><span class="p">,</span>
+    <span class="nx">Edit</span><span class="p">,</span>
+    <span class="nx">SimpleForm</span><span class="p">,</span>
+    <span class="nx">ReferenceInput</span><span class="p">,</span>
+    <span class="nx">SelectInput</span><span class="p">,</span>
+    <span class="nx">TextInput</span><span class="p">,</span>
+<span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react-admin</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="k">export</span> <span class="kd">const</span> <span class="nx">PostList</span> <span class="o">=</span> <span class="nx">props</span> <span class="o">=&gt;</span> <span class="p">(</span>
+  <span class="p">{</span> <span class="cm">/* ... */</span> <span class="p">}</span>
+<span class="p">);</span>
+
+<span class="k">export</span> <span class="kd">const</span> <span class="nx">PostEdit</span> <span class="o">=</span> <span class="nx">props</span> <span class="o">=&gt;</span> <span class="p">(</span>
+    <span class="p">&lt;</span><span class="nc">Edit</span> <span class="si">{</span><span class="p">...</span><span class="nx">props</span><span class="si">}</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nc">SimpleForm</span><span class="p">&gt;</span>
+            <span class="p">&lt;</span><span class="nc">ReferenceInput</span> <span class="na">source</span><span class="p">=</span><span class="s">"userId"</span> <span class="na">reference</span><span class="p">=</span><span class="s">"users"</span><span class="p">&gt;</span>
+                <span class="p">&lt;</span><span class="nc">SelectInput</span> <span class="na">optionText</span><span class="p">=</span><span class="s">"id"</span> <span class="p">/&gt;</span>
+            <span class="p">&lt;/</span><span class="nc">ReferenceInput</span><span class="p">&gt;</span>
+            <span class="p">&lt;</span><span class="nc">TextInput</span> <span class="na">source</span><span class="p">=</span><span class="s">"id"</span> <span class="p">/&gt;</span>
+            <span class="p">&lt;</span><span class="nc">TextInput</span> <span class="na">source</span><span class="p">=</span><span class="s">"title"</span> <span class="p">/&gt;</span>
+            <span class="p">&lt;</span><span class="nc">TextInput</span> <span class="na">source</span><span class="p">=</span><span class="s">"body"</span> <span class="p">/&gt;</span>
+        <span class="p">&lt;/</span><span class="nc">SimpleForm</span><span class="p">&gt;</span>
+    <span class="p">&lt;/</span><span class="nc">Edit</span><span class="p">&gt;</span>
+<span class="p">);</span>
+</code></pre></div></div>
+
+<p>You can now adjust the <code class="language-plaintext highlighter-rouge">PostEdit</code> component to disable the edition of the primary key (<code class="language-plaintext highlighter-rouge">id</code>), place it first, use the user <code class="language-plaintext highlighter-rouge">name</code> instead of the user <code class="language-plaintext highlighter-rouge">id</code> in the reference, and use a longer text input for the <code class="language-plaintext highlighter-rouge">body</code> field, as follows:</p>
+
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">//</span> in src/posts.js
+<span class="p">export const PostEdit = props =&gt; (
+</span>    &lt;Edit {...props}&gt;
+        &lt;SimpleForm&gt;
+<span class="gi">+           &lt;TextInput disabled source="id" /&gt;
+</span>            &lt;ReferenceInput source="userId" reference="users"&gt;
+<span class="gd">-               &lt;SelectInput optionText="id" /&gt;
+</span><span class="gi">+               &lt;SelectInput optionText="name" /&gt;
+</span>            &lt;/ReferenceInput&gt;
+<span class="gd">-           &lt;TextInput source="id" /&gt;
+</span>            &lt;TextInput source="title" /&gt;
+<span class="gd">-           &lt;TextInput source="body" /&gt;
+</span><span class="gi">+           &lt;TextInput multiline source="body" /&gt;
+</span>        &lt;/SimpleForm&gt;
+    &lt;/Edit&gt;
+<span class="err">);</span>
+</code></pre></div></div>
+
+<p>If you’ve understood the <code class="language-plaintext highlighter-rouge">&lt;List&gt;</code> component, the <code class="language-plaintext highlighter-rouge">&lt;Edit&gt;</code> component will be no surprise. It’s responsible for fetching the record, and displaying the page title. It passes the record down to the <code class="language-plaintext highlighter-rouge">&lt;SimpleForm&gt;</code> component, which is responsible for the form layout, default values, and validation. Just like <code class="language-plaintext highlighter-rouge">&lt;Datagrid&gt;</code>, <code class="language-plaintext highlighter-rouge">&lt;SimpleForm&gt;</code> uses its children to determine the form inputs to display. It expects <em>input components</em> as children. <code class="language-plaintext highlighter-rouge">&lt;TextInput&gt;</code>, <code class="language-plaintext highlighter-rouge">&lt;ReferenceInput&gt;</code>, and <code class="language-plaintext highlighter-rouge">&lt;SelectInput&gt;</code> are such inputs.</p>
+
+<p>The <code class="language-plaintext highlighter-rouge">&lt;ReferenceInput&gt;</code> takes the same props as the <code class="language-plaintext highlighter-rouge">&lt;ReferenceField&gt;</code> (used earlier in the <code class="language-plaintext highlighter-rouge">PostList</code> page). <code class="language-plaintext highlighter-rouge">&lt;ReferenceInput&gt;</code> uses these props to fetch the API for possible references related to the current record (in this case, possible <code class="language-plaintext highlighter-rouge">users</code> for the current <code class="language-plaintext highlighter-rouge">post</code>). It then passes these possible references to the child component (<code class="language-plaintext highlighter-rouge">&lt;SelectInput&gt;</code>), which is responsible for displaying them (via their <code class="language-plaintext highlighter-rouge">name</code> in that case), and letting the user select one. <code class="language-plaintext highlighter-rouge">&lt;SelectInput&gt;</code> renders as a <code class="language-plaintext highlighter-rouge">&lt;select&gt;</code> tag in HTML.</p>
+
+<p>Before you can use that custom component in the <code class="language-plaintext highlighter-rouge">App.js</code>, copy the <code class="language-plaintext highlighter-rouge">PostEdit</code> component into a <code class="language-plaintext highlighter-rouge">PostCreate</code>, and replace <code class="language-plaintext highlighter-rouge">Edit</code> by <code class="language-plaintext highlighter-rouge">Create</code>:</p>
+
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">//</span> in src/posts.js
+<span class="p">import * as React from "react";
+import {
+</span>    List,
+    Datagrid,
+    TextField,
+    ReferenceField,
+    EditButton,
+    Edit,
+<span class="gi">+   Create,
+</span>    SimpleForm,
+    ReferenceInput,
+    SelectInput,
+    TextInput,
+<span class="err">}</span> from 'react-admin';
+
+export const PostList = props =&gt; (
+    // ...
+<span class="err">);</span>
+
+<span class="p">export const PostEdit = props =&gt; (
+</span>    // ...
+<span class="err">);</span>
+
+<span class="gi">+export const PostCreate = props =&gt; (
++    &lt;Create {...props}&gt;
++        &lt;SimpleForm&gt;
++            &lt;ReferenceInput source="userId" reference="users"&gt;
++                &lt;SelectInput optionText="name" /&gt;
++            &lt;/ReferenceInput&gt;
++            &lt;TextInput source="title" /&gt;
++            &lt;TextInput multiline source="body" /&gt;
++        &lt;/SimpleForm&gt;
++    &lt;/Create&gt;
++);
+</span></code></pre></div></div>
+
+<p><strong>Tip</strong>: The <code class="language-plaintext highlighter-rouge">&lt;PostEdit&gt;</code> and the <code class="language-plaintext highlighter-rouge">&lt;PostCreate&gt;</code> components use almost the same child form, except for the additional <code class="language-plaintext highlighter-rouge">id</code> input in <code class="language-plaintext highlighter-rouge">&lt;PostEdit&gt;</code>. In most cases, the forms for creating and editing a record are a bit different, because most APIs create primary keys server-side. But if the forms are the same, you can share a common form component in <code class="language-plaintext highlighter-rouge">&lt;PostEdit&gt;</code> and <code class="language-plaintext highlighter-rouge">&lt;PostCreate&gt;</code>.</p>
+
+<p>To use the new <code class="language-plaintext highlighter-rouge">&lt;PostEdit&gt;</code> and <code class="language-plaintext highlighter-rouge">&lt;PostCreate&gt;</code> components in the posts resource, just add them as <code class="language-plaintext highlighter-rouge">edit</code> and <code class="language-plaintext highlighter-rouge">create</code> attributes in the <code class="language-plaintext highlighter-rouge">&lt;Resource name="posts"&gt;</code> component:</p>
+
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">//</span> in src/App.js
+<span class="gd">-import { Admin, Resource, EditGuesser } from 'react-admin';
+</span><span class="gi">+import { Admin, Resource } from 'react-admin';
+</span><span class="gd">-import { PostList } from './posts';
+</span><span class="gi">+import { PostList, PostEdit, PostCreate } from './posts';
+</span><span class="p">import { UserList } from './users';
+</span>
+const App = () =&gt; (
+    &lt;Admin dataProvider={dataProvider}&gt;
+<span class="gd">-       &lt;Resource name="posts" list={PostList} edit={EditGuesser} /&gt;
+</span><span class="gi">+       &lt;Resource name="posts" list={PostList} edit={PostEdit} create={PostCreate} /&gt;
+</span>        &lt;Resource name="users" list={UserList} /&gt;
+    &lt;/Admin&gt;
+<span class="err">);</span>
+</code></pre></div></div>
+
+<p><img src="./img/tutorial_post_create.gif" alt="Post Creation" /></p>
+
+<p>React-admin automatically adds a “create” button on top of the posts list to give access to the <code class="language-plaintext highlighter-rouge">&lt;PostCreate&gt;</code> component. And the creation form works ; it issues a <code class="language-plaintext highlighter-rouge">POST</code> request to the REST API upon submission.</p>
+
+<h2 id="optimistic-rendering-and-undo">Optimistic Rendering And Undo</h2>
+
+<p>Unfortunately, JSONPlaceholder is a read-only API; although it seems to accept <code class="language-plaintext highlighter-rouge">POST</code> and <code class="language-plaintext highlighter-rouge">PUT</code> requests, it doesn’t take into account the creations and edits - that’s why, in this particular case, you will see errors after creation, and you won’t see your edits after you save them. It’s just an artifact of JSONPlaceholder.</p>
+
+<p>But then, how come the newly created post appears in the list just after creation in the screencast above?</p>
+
+<p>That’s because react-admin uses <em>optimistic rendering</em>. When a user edits a record and hits the “Save” button, the UI shows a confirmation and displays the updated data <em>before sending the update query to server</em>. The main benefit is that UI changes are immediate - no need to wait for the server response. It’s a great comfort for users.</p>
+
+<p>But there is an additional benefit: it also allows the “Undo” feature. Undo is already functional in the admin at that point. Try editing a record, then hit the “Undo” link in the black confirmation box before it slides out. You’ll see that the app does not send the <code class="language-plaintext highlighter-rouge">UPDATE</code> query to the API, and displays the non-modified data.</p>
+
+<p><img src="./img/tutorial_post_edit_undo.gif" alt="Undo Post Editing" /></p>
+
+<p>Even though updates appear immediately due to Optimistic Rendering, React-admin only sends them to the server after a short delay (about 5 seconds). During this delay, the user can undo the action, and react-admin will never send the update.</p>
+
+<p>Optimistic Rendering and Undo require no specific code on the API side - react-admin handles them purely on the client-side. That means that you’ll get them for free with your own API!</p>
+
+<p><strong>Note</strong>: When you add the ability to edit an item, you also add the ability to delete it. The “Delete” button in the edit view is fully working out of the box - and it is also “Undo”-able .</p>
+
+<p>The post editing page has a slight problem: it uses the post id as main title (the text displayed in the top bar). Let’s customize the view title with a title component:</p>
+
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">//</span> in src/posts.js
+<span class="gi">+const PostTitle = ({ record }) =&gt; {
++    return &lt;span&gt;Post {record ? `"${record.title}"` : ''}&lt;/span&gt;;
++};
+</span>
+export const PostEdit = props =&gt; (
+<span class="gd">-   &lt;Edit {...props}&gt;
+</span><span class="gi">+   &lt;Edit title={&lt;PostTitle /&gt;} {...props}&gt;
+</span>        // ...
+    &lt;/Edit&gt;
+<span class="err">);</span>
+</code></pre></div></div>
+
+<p><img src="./img/tutorial_post_title.png" alt="Post Edit Title" /></p>
+
+<h2 id="adding-search-and-filters-to-the-list">Adding Search And Filters To The List</h2>
+
+<p>Let’s get back to the post list for a minute. It offers sorting and pagination, but one feature is missing: the ability to search content.</p>
+
+<p>React-admin can use Input components to create a multi-criteria search engine in the list view. Pass an array of such Input components to the List <code class="language-plaintext highlighter-rouge">filters</code> prop to enable filtering:</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// in src/posts.js</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">ReferenceInput</span><span class="p">,</span> <span class="nx">SelectInput</span><span class="p">,</span> <span class="nx">TextInput</span><span class="p">,</span> <span class="nx">List</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react-admin</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">const</span> <span class="nx">postFilters</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">&lt;</span><span class="nc">TextInput</span> <span class="na">source</span><span class="p">=</span><span class="s">"q"</span> <span class="na">label</span><span class="p">=</span><span class="s">"Search"</span> <span class="na">alwaysOn</span> <span class="p">/&gt;,</span>
+    <span class="p">&lt;</span><span class="nc">ReferenceInput</span> <span class="na">source</span><span class="p">=</span><span class="s">"userId"</span> <span class="na">label</span><span class="p">=</span><span class="s">"User"</span> <span class="na">reference</span><span class="p">=</span><span class="s">"users"</span> <span class="na">allowEmpty</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nc">SelectInput</span> <span class="na">optionText</span><span class="p">=</span><span class="s">"name"</span> <span class="p">/&gt;</span>
+    <span class="p">&lt;/</span><span class="nc">ReferenceInput</span><span class="p">&gt;,</span>
+<span class="p">];</span>
+
+<span class="k">export</span> <span class="kd">const</span> <span class="nx">PostList</span> <span class="o">=</span> <span class="p">(</span><span class="nx">props</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">(</span>
+    <span class="p">&lt;</span><span class="nc">List</span> <span class="na">filters</span><span class="p">=</span><span class="si">{</span><span class="nx">postFilters</span><span class="si">}</span> <span class="si">{</span><span class="p">...</span><span class="nx">props</span><span class="si">}</span><span class="p">&gt;</span>
+        // ...
+    <span class="p">&lt;/</span><span class="nc">List</span><span class="p">&gt;</span>
+<span class="p">);</span>
+</code></pre></div></div>
+
+<p>The first filter, ‘q’, takes advantage of a full-text functionality offered by JSONPlaceholder. It is <code class="language-plaintext highlighter-rouge">alwaysOn</code>, so it always appears on the screen. Users can add the second filter, <code class="language-plaintext highlighter-rouge">userId</code>, thanks to the “add filter” button, located on the top of the list. As it’s a <code class="language-plaintext highlighter-rouge">&lt;ReferenceInput&gt;</code>, it’s already populated with possible users.</p>
+
+<p><img src="./img/filters.gif" alt="posts search engine" /></p>
+
+<p>Filters are “search-as-you-type”, meaning that when the user enters new values in the filter form, the list refreshes (via an API request) immediately.</p>
+
+<p><strong>Tip</strong>: Note that the <code class="language-plaintext highlighter-rouge">label</code> property can be used on any field to customize the field label.</p>
+
+<h2 id="customizing-the-menu-icons">Customizing the Menu Icons</h2>
+
+<p>The sidebar menu shows the same icon for both posts and users. Customizing the menu icon is just a matter of passing an <code class="language-plaintext highlighter-rouge">icon</code> attribute to each <code class="language-plaintext highlighter-rouge">&lt;Resource&gt;</code>:</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// in src/App.js</span>
+<span class="k">import</span> <span class="nx">PostIcon</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">@material-ui/icons/Book</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">UserIcon</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">@material-ui/icons/Group</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">const</span> <span class="nx">App</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">(</span>
+    <span class="p">&lt;</span><span class="nc">Admin</span> <span class="na">dataProvider</span><span class="p">=</span><span class="si">{</span><span class="nx">dataProvider</span><span class="si">}</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nc">Resource</span> <span class="na">name</span><span class="p">=</span><span class="s">"posts"</span> <span class="na">list</span><span class="p">=</span><span class="si">{</span><span class="nx">PostList</span><span class="si">}</span> <span class="na">edit</span><span class="p">=</span><span class="si">{</span><span class="nx">PostEdit</span><span class="si">}</span> <span class="na">create</span><span class="p">=</span><span class="si">{</span><span class="nx">PostCreate</span><span class="si">}</span> <span class="na">icon</span><span class="p">=</span><span class="si">{</span><span class="nx">PostIcon</span><span class="si">}</span> <span class="p">/&gt;</span>
+        <span class="p">&lt;</span><span class="nc">Resource</span> <span class="na">name</span><span class="p">=</span><span class="s">"users"</span> <span class="na">list</span><span class="p">=</span><span class="si">{</span><span class="nx">UserList</span><span class="si">}</span> <span class="na">icon</span><span class="p">=</span><span class="si">{</span><span class="nx">UserIcon</span><span class="si">}</span> <span class="p">/&gt;</span>
+    <span class="p">&lt;/</span><span class="nc">Admin</span><span class="p">&gt;</span>
+<span class="p">);</span>
+</code></pre></div></div>
+
+<p><img src="./img/custom-menu.gif" alt="custom menu icons" /></p>
+
+<h2 id="using-a-custom-home-page">Using a Custom Home Page</h2>
+
+<p>By default, react-admin displays the list page of the first <code class="language-plaintext highlighter-rouge">Resource</code> element as home page. If you want to display a custom component instead, pass it in the <code class="language-plaintext highlighter-rouge">dashboard</code> prop of the <code class="language-plaintext highlighter-rouge">&lt;Admin&gt;</code> component.</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// in src/Dashboard.js</span>
+<span class="k">import</span> <span class="o">*</span> <span class="k">as</span> <span class="nx">React</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">react</span><span class="dl">"</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">Card</span><span class="p">,</span> <span class="nx">CardContent</span><span class="p">,</span> <span class="nx">CardHeader</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">@material-ui/core</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">(</span>
+    <span class="p">&lt;</span><span class="nc">Card</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nc">CardHeader</span> <span class="na">title</span><span class="p">=</span><span class="s">"Welcome to the administration"</span> <span class="p">/&gt;</span>
+        <span class="p">&lt;</span><span class="nc">CardContent</span><span class="p">&gt;</span>Lorem ipsum sic dolor amet...<span class="p">&lt;/</span><span class="nc">CardContent</span><span class="p">&gt;</span>
+    <span class="p">&lt;/</span><span class="nc">Card</span><span class="p">&gt;</span>
+<span class="p">);</span>
+</code></pre></div></div>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// in src/App.js</span>
+<span class="k">import</span> <span class="nx">Dashboard</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">./Dashboard</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">const</span> <span class="nx">App</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">(</span>
+    <span class="p">&lt;</span><span class="nc">Admin</span> <span class="na">dashboard</span><span class="p">=</span><span class="si">{</span><span class="nx">Dashboard</span><span class="si">}</span> <span class="na">dataProvider</span><span class="p">=</span><span class="si">{</span><span class="nx">dataProvider</span><span class="si">}</span><span class="p">&gt;</span>
+        // ...
+    <span class="p">&lt;/</span><span class="nc">Admin</span><span class="p">&gt;</span>
+<span class="p">);</span>
+</code></pre></div></div>
+
+<p><img src="./img/dashboard.png" alt="Custom home page" /></p>
+
+<h2 id="adding-a-login-page">Adding a Login Page</h2>
+
+<p>Most admin apps require authentication. React-admin can check user credentials before displaying a page, and redirect to a login form when the REST API returns a 403 error code.</p>
+
+<p><em>What</em> those credentials are, and <em>how</em> to get them, are questions that you, as a developer, must answer. React-admin makes no assumption about your authentication strategy (basic auth, OAuth, custom route, etc), but gives you the ability to plug your logic at the right place - using the <code class="language-plaintext highlighter-rouge">authProvider</code> object.</p>
+
+<p>For this tutorial, since there is no public authentication API, we can use a fake authentication provider that accepts every login request, and stores the <code class="language-plaintext highlighter-rouge">username</code> in <code class="language-plaintext highlighter-rouge">localStorage</code>. Each page change will require that <code class="language-plaintext highlighter-rouge">localStorage</code> contains a <code class="language-plaintext highlighter-rouge">username</code> item.</p>
+
+<p>The <code class="language-plaintext highlighter-rouge">authProvider</code> must expose 5 methods, each returning a <code class="language-plaintext highlighter-rouge">Promise</code>:</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// in src/authProvider.js</span>
+<span class="k">export</span> <span class="k">default</span> <span class="p">{</span>
+    <span class="c1">// called when the user attempts to log in</span>
+    <span class="na">login</span><span class="p">:</span> <span class="p">({</span> <span class="nx">username</span> <span class="p">})</span> <span class="o">=&gt;</span> <span class="p">{</span>
+        <span class="nx">localStorage</span><span class="p">.</span><span class="nx">setItem</span><span class="p">(</span><span class="dl">'</span><span class="s1">username</span><span class="dl">'</span><span class="p">,</span> <span class="nx">username</span><span class="p">);</span>
+        <span class="c1">// accept all username/password combinations</span>
+        <span class="k">return</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">resolve</span><span class="p">();</span>
+    <span class="p">},</span>
+    <span class="c1">// called when the user clicks on the logout button</span>
+    <span class="na">logout</span><span class="p">:</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+        <span class="nx">localStorage</span><span class="p">.</span><span class="nx">removeItem</span><span class="p">(</span><span class="dl">'</span><span class="s1">username</span><span class="dl">'</span><span class="p">);</span>
+        <span class="k">return</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">resolve</span><span class="p">();</span>
+    <span class="p">},</span>
+    <span class="c1">// called when the API returns an error</span>
+    <span class="na">checkError</span><span class="p">:</span> <span class="p">({</span> <span class="nx">status</span> <span class="p">})</span> <span class="o">=&gt;</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">status</span> <span class="o">===</span> <span class="mi">401</span> <span class="o">||</span> <span class="nx">status</span> <span class="o">===</span> <span class="mi">403</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">localStorage</span><span class="p">.</span><span class="nx">removeItem</span><span class="p">(</span><span class="dl">'</span><span class="s1">username</span><span class="dl">'</span><span class="p">);</span>
+            <span class="k">return</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">reject</span><span class="p">();</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">resolve</span><span class="p">();</span>
+    <span class="p">},</span>
+    <span class="c1">// called when the user navigates to a new location, to check for authentication</span>
+    <span class="na">checkAuth</span><span class="p">:</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">localStorage</span><span class="p">.</span><span class="nx">getItem</span><span class="p">(</span><span class="dl">'</span><span class="s1">username</span><span class="dl">'</span><span class="p">)</span>
+            <span class="p">?</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">resolve</span><span class="p">()</span>
+            <span class="p">:</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">reject</span><span class="p">();</span>
+    <span class="p">},</span>
+    <span class="c1">// called when the user navigates to a new location, to check for permissions / roles</span>
+    <span class="na">getPermissions</span><span class="p">:</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(),</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p><strong>Tip</strong>: As the <code class="language-plaintext highlighter-rouge">authProvider</code> calls are asynchronous, you can easily fetch an authentication server in there.</p>
+
+<p>To enable this authentication strategy, pass the client as the <code class="language-plaintext highlighter-rouge">authProvider</code> prop in the <code class="language-plaintext highlighter-rouge">&lt;Admin&gt;</code> component:</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// in src/App.js</span>
+<span class="k">import</span> <span class="nx">Dashboard</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">./Dashboard</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">authProvider</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">./authProvider</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">const</span> <span class="nx">App</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">(</span>
+    <span class="p">&lt;</span><span class="nc">Admin</span> <span class="na">dashboard</span><span class="p">=</span><span class="si">{</span><span class="nx">Dashboard</span><span class="si">}</span> <span class="na">authProvider</span><span class="p">=</span><span class="si">{</span><span class="nx">authProvider</span><span class="si">}</span> <span class="na">dataProvider</span><span class="p">=</span><span class="si">{</span><span class="nx">dataProvider</span><span class="si">}</span><span class="p">&gt;</span>
+        // ...
+    <span class="p">&lt;/</span><span class="nc">Admin</span><span class="p">&gt;</span>
+<span class="p">);</span>
+</code></pre></div></div>
+
+<p>Once the app reloads, it’s now behind a login form that accepts everyone:</p>
+
+<p><img src="./img/login.gif" alt="Login form" /></p>
+
+<h2 id="supporting-mobile-devices">Supporting Mobile Devices</h2>
+
+<p>The react-admin layout is already responsive. Try to resize your browser to see how the sidebar switches to a drawer on smaller screens.</p>
+
+<p>But a responsive layout is not enough to make a responsive app. Datagrid components work well on desktop, but are absolutely not adapted to mobile devices. If your admin must be used on mobile devices, you’ll have to provide an alternative component for small screens.</p>
+
+<p>First, you should know that you don’t have to use the <code class="language-plaintext highlighter-rouge">&lt;Datagrid&gt;</code> component as <code class="language-plaintext highlighter-rouge">&lt;List&gt;</code> child. You can use any other component you like. For instance, the <code class="language-plaintext highlighter-rouge">&lt;SimpleList&gt;</code> component:</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// in src/posts.js</span>
+<span class="k">import</span> <span class="o">*</span> <span class="k">as</span> <span class="nx">React</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">react</span><span class="dl">"</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">List</span><span class="p">,</span> <span class="nx">SimpleList</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react-admin</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="k">export</span> <span class="kd">const</span> <span class="nx">PostList</span> <span class="o">=</span> <span class="p">(</span><span class="nx">props</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">(</span>
+    <span class="p">&lt;</span><span class="nc">List</span> <span class="si">{</span><span class="p">...</span><span class="nx">props</span><span class="si">}</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nc">SimpleList</span>
+            <span class="na">primaryText</span><span class="p">=</span><span class="si">{</span><span class="nx">record</span> <span class="o">=&gt;</span> <span class="nx">record</span><span class="p">.</span><span class="nx">title</span><span class="si">}</span>
+            <span class="na">secondaryText</span><span class="p">=</span><span class="si">{</span><span class="nx">record</span> <span class="o">=&gt;</span> <span class="s2">`</span><span class="p">${</span><span class="nx">record</span><span class="p">.</span><span class="nx">views</span><span class="p">}</span><span class="s2"> views`</span><span class="si">}</span>
+            <span class="na">tertiaryText</span><span class="p">=</span><span class="si">{</span><span class="nx">record</span> <span class="o">=&gt;</span> <span class="k">new</span> <span class="nb">Date</span><span class="p">(</span><span class="nx">record</span><span class="p">.</span><span class="nx">published_at</span><span class="p">).</span><span class="nx">toLocaleDateString</span><span class="p">()</span><span class="si">}</span>
+        <span class="p">/&gt;</span>
+    <span class="p">&lt;/</span><span class="nc">List</span><span class="p">&gt;</span>
+<span class="p">);</span>
+</code></pre></div></div>
+
+<p><img src="./img/tutorial_mobile_post_list.gif" alt="Mobile post list" /></p>
+
+<p>The <code class="language-plaintext highlighter-rouge">&lt;SimpleList&gt;</code> component uses <a href="https://material-ui.com/components/lists">material-ui’s <code class="language-plaintext highlighter-rouge">&lt;List&gt;</code> and <code class="language-plaintext highlighter-rouge">&lt;ListItem&gt;</code> components</a>, and expects functions as <code class="language-plaintext highlighter-rouge">primaryText</code>, <code class="language-plaintext highlighter-rouge">secondaryText</code>, and <code class="language-plaintext highlighter-rouge">tertiaryText</code> props.</p>
+
+<p><strong>Note:</strong> Since JSONRestServer doesn’t provide <code class="language-plaintext highlighter-rouge">views</code> or <code class="language-plaintext highlighter-rouge">published_at</code> values for posts, we switched to a custom API for those screenshots in order to demonstrate how to use some of the <code class="language-plaintext highlighter-rouge">SimpleList</code> component props.</p>
+
+<p>That works fine on mobile, but now the desktop user experience is worse. The best compromise would be to use <code class="language-plaintext highlighter-rouge">&lt;SimpleList&gt;</code> on small screens, and <code class="language-plaintext highlighter-rouge">&lt;Datagrid&gt;</code> on other screens. That’s where the <code class="language-plaintext highlighter-rouge">useMediaQuery</code> hook comes in:</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// in src/posts.js</span>
+<span class="k">import</span> <span class="o">*</span> <span class="k">as</span> <span class="nx">React</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">react</span><span class="dl">"</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">useMediaQuery</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">@material-ui/core</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">List</span><span class="p">,</span> <span class="nx">SimpleList</span><span class="p">,</span> <span class="nx">Datagrid</span><span class="p">,</span> <span class="nx">TextField</span><span class="p">,</span> <span class="nx">ReferenceField</span><span class="p">,</span> <span class="nx">EditButton</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react-admin</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="k">export</span> <span class="kd">const</span> <span class="nx">PostList</span> <span class="o">=</span> <span class="p">(</span><span class="nx">props</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">isSmall</span> <span class="o">=</span> <span class="nx">useMediaQuery</span><span class="p">(</span><span class="nx">theme</span> <span class="o">=&gt;</span> <span class="nx">theme</span><span class="p">.</span><span class="nx">breakpoints</span><span class="p">.</span><span class="nx">down</span><span class="p">(</span><span class="dl">'</span><span class="s1">sm</span><span class="dl">'</span><span class="p">));</span>
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="p">&lt;</span><span class="nc">List</span> <span class="si">{</span><span class="p">...</span><span class="nx">props</span><span class="si">}</span><span class="p">&gt;</span>
+            <span class="si">{</span><span class="nx">isSmall</span> <span class="p">?</span> <span class="p">(</span>
+                <span class="p">&lt;</span><span class="nc">SimpleList</span>
+                    <span class="na">primaryText</span><span class="p">=</span><span class="si">{</span><span class="nx">record</span> <span class="o">=&gt;</span> <span class="nx">record</span><span class="p">.</span><span class="nx">title</span><span class="si">}</span>
+                    <span class="na">secondaryText</span><span class="p">=</span><span class="si">{</span><span class="nx">record</span> <span class="o">=&gt;</span> <span class="s2">`</span><span class="p">${</span><span class="nx">record</span><span class="p">.</span><span class="nx">views</span><span class="p">}</span><span class="s2"> views`</span><span class="si">}</span>
+                    <span class="na">tertiaryText</span><span class="p">=</span><span class="si">{</span><span class="nx">record</span> <span class="o">=&gt;</span> <span class="k">new</span> <span class="nb">Date</span><span class="p">(</span><span class="nx">record</span><span class="p">.</span><span class="nx">published_at</span><span class="p">).</span><span class="nx">toLocaleDateString</span><span class="p">()</span><span class="si">}</span>
+                <span class="p">/&gt;</span>
+            <span class="p">)</span> <span class="p">:</span> <span class="p">(</span>
+                <span class="p">&lt;</span><span class="nc">Datagrid</span><span class="p">&gt;</span>
+                    <span class="p">&lt;</span><span class="nc">TextField</span> <span class="na">source</span><span class="p">=</span><span class="s">"id"</span> <span class="p">/&gt;</span>
+                    <span class="p">&lt;</span><span class="nc">ReferenceField</span> <span class="na">label</span><span class="p">=</span><span class="s">"User"</span> <span class="na">source</span><span class="p">=</span><span class="s">"userId"</span> <span class="na">reference</span><span class="p">=</span><span class="s">"users"</span><span class="p">&gt;</span>
+                        <span class="p">&lt;</span><span class="nc">TextField</span> <span class="na">source</span><span class="p">=</span><span class="s">"name"</span> <span class="p">/&gt;</span>
+                    <span class="p">&lt;/</span><span class="nc">ReferenceField</span><span class="p">&gt;</span>
+                    <span class="p">&lt;</span><span class="nc">TextField</span> <span class="na">source</span><span class="p">=</span><span class="s">"title"</span> <span class="p">/&gt;</span>
+                    <span class="p">&lt;</span><span class="nc">TextField</span> <span class="na">source</span><span class="p">=</span><span class="s">"body"</span> <span class="p">/&gt;</span>
+                    <span class="p">&lt;</span><span class="nc">EditButton</span> <span class="p">/&gt;</span>
+                <span class="p">&lt;/</span><span class="nc">Datagrid</span><span class="p">&gt;</span>
+            <span class="p">)</span><span class="si">}</span>
+        <span class="p">&lt;/</span><span class="nc">List</span><span class="p">&gt;</span>
+    <span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>This works exactly the way you expect. The lesson here is that react-admin takes care of responsive web design for the layout, but it’s your job to use <code class="language-plaintext highlighter-rouge">useMediaQuery()</code> in pages.</p>
+
+<p><img src="./img/responsive-list.gif" alt="Responsive List" /></p>
+
+<h2 id="connecting-to-a-real-api">Connecting To A Real API</h2>
+
+<p>Here is the elephant in the room of this tutorial. In real world projects, the dialect of your API (REST? GraphQL? Something else?) won’t match the JSONPlaceholder dialect. Writing a Data Provider is probably the first thing you’ll have to do to make react-admin work. Depending on your API, this can require a few hours of additional work.</p>
+
+<p>React-admin delegates every data query to a Data Provider object, which acts as an adapter to your API. This makes react-admin capable of mapping any API dialect, using endpoints from several domains, etc.</p>
+
+<p>For instance, let’s imagine you have to use the <code class="language-plaintext highlighter-rouge">my.api.url</code> REST API, which expects the following parameters:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Action</th>
+      <th>Expected API request</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Get list</td>
+      <td><code class="language-plaintext highlighter-rouge">GET http://my.api.url/posts?sort=["title","ASC"]&amp;range=[0, 24]&amp;filter={"title":"bar"}</code></td>
+    </tr>
+    <tr>
+      <td>Get one record</td>
+      <td><code class="language-plaintext highlighter-rouge">GET http://my.api.url/posts/123</code></td>
+    </tr>
+    <tr>
+      <td>Get several records</td>
+      <td><code class="language-plaintext highlighter-rouge">GET http://my.api.url/posts?filter={"id":[123,456,789]}</code></td>
+    </tr>
+    <tr>
+      <td>Get related records</td>
+      <td><code class="language-plaintext highlighter-rouge">GET http://my.api.url/posts?filter={"author_id":345}</code></td>
+    </tr>
+    <tr>
+      <td>Create a record</td>
+      <td><code class="language-plaintext highlighter-rouge">POST http://my.api.url/posts</code></td>
+    </tr>
+    <tr>
+      <td>Update a record</td>
+      <td><code class="language-plaintext highlighter-rouge">PUT http://my.api.url/posts/123</code></td>
+    </tr>
+    <tr>
+      <td>Update records</td>
+      <td><code class="language-plaintext highlighter-rouge">PUT http://my.api.url/posts?filter={"id":[123,124,125]}</code></td>
+    </tr>
+    <tr>
+      <td>Delete a record</td>
+      <td><code class="language-plaintext highlighter-rouge">DELETE http://my.api.url/posts/123</code></td>
+    </tr>
+    <tr>
+      <td>Delete records</td>
+      <td><code class="language-plaintext highlighter-rouge">DELETE http://my.api.url/posts?filter={"id":[123,124,125]}</code></td>
+    </tr>
+  </tbody>
+</table>
+
+<p>React-admin calls the Data Provider with one method for each of the actions of this list, and expects a Promise in return. These methods are called <code class="language-plaintext highlighter-rouge">getList</code>, <code class="language-plaintext highlighter-rouge">getOne</code>, <code class="language-plaintext highlighter-rouge">getMany</code>, <code class="language-plaintext highlighter-rouge">getManyReference</code>, <code class="language-plaintext highlighter-rouge">create</code>, <code class="language-plaintext highlighter-rouge">update</code>, <code class="language-plaintext highlighter-rouge">updateMany</code>, <code class="language-plaintext highlighter-rouge">delete</code>, and <code class="language-plaintext highlighter-rouge">deleteMany</code>. It’s the Data Provider’s job to emit HTTP requests and transform the response into the format expected by react-admin.</p>
+
+<p>The code for a Data Provider for the <code class="language-plaintext highlighter-rouge">my.api.url</code> API is as follows:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">{</span> <span class="nx">fetchUtils</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react-admin</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">stringify</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">query-string</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">const</span> <span class="nx">apiUrl</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">https://my.api.com/</span><span class="dl">'</span><span class="p">;</span>
+<span class="kd">const</span> <span class="nx">httpClient</span> <span class="o">=</span> <span class="nx">fetchUtils</span><span class="p">.</span><span class="nx">fetchJson</span><span class="p">;</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="p">{</span>
+    <span class="na">getList</span><span class="p">:</span> <span class="p">(</span><span class="nx">resource</span><span class="p">,</span> <span class="nx">params</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+        <span class="kd">const</span> <span class="p">{</span> <span class="nx">page</span><span class="p">,</span> <span class="nx">perPage</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">params</span><span class="p">.</span><span class="nx">pagination</span><span class="p">;</span>
+        <span class="kd">const</span> <span class="p">{</span> <span class="nx">field</span><span class="p">,</span> <span class="nx">order</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">params</span><span class="p">.</span><span class="nx">sort</span><span class="p">;</span>
+        <span class="kd">const</span> <span class="nx">query</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="na">sort</span><span class="p">:</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">([</span><span class="nx">field</span><span class="p">,</span> <span class="nx">order</span><span class="p">]),</span>
+            <span class="na">range</span><span class="p">:</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">([(</span><span class="nx">page</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="nx">perPage</span><span class="p">,</span> <span class="nx">page</span> <span class="o">*</span> <span class="nx">perPage</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]),</span>
+            <span class="na">filter</span><span class="p">:</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">params</span><span class="p">.</span><span class="nx">filter</span><span class="p">),</span>
+        <span class="p">};</span>
+        <span class="kd">const</span> <span class="nx">url</span> <span class="o">=</span> <span class="s2">`</span><span class="p">${</span><span class="nx">apiUrl</span><span class="p">}</span><span class="s2">/</span><span class="p">${</span><span class="nx">resource</span><span class="p">}</span><span class="s2">?</span><span class="p">${</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">query</span><span class="p">)}</span><span class="s2">`</span><span class="p">;</span>
+
+        <span class="k">return</span> <span class="nx">httpClient</span><span class="p">(</span><span class="nx">url</span><span class="p">).</span><span class="nx">then</span><span class="p">(({</span> <span class="nx">headers</span><span class="p">,</span> <span class="nx">json</span> <span class="p">})</span> <span class="o">=&gt;</span> <span class="p">({</span>
+            <span class="na">data</span><span class="p">:</span> <span class="nx">json</span><span class="p">,</span>
+            <span class="na">total</span><span class="p">:</span> <span class="nb">parseInt</span><span class="p">(</span><span class="nx">headers</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="dl">'</span><span class="s1">content-range</span><span class="dl">'</span><span class="p">).</span><span class="nx">split</span><span class="p">(</span><span class="dl">'</span><span class="s1">/</span><span class="dl">'</span><span class="p">).</span><span class="nx">pop</span><span class="p">(),</span> <span class="mi">10</span><span class="p">),</span>
+        <span class="p">}));</span>
+    <span class="p">},</span>
+
+    <span class="na">getOne</span><span class="p">:</span> <span class="p">(</span><span class="nx">resource</span><span class="p">,</span> <span class="nx">params</span><span class="p">)</span> <span class="o">=&gt;</span>
+        <span class="nx">httpClient</span><span class="p">(</span><span class="s2">`</span><span class="p">${</span><span class="nx">apiUrl</span><span class="p">}</span><span class="s2">/</span><span class="p">${</span><span class="nx">resource</span><span class="p">}</span><span class="s2">/</span><span class="p">${</span><span class="nx">params</span><span class="p">.</span><span class="nx">id</span><span class="p">}</span><span class="s2">`</span><span class="p">).</span><span class="nx">then</span><span class="p">(({</span> <span class="nx">json</span> <span class="p">})</span> <span class="o">=&gt;</span> <span class="p">({</span>
+            <span class="na">data</span><span class="p">:</span> <span class="nx">json</span><span class="p">,</span>
+        <span class="p">})),</span>
+
+    <span class="na">getMany</span><span class="p">:</span> <span class="p">(</span><span class="nx">resource</span><span class="p">,</span> <span class="nx">params</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+        <span class="kd">const</span> <span class="nx">query</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="na">filter</span><span class="p">:</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">({</span> <span class="na">id</span><span class="p">:</span> <span class="nx">params</span><span class="p">.</span><span class="nx">ids</span> <span class="p">}),</span>
+        <span class="p">};</span>
+        <span class="kd">const</span> <span class="nx">url</span> <span class="o">=</span> <span class="s2">`</span><span class="p">${</span><span class="nx">apiUrl</span><span class="p">}</span><span class="s2">/</span><span class="p">${</span><span class="nx">resource</span><span class="p">}</span><span class="s2">?</span><span class="p">${</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">query</span><span class="p">)}</span><span class="s2">`</span><span class="p">;</span>
+        <span class="k">return</span> <span class="nx">httpClient</span><span class="p">(</span><span class="nx">url</span><span class="p">).</span><span class="nx">then</span><span class="p">(({</span> <span class="nx">json</span> <span class="p">})</span> <span class="o">=&gt;</span> <span class="p">({</span> <span class="na">data</span><span class="p">:</span> <span class="nx">json</span> <span class="p">}));</span>
+    <span class="p">},</span>
+
+    <span class="na">getManyReference</span><span class="p">:</span> <span class="p">(</span><span class="nx">resource</span><span class="p">,</span> <span class="nx">params</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+        <span class="kd">const</span> <span class="p">{</span> <span class="nx">page</span><span class="p">,</span> <span class="nx">perPage</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">params</span><span class="p">.</span><span class="nx">pagination</span><span class="p">;</span>
+        <span class="kd">const</span> <span class="p">{</span> <span class="nx">field</span><span class="p">,</span> <span class="nx">order</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">params</span><span class="p">.</span><span class="nx">sort</span><span class="p">;</span>
+        <span class="kd">const</span> <span class="nx">query</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="na">sort</span><span class="p">:</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">([</span><span class="nx">field</span><span class="p">,</span> <span class="nx">order</span><span class="p">]),</span>
+            <span class="na">range</span><span class="p">:</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">([(</span><span class="nx">page</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="nx">perPage</span><span class="p">,</span> <span class="nx">page</span> <span class="o">*</span> <span class="nx">perPage</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]),</span>
+            <span class="na">filter</span><span class="p">:</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">({</span>
+                <span class="p">...</span><span class="nx">params</span><span class="p">.</span><span class="nx">filter</span><span class="p">,</span>
+                <span class="p">[</span><span class="nx">params</span><span class="p">.</span><span class="nx">target</span><span class="p">]:</span> <span class="nx">params</span><span class="p">.</span><span class="nx">id</span><span class="p">,</span>
+            <span class="p">}),</span>
+        <span class="p">};</span>
+        <span class="kd">const</span> <span class="nx">url</span> <span class="o">=</span> <span class="s2">`</span><span class="p">${</span><span class="nx">apiUrl</span><span class="p">}</span><span class="s2">/</span><span class="p">${</span><span class="nx">resource</span><span class="p">}</span><span class="s2">?</span><span class="p">${</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">query</span><span class="p">)}</span><span class="s2">`</span><span class="p">;</span>
+
+        <span class="k">return</span> <span class="nx">httpClient</span><span class="p">(</span><span class="nx">url</span><span class="p">).</span><span class="nx">then</span><span class="p">(({</span> <span class="nx">headers</span><span class="p">,</span> <span class="nx">json</span> <span class="p">})</span> <span class="o">=&gt;</span> <span class="p">({</span>
+            <span class="na">data</span><span class="p">:</span> <span class="nx">json</span><span class="p">,</span>
+            <span class="na">total</span><span class="p">:</span> <span class="nb">parseInt</span><span class="p">(</span><span class="nx">headers</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="dl">'</span><span class="s1">content-range</span><span class="dl">'</span><span class="p">).</span><span class="nx">split</span><span class="p">(</span><span class="dl">'</span><span class="s1">/</span><span class="dl">'</span><span class="p">).</span><span class="nx">pop</span><span class="p">(),</span> <span class="mi">10</span><span class="p">),</span>
+        <span class="p">}));</span>
+    <span class="p">},</span>
+
+    <span class="na">update</span><span class="p">:</span> <span class="p">(</span><span class="nx">resource</span><span class="p">,</span> <span class="nx">params</span><span class="p">)</span> <span class="o">=&gt;</span>
+        <span class="nx">httpClient</span><span class="p">(</span><span class="s2">`</span><span class="p">${</span><span class="nx">apiUrl</span><span class="p">}</span><span class="s2">/</span><span class="p">${</span><span class="nx">resource</span><span class="p">}</span><span class="s2">/</span><span class="p">${</span><span class="nx">params</span><span class="p">.</span><span class="nx">id</span><span class="p">}</span><span class="s2">`</span><span class="p">,</span> <span class="p">{</span>
+            <span class="na">method</span><span class="p">:</span> <span class="dl">'</span><span class="s1">PUT</span><span class="dl">'</span><span class="p">,</span>
+            <span class="na">body</span><span class="p">:</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">params</span><span class="p">.</span><span class="nx">data</span><span class="p">),</span>
+        <span class="p">}).</span><span class="nx">then</span><span class="p">(({</span> <span class="nx">json</span> <span class="p">})</span> <span class="o">=&gt;</span> <span class="p">({</span> <span class="na">data</span><span class="p">:</span> <span class="nx">json</span> <span class="p">})),</span>
+
+    <span class="na">updateMany</span><span class="p">:</span> <span class="p">(</span><span class="nx">resource</span><span class="p">,</span> <span class="nx">params</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+        <span class="kd">const</span> <span class="nx">query</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="na">filter</span><span class="p">:</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">({</span> <span class="na">id</span><span class="p">:</span> <span class="nx">params</span><span class="p">.</span><span class="nx">ids</span><span class="p">}),</span>
+        <span class="p">};</span>
+        <span class="k">return</span> <span class="nx">httpClient</span><span class="p">(</span><span class="s2">`</span><span class="p">${</span><span class="nx">apiUrl</span><span class="p">}</span><span class="s2">/</span><span class="p">${</span><span class="nx">resource</span><span class="p">}</span><span class="s2">?</span><span class="p">${</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">query</span><span class="p">)}</span><span class="s2">`</span><span class="p">,</span> <span class="p">{</span>
+            <span class="na">method</span><span class="p">:</span> <span class="dl">'</span><span class="s1">PUT</span><span class="dl">'</span><span class="p">,</span>
+            <span class="na">body</span><span class="p">:</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">params</span><span class="p">.</span><span class="nx">data</span><span class="p">),</span>
+        <span class="p">}).</span><span class="nx">then</span><span class="p">(({</span> <span class="nx">json</span> <span class="p">})</span> <span class="o">=&gt;</span> <span class="p">({</span> <span class="na">data</span><span class="p">:</span> <span class="nx">json</span> <span class="p">}));</span>
+    <span class="p">},</span>
+
+    <span class="na">create</span><span class="p">:</span> <span class="p">(</span><span class="nx">resource</span><span class="p">,</span> <span class="nx">params</span><span class="p">)</span> <span class="o">=&gt;</span>
+        <span class="nx">httpClient</span><span class="p">(</span><span class="s2">`</span><span class="p">${</span><span class="nx">apiUrl</span><span class="p">}</span><span class="s2">/</span><span class="p">${</span><span class="nx">resource</span><span class="p">}</span><span class="s2">`</span><span class="p">,</span> <span class="p">{</span>
+            <span class="na">method</span><span class="p">:</span> <span class="dl">'</span><span class="s1">POST</span><span class="dl">'</span><span class="p">,</span>
+            <span class="na">body</span><span class="p">:</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">params</span><span class="p">.</span><span class="nx">data</span><span class="p">),</span>
+        <span class="p">}).</span><span class="nx">then</span><span class="p">(({</span> <span class="nx">json</span> <span class="p">})</span> <span class="o">=&gt;</span> <span class="p">({</span>
+            <span class="na">data</span><span class="p">:</span> <span class="p">{</span> <span class="p">...</span><span class="nx">params</span><span class="p">.</span><span class="nx">data</span><span class="p">,</span> <span class="na">id</span><span class="p">:</span> <span class="nx">json</span><span class="p">.</span><span class="nx">id</span> <span class="p">},</span>
+        <span class="p">})),</span>
+
+    <span class="na">delete</span><span class="p">:</span> <span class="p">(</span><span class="nx">resource</span><span class="p">,</span> <span class="nx">params</span><span class="p">)</span> <span class="o">=&gt;</span>
+        <span class="nx">httpClient</span><span class="p">(</span><span class="s2">`</span><span class="p">${</span><span class="nx">apiUrl</span><span class="p">}</span><span class="s2">/</span><span class="p">${</span><span class="nx">resource</span><span class="p">}</span><span class="s2">/</span><span class="p">${</span><span class="nx">params</span><span class="p">.</span><span class="nx">id</span><span class="p">}</span><span class="s2">`</span><span class="p">,</span> <span class="p">{</span>
+            <span class="na">method</span><span class="p">:</span> <span class="dl">'</span><span class="s1">DELETE</span><span class="dl">'</span><span class="p">,</span>
+        <span class="p">}).</span><span class="nx">then</span><span class="p">(({</span> <span class="nx">json</span> <span class="p">})</span> <span class="o">=&gt;</span> <span class="p">({</span> <span class="na">data</span><span class="p">:</span> <span class="nx">json</span> <span class="p">})),</span>
+
+    <span class="na">deleteMany</span><span class="p">:</span> <span class="p">(</span><span class="nx">resource</span><span class="p">,</span> <span class="nx">params</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+        <span class="kd">const</span> <span class="nx">query</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="na">filter</span><span class="p">:</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">({</span> <span class="na">id</span><span class="p">:</span> <span class="nx">params</span><span class="p">.</span><span class="nx">ids</span><span class="p">}),</span>
+        <span class="p">};</span>
+        <span class="k">return</span> <span class="nx">httpClient</span><span class="p">(</span><span class="s2">`</span><span class="p">${</span><span class="nx">apiUrl</span><span class="p">}</span><span class="s2">/</span><span class="p">${</span><span class="nx">resource</span><span class="p">}</span><span class="s2">?</span><span class="p">${</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">query</span><span class="p">)}</span><span class="s2">`</span><span class="p">,</span> <span class="p">{</span>
+            <span class="na">method</span><span class="p">:</span> <span class="dl">'</span><span class="s1">DELETE</span><span class="dl">'</span><span class="p">,</span>
+        <span class="p">}).</span><span class="nx">then</span><span class="p">(({</span> <span class="nx">json</span> <span class="p">})</span> <span class="o">=&gt;</span> <span class="p">({</span> <span class="na">data</span><span class="p">:</span> <span class="nx">json</span> <span class="p">}));</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p><strong>Tip</strong>: <code class="language-plaintext highlighter-rouge">fetchUtils.fetchJson()</code> is just a shortcut for <code class="language-plaintext highlighter-rouge">fetch().then(r =&gt; r.json())</code>, plus a control of the HTTP response code to throw an <code class="language-plaintext highlighter-rouge">HTTPError</code> in case of 4xx or 5xx response. Feel free to use <code class="language-plaintext highlighter-rouge">fetch()</code> directly if it doesn’t suit your needs.</p>
+
+<p>Using this provider instead of the previous <code class="language-plaintext highlighter-rouge">jsonServerProvider</code> is just a matter of switching a function:</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// in src/app.js</span>
+<span class="k">import</span> <span class="nx">dataProvider</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">./dataProvider</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">const</span> <span class="nx">App</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">(</span>
+    <span class="p">&lt;</span><span class="nc">Admin</span> <span class="na">dataProvider</span><span class="p">=</span><span class="si">{</span><span class="nx">dataProvider</span><span class="si">}</span><span class="p">&gt;</span>
+        // ...
+    <span class="p">&lt;/</span><span class="nc">Admin</span><span class="p">&gt;</span>
+<span class="p">);</span>
+</code></pre></div></div>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>React-admin was built with customization in mind. You can replace any react-admin component with a component of your own, for instance to display a custom list layout, or a different edit form for a given resource.</p>
+
+<p>Now that you’ve completed the tutorial, continue reading the <a href="https://marmelab.com/react-admin/Readme.html">react-admin documentation</a>, and read the <a href="https://material-ui.com/">Material UI components documentation</a>.</p>
+:ET

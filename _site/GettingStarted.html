@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en-US">
+    <head>
+        <title>React-admin - Documentation</title>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+        <meta name="description" content="" />
+        <meta name="HandheldFriendly" content="true" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+        <link
+            rel="canonical"
+            href="/GettingStarted.html"
+        />
+        <link
+            rel="stylesheet"
+            href="/css/materialize.min.css"
+        />
+        <link
+            rel="stylesheet"
+            href="/css/style-v11.css"
+        />
+        <link rel="stylesheet" href="/css/syntax.css" />
+        <link rel="stylesheet" href="/css/prism.css" />
+        <link rel="stylesheet" href="/css/tocbot.css" />
+        <link
+            rel="stylesheet"
+            href="https://fonts.googleapis.com/icon?family=Material+Icons"
+        />
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/@docsearch/css@1.0.0-alpha.28"
+        />
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.12.0/tocbot.css"
+        />
+        <link
+            rel="stylesheet"
+            href="/css/docsearch.css"
+        />
+    </head>
+
+    <body>
+        <header>
+            <div id="banner" style="background-color: #4b3165; padding: 3px;text-align:center;color: white;display:none">
+                We're hiring! 
+                <a href="https://marmelab.com/en/jobs/developer" style="color:white;text-decoration:underline">Join the react-admin team today</a> 
+                and get paid to work on the library you love. Remote friendly.
+                <span style="position:absolute;right:10px"><a href="javascript:hideBanner()" style="color:white;">X</a></span>
+            </div>
+            <script>
+                function hideBanner() {
+                    document.getElementById('banner').style.display = 'none';
+                    window.localStorage.setItem('hideBannerDate', Date.now());
+                }
+                const hideBannerDate = parseInt(window.localStorage.getItem('hideBannerDate'), 10);
+                if (!hideBannerDate || (Date.now() - hideBannerDate) > 14 * 24 * 60 * 60 * 1000) { // two weeks
+                    document.getElementById('banner').style.display = 'block';
+                }
+            </script>
+            <nav>
+                <a href="#" data-target="slide-out" class="sidenav-trigger"
+                    ><i class="material-icons">menu</i></a
+                >
+                <div
+                    class="nav-wrapper"
+                    style="
+                        background: linear-gradient(
+                            145deg,
+                            #027be3 11%,
+                            #1a237e 75%
+                        );
+                    "
+                >
+                    <div class="left">
+                        <div id="docsearch" class="center"></div>
+                    </div>
+                    <ul id="nav-mobile" class="right hide-on-med-and-down">
+                        <li class="active">
+                            <a
+                                href="https://marmelab.com/react-admin/Readme.html"
+                                >Documentation</a
+                            >
+                        </li>
+                        <li>
+                            <a href="https://marmelab.com/react-admin/Demos.html"
+                                >Demos</a
+                            >
+                        </li>
+                        <li>
+                            <a href="https://marmelab.com/en/blog/#react-admin"
+                                >Blog</a
+                            >
+                        </li>
+                        <li>
+                            <a
+                                href="https://marmelab.com/ra-enterprise/"
+                                style="color: #f0c070"
+                                >Enterprise Edition</a
+                            >
+                        </li>
+                        <li>
+                            <a href="https://github.com/marmelab/react-admin">
+                                <svg
+                                    viewBox="0 0 256 250"
+                                    preserveAspectRatio="xMidYMid"
+                                    style="
+                                        height: 20px;
+                                        vertical-align: middle;
+                                        margin-right: 5px;
+                                        fill: #ffffff;
+                                    "
+                                >
+                                    <path
+                                        d="M128.001 0C57.317 0 0 57.307 0 128.001c0 56.554 36.676 104.535 87.535 121.46 6.397 1.185 8.746-2.777 8.746-6.158 0-3.052-.12-13.135-.174-23.83-35.61 7.742-43.124-15.103-43.124-15.103-5.823-14.795-14.213-18.73-14.213-18.73-11.613-7.944.876-7.78.876-7.78 12.853.902 19.621 13.19 19.621 13.19 11.417 19.568 29.945 13.911 37.249 10.64 1.149-8.272 4.466-13.92 8.127-17.116-28.431-3.236-58.318-14.212-58.318-63.258 0-13.975 5-25.394 13.188-34.358-1.329-3.224-5.71-16.242 1.24-33.874 0 0 10.749-3.44 35.21 13.121 10.21-2.836 21.16-4.258 32.038-4.307 10.878.049 21.837 1.47 32.066 4.307 24.431-16.56 35.165-13.12 35.165-13.12 6.967 17.63 2.584 30.65 1.255 33.873 8.207 8.964 13.173 20.383 13.173 34.358 0 49.163-29.944 59.988-58.447 63.157 4.591 3.972 8.682 11.762 8.682 23.704 0 17.126-.148 30.91-.148 35.126 0 3.407 2.304 7.398 8.792 6.14C219.37 232.5 256 184.537 256 128.002 256 57.307 198.691 0 128.001 0zm-80.06 182.34c-.282.636-1.283.827-2.194.39-.929-.417-1.45-1.284-1.15-1.922.276-.655 1.279-.838 2.205-.399.93.418 1.46 1.293 1.139 1.931zm6.296 5.618c-.61.566-1.804.303-2.614-.591-.837-.892-.994-2.086-.375-2.66.63-.566 1.787-.301 2.626.591.838.903 1 2.088.363 2.66zm4.32 7.188c-.785.545-2.067.034-2.86-1.104-.784-1.138-.784-2.503.017-3.05.795-.547 2.058-.055 2.861 1.075.782 1.157.782 2.522-.019 3.08zm7.304 8.325c-.701.774-2.196.566-3.29-.49-1.119-1.032-1.43-2.496-.726-3.27.71-.776 2.213-.558 3.315.49 1.11 1.03 1.45 2.505.701 3.27zm9.442 2.81c-.31 1.003-1.75 1.459-3.199 1.033-1.448-.439-2.395-1.613-2.103-2.626.301-1.01 1.747-1.484 3.207-1.028 1.446.436 2.396 1.602 2.095 2.622zm10.744 1.193c.036 1.055-1.193 1.93-2.715 1.95-1.53.034-2.769-.82-2.786-1.86 0-1.065 1.202-1.932 2.733-1.958 1.522-.03 2.768.818 2.768 1.868zm10.555-.405c.182 1.03-.875 2.088-2.387 2.37-1.485.271-2.861-.365-3.05-1.386-.184-1.056.893-2.114 2.376-2.387 1.514-.263 2.868.356 3.061 1.403z"
+                                    ></path>
+                                </svg>
+                                GitHub
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+            <ul id="slide-out" class="sidenav sidenav-fixed">
+                <li class="logo">
+                    <a href=""
+                        ><img src="/assets/logo_white.png"
+                    /></a>
+                </li>
+                <li class="version">
+<a class="dropdown-trigger" href="#" data-target="versions">
+    
+    
+    
+    <svg class="caret" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M7 10l5 5 5-5z"></path>
+        <path d="M0 0h24v24H0z" fill="none"></path>
+    </svg>
+</a>
+<ul id="versions" class="dropdown-content">
+    
+</ul>
+</li>
+                <li  class="active" ><a href="./GettingStarted.html">Getting Started</a></li>
+
+<ul><div>Core</div>
+  <li ><a href="./AudioVisualizer.html"><code>&lt;AudioVisualizer&gt;</code></a></li>
+  <li ><a href="./AudioVisualizerUtils.html"><code>AudioVisualizerUtils</code></a></li>
+  <li ><a href="./AudioVisualizerHooks.html"><code>AudioVisualizerHooks</code></a></li>
+  <li ><a href="./Types.html">Types</a></li>
+</ul>
+
+<ul><div>Visualizers</div>
+  <li ><a href="./SpectrumVisualizer.html"><code>&lt;SpectrumVisualizer&gt;</code></a></li>
+  <li ><a href="./WaveformVisualizer.html"><code>&lt;WaveformVisualizer&gt;</code></a></li>
+</ul>
+
+<li ><a href="./Architecture.html">Architecture</a></li>
+
+            </ul>
+        </header>
+
+        <main>
+            <div class="container">
+                <div class="row">
+                    <div
+                        class="col s12 m8 offset-m1 xl7 offset-xl1 markdown-section DocSearch-content toc-content"
+                    >
+                        <h1 id="react-admin">react-admin</h1>
+
+<p>A frontend Framework for building data-driven applications running in the browser, on top of REST/GraphQL APIs, using <a href="https://facebook.github.io/react/">React</a> and <a href="https://material.io/">Material Design</a>. Open sourced and maintained by <a href="https://marmelab.com/">marmelab</a>.</p>
+
+<p><a href="https://vimeo.com/474999017"><img src="https://marmelab.com/react-admin/img/react-admin-demo-still.png" alt="react-admin-demo" /></a></p>
+
+<p>Check out <a href="./Demos.md">the demos page</a> for real-life examples.</p>
+
+<h2 id="installation">Installation</h2>
+
+<p>React-admin is available from npm. You can install it (and its required dependencies)
+using:</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>npm <span class="nb">install </span>react-admin
+<span class="c">#or</span>
+yarn add react-admin
+</code></pre></div></div>
+
+<h2 id="how-to-learn-react-admin">How To Learn React-Admin</h2>
+
+<ol>
+  <li>Read the <a href="./Tutorial.md">Tutorial</a> for a 30 minutes introduction.</li>
+  <li>Read the source code of <a href="./Demos.md">the demos</a> for real-life examples.</li>
+  <li>Read the <a href="./Admin.md">Documentation</a> for a deep dive into the react-admin components and hooks.</li>
+  <li>Read the <a href="./Architecture.md">Architecture decisions</a> to better understand why features are implemented that way.</li>
+  <li>Check out the <a href="./Reference.md">API Reference</a> for a complete list of the public API.</li>
+  <li>Get <a href="#support">Support</a> for fixing your own problems</li>
+</ol>
+
+<h2 id="usage">Usage</h2>
+
+<p>Here is a simple example of how to use React-admin:</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// in app.js</span>
+<span class="k">import</span> <span class="o">*</span> <span class="k">as</span> <span class="nx">React</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">react</span><span class="dl">"</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">render</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react-dom</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">Admin</span><span class="p">,</span> <span class="nx">Resource</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react-admin</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">simpleRestProvider</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">ra-data-simple-rest</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="k">import</span> <span class="p">{</span> <span class="nx">PostList</span><span class="p">,</span> <span class="nx">PostEdit</span><span class="p">,</span> <span class="nx">PostCreate</span><span class="p">,</span> <span class="nx">PostIcon</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">./posts</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="nx">render</span><span class="p">(</span>
+    <span class="p">&lt;</span><span class="nc">Admin</span> <span class="na">dataProvider</span><span class="p">=</span><span class="si">{</span><span class="nx">simpleRestProvider</span><span class="p">(</span><span class="dl">'</span><span class="s1">http://localhost:3000</span><span class="dl">'</span><span class="p">)</span><span class="si">}</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nc">Resource</span> <span class="na">name</span><span class="p">=</span><span class="s">"posts"</span> <span class="na">list</span><span class="p">=</span><span class="si">{</span><span class="nx">PostList</span><span class="si">}</span> <span class="na">edit</span><span class="p">=</span><span class="si">{</span><span class="nx">PostEdit</span><span class="si">}</span> <span class="na">create</span><span class="p">=</span><span class="si">{</span><span class="nx">PostCreate</span><span class="si">}</span> <span class="na">icon</span><span class="p">=</span><span class="si">{</span><span class="nx">PostIcon</span><span class="si">}</span><span class="p">/&gt;</span>
+    <span class="p">&lt;/</span><span class="nc">Admin</span><span class="p">&gt;,</span>
+    <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="dl">'</span><span class="s1">root</span><span class="dl">'</span><span class="p">)</span>
+<span class="p">);</span>
+</code></pre></div></div>
+
+<p>The <code class="language-plaintext highlighter-rouge">&lt;Resource&gt;</code> component is a configuration component that allows defining sub components for each of the admin view: <code class="language-plaintext highlighter-rouge">list</code>, <code class="language-plaintext highlighter-rouge">edit</code>, and <code class="language-plaintext highlighter-rouge">create</code>. These components use Material UI and custom components from react-admin:</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// in posts.js</span>
+<span class="k">import</span> <span class="o">*</span> <span class="k">as</span> <span class="nx">React</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">react</span><span class="dl">"</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">List</span><span class="p">,</span> <span class="nx">Datagrid</span><span class="p">,</span> <span class="nx">Edit</span><span class="p">,</span> <span class="nx">Create</span><span class="p">,</span> <span class="nx">SimpleForm</span><span class="p">,</span> <span class="nx">DateField</span><span class="p">,</span> <span class="nx">TextField</span><span class="p">,</span> <span class="nx">EditButton</span><span class="p">,</span> <span class="nx">TextInput</span><span class="p">,</span> <span class="nx">DateInput</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react-admin</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">BookIcon</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">@material-ui/icons/Book</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">export</span> <span class="kd">const</span> <span class="nx">PostIcon</span> <span class="o">=</span> <span class="nx">BookIcon</span><span class="p">;</span>
+
+<span class="k">export</span> <span class="kd">const</span> <span class="nx">PostList</span> <span class="o">=</span> <span class="p">(</span><span class="nx">props</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">(</span>
+    <span class="p">&lt;</span><span class="nc">List</span> <span class="si">{</span><span class="p">...</span><span class="nx">props</span><span class="si">}</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nc">Datagrid</span><span class="p">&gt;</span>
+            <span class="p">&lt;</span><span class="nc">TextField</span> <span class="na">source</span><span class="p">=</span><span class="s">"id"</span> <span class="p">/&gt;</span>
+            <span class="p">&lt;</span><span class="nc">TextField</span> <span class="na">source</span><span class="p">=</span><span class="s">"title"</span> <span class="p">/&gt;</span>
+            <span class="p">&lt;</span><span class="nc">DateField</span> <span class="na">source</span><span class="p">=</span><span class="s">"published_at"</span> <span class="p">/&gt;</span>
+            <span class="p">&lt;</span><span class="nc">TextField</span> <span class="na">source</span><span class="p">=</span><span class="s">"average_note"</span> <span class="p">/&gt;</span>
+            <span class="p">&lt;</span><span class="nc">TextField</span> <span class="na">source</span><span class="p">=</span><span class="s">"views"</span> <span class="p">/&gt;</span>
+            <span class="p">&lt;</span><span class="nc">EditButton</span> <span class="na">basePath</span><span class="p">=</span><span class="s">"/posts"</span> <span class="p">/&gt;</span>
+        <span class="p">&lt;/</span><span class="nc">Datagrid</span><span class="p">&gt;</span>
+    <span class="p">&lt;/</span><span class="nc">List</span><span class="p">&gt;</span>
+<span class="p">);</span>
+
+<span class="kd">const</span> <span class="nx">PostTitle</span> <span class="o">=</span> <span class="p">({</span> <span class="nx">record</span> <span class="p">})</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="p">&lt;</span><span class="nt">span</span><span class="p">&gt;</span>Post <span class="si">{</span><span class="nx">record</span> <span class="p">?</span> <span class="s2">`"</span><span class="p">${</span><span class="nx">record</span><span class="p">.</span><span class="nx">title</span><span class="p">}</span><span class="s2">"`</span> <span class="p">:</span> <span class="dl">''</span><span class="si">}</span><span class="p">&lt;/</span><span class="nt">span</span><span class="p">&gt;;</span>
+<span class="p">};</span>
+
+<span class="k">export</span> <span class="kd">const</span> <span class="nx">PostEdit</span> <span class="o">=</span> <span class="p">(</span><span class="nx">props</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">(</span>
+    <span class="p">&lt;</span><span class="nc">Edit</span> <span class="na">title</span><span class="p">=</span><span class="si">{</span><span class="p">&lt;</span><span class="nc">PostTitle</span> <span class="p">/&gt;</span><span class="si">}</span> <span class="si">{</span><span class="p">...</span><span class="nx">props</span><span class="si">}</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nc">SimpleForm</span><span class="p">&gt;</span>
+            <span class="p">&lt;</span><span class="nc">TextInput</span> <span class="na">disabled</span> <span class="na">source</span><span class="p">=</span><span class="s">"id"</span> <span class="p">/&gt;</span>
+            <span class="p">&lt;</span><span class="nc">TextInput</span> <span class="na">source</span><span class="p">=</span><span class="s">"title"</span> <span class="p">/&gt;</span>
+            <span class="p">&lt;</span><span class="nc">TextInput</span> <span class="na">source</span><span class="p">=</span><span class="s">"teaser"</span> <span class="na">options</span><span class="p">=</span><span class="si">{</span><span class="p">{</span> <span class="na">multiline</span><span class="p">:</span> <span class="kc">true</span> <span class="p">}</span><span class="si">}</span> <span class="p">/&gt;</span>
+            <span class="p">&lt;</span><span class="nc">TextInput</span> <span class="na">multiline</span> <span class="na">source</span><span class="p">=</span><span class="s">"body"</span> <span class="p">/&gt;</span>
+            <span class="p">&lt;</span><span class="nc">DateInput</span> <span class="na">label</span><span class="p">=</span><span class="s">"Publication date"</span> <span class="na">source</span><span class="p">=</span><span class="s">"published_at"</span> <span class="p">/&gt;</span>
+            <span class="p">&lt;</span><span class="nc">TextInput</span> <span class="na">source</span><span class="p">=</span><span class="s">"average_note"</span> <span class="p">/&gt;</span>
+            <span class="p">&lt;</span><span class="nc">TextInput</span> <span class="na">disabled</span> <span class="na">label</span><span class="p">=</span><span class="s">"Nb views"</span> <span class="na">source</span><span class="p">=</span><span class="s">"views"</span> <span class="p">/&gt;</span>
+        <span class="p">&lt;/</span><span class="nc">SimpleForm</span><span class="p">&gt;</span>
+    <span class="p">&lt;/</span><span class="nc">Edit</span><span class="p">&gt;</span>
+<span class="p">);</span>
+
+<span class="k">export</span> <span class="kd">const</span> <span class="nx">PostCreate</span> <span class="o">=</span> <span class="p">(</span><span class="nx">props</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">(</span>
+    <span class="p">&lt;</span><span class="nc">Create</span> <span class="na">title</span><span class="p">=</span><span class="s">"Create a Post"</span> <span class="si">{</span><span class="p">...</span><span class="nx">props</span><span class="si">}</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nc">SimpleForm</span><span class="p">&gt;</span>
+            <span class="p">&lt;</span><span class="nc">TextInput</span> <span class="na">source</span><span class="p">=</span><span class="s">"title"</span> <span class="p">/&gt;</span>
+            <span class="p">&lt;</span><span class="nc">TextInput</span> <span class="na">source</span><span class="p">=</span><span class="s">"teaser"</span> <span class="na">options</span><span class="p">=</span><span class="si">{</span><span class="p">{</span> <span class="na">multiline</span><span class="p">:</span> <span class="kc">true</span> <span class="p">}</span><span class="si">}</span> <span class="p">/&gt;</span>
+            <span class="p">&lt;</span><span class="nc">TextInput</span> <span class="na">multiline</span> <span class="na">source</span><span class="p">=</span><span class="s">"body"</span> <span class="p">/&gt;</span>
+            <span class="p">&lt;</span><span class="nc">TextInput</span> <span class="na">label</span><span class="p">=</span><span class="s">"Publication date"</span> <span class="na">source</span><span class="p">=</span><span class="s">"published_at"</span> <span class="p">/&gt;</span>
+            <span class="p">&lt;</span><span class="nc">TextInput</span> <span class="na">source</span><span class="p">=</span><span class="s">"average_note"</span> <span class="p">/&gt;</span>
+        <span class="p">&lt;/</span><span class="nc">SimpleForm</span><span class="p">&gt;</span>
+    <span class="p">&lt;/</span><span class="nc">Create</span><span class="p">&gt;</span>
+<span class="p">);</span>
+</code></pre></div></div>
+
+<h2 id="does-it-work-with-my-api">Does It Work With My API?</h2>
+
+<p>Yes.</p>
+
+<p>React-admin uses an adapter approach, with a concept called <em>Data Providers</em>. Existing providers can be used as a blueprint to design your API, or you can write your own Data Provider to query an existing API. Writing a custom Data Provider is a matter of hours.</p>
+
+<p><img src="./img/data-provider.png" alt="Data Provider architecture" /></p>
+
+<p>See the <a href="./DataProviders.md">Data Providers documentation</a> for details.</p>
+
+<h2 id="architecture-batteries-included-but-removable">Architecture: Batteries Included But Removable</h2>
+
+<p>React-admin is designed as a library of loosely coupled React components built on top of <a href="https://material-ui.com/">material-ui</a>, in addition to React hooks allowing to reuse the logic with a custom UI.</p>
+
+<p>You may replace one part of react-admin with your own, e.g. to use a custom Datagrid, GraphQL instead of REST, or Bootstrap instead of Material Design.</p>
+
+<p>Read more about the <a href="./Architecture.md">Architecture choices</a>.</p>
+
+<h2 id="support">Support</h2>
+
+<ul>
+  <li>Get professional support from Marmelab via <a href="https://marmelab.com/ra-enterprise">React-Admin Enterprise Edition</a></li>
+  <li>Get community support via <a href="https://stackoverflow.com/questions/tagged/react-admin">StackOverflow</a></li>
+</ul>
+
+<h2 id="enterprise-edition">Enterprise Edition</h2>
+
+<p>The <a href="https://marmelab.com/ra-enterprise">React-Admin Enterprise Edition</a> <img class="icon" src="./img/premium.svg" /> offers additional features and services for react-admin:</p>
+
+<ul>
+  <li>Save weeks of development thanks to the <strong>Private Modules</strong>, valid on an unlimited number of domains and projects.
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">ra-preferences</code>: Persist user preferences (language, theme, filters, datagrid columns, sidebar position, etc) in local storage.</li>
+      <li><code class="language-plaintext highlighter-rouge">ra-navigation</code>: Multi-level menu and breadcrumb, with the ability to define a custom path for your resources.</li>
+      <li><code class="language-plaintext highlighter-rouge">ra-realtime</code>: Display live notifications, auto-update content on the screen, lock content when editing, with adapters for real-time backends.</li>
+      <li><code class="language-plaintext highlighter-rouge">ra-editable-datagrid</code>: Edit data directly in the list view, for better productivity. Excel-like editing experience.</li>
+      <li><code class="language-plaintext highlighter-rouge">ra-form-layout</code>: New form layouts for complex data entry tasks (accordion, wizard, etc.)</li>
+      <li><code class="language-plaintext highlighter-rouge">ra-relationships</code>: Visualize and edit complex relationships, including many-to-many relationships.</li>
+      <li><code class="language-plaintext highlighter-rouge">ra-tree</code>: Edit and visualize tree structures. Reorganize by drag and drop. Adapts to any data structure on the backend (parent_id, children, nested sets, etc).</li>
+      <li><code class="language-plaintext highlighter-rouge">ra-tour</code>: Guided tours for react-admin applications. Step-by-step instructions, Material-ui skin.</li>
+      <li><code class="language-plaintext highlighter-rouge">ra-markdown</code>: Read Markdown data, and edit it using a WYSIWYG editor in your admin</li>
+    </ul>
+  </li>
+  <li>Get <strong>Support</strong> from experienced react and react-admin developers, who will help you find the right information and troubleshoot your bugs.</li>
+  <li>Get a <strong>50% Discount on Professional Services</strong> in case you need coaching, audit, or custom development by our experts.</li>
+  <li>Get access to exclusive <strong>Learning Material</strong>, including a Storybook full of examples, and a dedicated demo app.</li>
+  <li>Prioritize your needs in the react-admin <strong>Development Roadmap</strong> thanks to a priority vote.</li>
+</ul>
+
+<p><a href="https://marmelab.com/ra-enterprise/"><img src="https://marmelab.com/ra-enterprise/assets/ra-enterprise-demo.png" alt="React-admin enterprise Edition" /></a></p>
+
+<h2 id="contributing">Contributing</h2>
+
+<p>If you want to give a hand: Thank you! There are many things you can do to help making react-admin better.</p>
+
+<p>The easiest task is <strong>bug triaging</strong>. Check that new issues on GitHub follow the issue template and give a way to reproduce the issue. If not, comment on the issue to ask precisions. Then, try and reproduce the issue following the description. If you managed to reproduce the issue, add a comment to say it. Otherwise, add a comment to say that something is missing.</p>
+
+<p>The second way to contribute is to <strong>answer support questions on <a href="https://stackoverflow.com/questions/tagged/react-admin">StackOverflow</a></strong>. There are many beginner questions there, so even if you’re not super experienced with react-admin, there is someone you can help there.</p>
+
+<p>Pull requests for <strong>bug fixes</strong> are welcome on the <a href="https://github.com/marmelab/react-admin">GitHub repository</a>. There is always a bunch of <a href="https://github.com/marmelab/react-admin/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22">issues labeled “Good First Issue”</a> in the bug tracker - start with these. Check the contributing guidelines in <a href="https://github.com/marmelab/react-admin#contributing">the repository README</a>.</p>
+
+<p>If you want to <strong>add a feature</strong>, you can open a Pull request on the <code class="language-plaintext highlighter-rouge">next</code> branch. We don’t accept all features - we try to keep the react-admin code small and manageable. Try and see if your feature can be built as an additional <code class="language-plaintext highlighter-rouge">npm</code> package. If you’re in doubt, open a “Feature Request” issue to see if the core team would accept your feature before developing it.</p>
+
+<h2 id="license">License</h2>
+
+<p>React-admin is licensed under the <a href="https://github.com/marmelab/react-admin/blob/master/LICENSE.md">MIT Licence</a>, sponsored and supported by <a href="https://marmelab.com">marmelab</a>.</p>
+
+<h2 id="donate">Donate</h2>
+
+<p>This library is free to use, even for commercial purpose. If you want to give back, please talk about it, help newcomers, or contribute code. But the best way to give back is to <strong>donate to a charity</strong>. We recommend <a href="https://www.doctorswithoutborders.org/">Doctors Without Borders</a>.</p>
+
+                    </div>
+                    <div class="col hide-on-small-only m3 xl3 offset-xl1">
+                        <div class="toc"></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <script src="/js/materialize.min.js"></script>
+        <script src="/js/prism.js"></script>
+        <script>
+            function slugify(text) {
+                return text
+                    .toString()
+                    .toLowerCase()
+                    .replace(/\s+/g, '-') // Replace spaces with -
+                    .replace(/[^\w\-]+/g, '') // Remove all non-word chars
+                    .replace(/\-\-+/g, '-') // Replace multiple - with single -
+                    .replace(/^-+/, '') // Trim - from start of text
+                    .replace(/-+$/, ''); // Trim - from end of text
+            }
+            document.addEventListener('DOMContentLoaded', function () {
+                M.Sidenav.init(document.querySelectorAll('.sidenav'));
+                // Initialize version selector
+                M.Dropdown.init(document.querySelectorAll('.dropdown-trigger'));
+                /* Generate table of contents */
+                tocbot.init({
+                    // Where to render the table of contents
+                    tocSelector: '.toc',
+                    positionFixedSelector: '.toc',
+                    // Where to grab the headings to build the table of contents
+                    contentSelector: '.toc-content',
+                    // More options
+                    headingSelector: 'h2, h3, h4',
+                    includeHtml: true,
+                    collapseDepth: 2,
+                    hasInnerContainers: true,
+                });
+            });
+        </script>
+        <script
+            type="text/javascript"
+            src="https://cdn.jsdelivr.net/npm/@docsearch/js@1.0.0-alpha.28"
+        ></script>
+        <script type="text/javascript">
+            docsearch({
+                apiKey: '32f254b1de6a25a96665d1229b6eb8f7',
+                indexName: 'marmelab-react-admin',
+                container: '#docsearch',
+            });
+        </script>
+        <script
+            src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.12.0/tocbot.min.js"
+            defer
+        ></script>
+        <!--
+        React-admin protects your privacy!
+        We use our own self-hosted tracking solution to collect some raw metrics,
+        like page views, device type (mobile, desktop, etc.) or country.
+        We don't track any personal information about our visitors.
+    -->
+        <script
+            async
+            defer
+            data-website-id="ef7f8242-2808-4cbf-9dff-564daa515bbd"
+            src="https://analytics.marmelab.com/umami.js"
+        ></script>
+    </body>
+</html>

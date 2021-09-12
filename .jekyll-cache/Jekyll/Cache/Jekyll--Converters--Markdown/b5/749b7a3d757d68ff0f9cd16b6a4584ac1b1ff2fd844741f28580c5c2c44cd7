@@ -1,0 +1,709 @@
+I"T@<h1 id="translation">Translation</h1>
+
+<p>The react-admin user interface uses English as the default language. But you can also display the UI and content in other languages, allow changing language at runtime, even lazy-loading optional languages to avoid increasing the bundle size with all translations.</p>
+
+<p>You will use translation features mostly via the <code class="language-plaintext highlighter-rouge">i18nProvider</code>, and a set of hooks (<code class="language-plaintext highlighter-rouge">useTranslate</code>, <code class="language-plaintext highlighter-rouge">useLocale</code>, <code class="language-plaintext highlighter-rouge">useSetLocale</code>).</p>
+
+<p><strong>Tip</strong>: We’ll use a bit of custom vocabulary in this chapter:</p>
+
+<ul>
+  <li>“i18n” is a shorter way to write “internationalization” (an “i” followed by 18 letters followed by “n”)</li>
+  <li>“locale” is a concept similar to languages, but it also includes the concept of country. For instance, there are several English locales (like <code class="language-plaintext highlighter-rouge">en_us</code> and <code class="language-plaintext highlighter-rouge">en_gb</code>) because US and UK citizens don’t use exactly the same language. For react-admin, the “locale” is just a key for your i18nProvider, so it can have any value you want.</li>
+</ul>
+
+<h2 id="introducing-the-i18nprovider">Introducing the <code class="language-plaintext highlighter-rouge">i18nProvider</code></h2>
+
+<p>Just like for data fetching and authentication, react-admin relies on a simple object for translations. It’s called the <code class="language-plaintext highlighter-rouge">i18nProvider</code>, and it manages translation and language change using two methods:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">i18nProvider</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="na">translate</span><span class="p">:</span> <span class="p">(</span><span class="nx">key</span><span class="p">,</span> <span class="nx">options</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nx">string</span><span class="p">,</span>
+    <span class="na">changeLocale</span><span class="p">:</span> <span class="nx">locale</span> <span class="o">=&gt;</span> <span class="nb">Promise</span><span class="p">,</span>
+    <span class="na">getLocale</span><span class="p">:</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="nx">string</span><span class="p">,</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>And just like for the <code class="language-plaintext highlighter-rouge">dataProvider</code> and the <code class="language-plaintext highlighter-rouge">authProvider</code>, you can <em>inject</em> the <code class="language-plaintext highlighter-rouge">i18nProvider</code> to your react-admin app using the <code class="language-plaintext highlighter-rouge">&lt;Admin&gt;</code> component:</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nx">i18nProvider</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">./i18n/i18nProvider</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">const</span> <span class="nx">App</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">(</span>
+    <span class="p">&lt;</span><span class="nc">Admin</span> 
+        <span class="na">dataProvider</span><span class="p">=</span><span class="si">{</span><span class="nx">dataProvider</span><span class="si">}</span>
+        <span class="na">authProvider</span><span class="p">=</span><span class="si">{</span><span class="nx">authProvider</span><span class="si">}</span>
+        <span class="na">i18nProvider</span><span class="p">=</span><span class="si">{</span><span class="nx">i18nProvider</span><span class="si">}</span>
+    <span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nc">Resource</span> <span class="na">name</span><span class="p">=</span><span class="s">"posts"</span> <span class="na">list</span><span class="p">=</span><span class="si">{</span><span class="cm">/* ... */</span><span class="si">}</span><span class="p">&gt;</span>
+        // ...
+</code></pre></div></div>
+
+<p>If you want to add or update translations, you’ll have to provide your own <code class="language-plaintext highlighter-rouge">i18nProvider</code>.</p>
+
+<p>React-admin components use translation keys for their labels, and rely on the <code class="language-plaintext highlighter-rouge">i18nProvider</code> to translate them. For instance:</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">SaveButton</span> <span class="o">=</span> <span class="p">({</span> <span class="nx">doSave</span> <span class="p">})</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">translate</span> <span class="o">=</span> <span class="nx">useTranslate</span><span class="p">();</span> <span class="c1">// returns the i18nProvider.translate() method</span>
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="p">&lt;</span><span class="nc">Button</span> <span class="na">onClick</span><span class="p">=</span><span class="si">{</span><span class="nx">doSave</span><span class="si">}</span><span class="p">&gt;</span>
+            <span class="si">{</span><span class="nx">translate</span><span class="p">(</span><span class="dl">'</span><span class="s1">ra.action.save</span><span class="dl">'</span><span class="p">)</span><span class="si">}</span> // will translate to "Save" in English and "Enregistrer" in French
+        <span class="p">&lt;/</span><span class="nc">Button</span><span class="p">&gt;</span>
+    <span class="p">);</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<h2 id="using-polyglotjs">Using Polyglot.js</h2>
+
+<p>Here is the simplest possible implementation for an <code class="language-plaintext highlighter-rouge">i18nProvider</code> with English and French messages:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nx">lodashGet</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">lodash/get</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">const</span> <span class="nx">englishMessages</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="na">ra</span><span class="p">:</span> <span class="p">{</span>
+        <span class="na">notification</span><span class="p">:</span> <span class="p">{</span>
+            <span class="na">http_error</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Network error. Please retry</span><span class="dl">'</span><span class="p">,</span>
+        <span class="p">},</span>
+        <span class="na">action</span><span class="p">:</span> <span class="p">{</span>
+            <span class="na">save</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Save</span><span class="dl">'</span><span class="p">,</span>
+            <span class="na">delete</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Delete</span><span class="dl">'</span><span class="p">,</span>
+        <span class="p">},</span>
+    <span class="p">},</span>
+<span class="p">};</span>
+<span class="kd">const</span> <span class="nx">frenchMessages</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="na">ra</span><span class="p">:</span> <span class="p">{</span>
+        <span class="na">notification</span><span class="p">:</span> <span class="p">{</span>
+            <span class="na">http_error</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Erreur réseau, veuillez réessayer</span><span class="dl">'</span><span class="p">,</span>
+        <span class="p">},</span>
+        <span class="na">action</span><span class="p">:</span> <span class="p">{</span>
+            <span class="na">save</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Enregistrer</span><span class="dl">'</span><span class="p">,</span>
+            <span class="na">delete</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Supprimer</span><span class="dl">'</span><span class="p">,</span>
+        <span class="p">},</span>
+    <span class="p">},</span>
+<span class="p">};</span>
+<span class="kd">let</span> <span class="nx">messages</span> <span class="o">=</span> <span class="nx">englishMessages</span><span class="p">;</span>
+
+<span class="kd">let</span> <span class="nx">locale</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">en</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">const</span> <span class="nx">i18nProvider</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="na">translate</span><span class="p">:</span> <span class="nx">key</span> <span class="o">=&gt;</span> <span class="nx">lodashGet</span><span class="p">(</span><span class="nx">messages</span><span class="p">,</span> <span class="nx">key</span><span class="p">),</span>
+    <span class="na">changeLocale</span><span class="p">:</span> <span class="nx">newLocale</span> <span class="o">=&gt;</span> <span class="p">{</span>
+        <span class="nx">messages</span> <span class="o">=</span> <span class="p">(</span><span class="nx">newLocale</span> <span class="o">===</span> <span class="dl">'</span><span class="s1">fr</span><span class="dl">'</span><span class="p">)</span> <span class="p">?</span> <span class="nx">frenchMessages</span> <span class="p">:</span> <span class="nx">englishMessages</span><span class="p">;</span>
+        <span class="nx">locale</span> <span class="o">=</span> <span class="nx">newLocale</span><span class="p">;</span>
+        <span class="k">return</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">resolve</span><span class="p">();</span>
+    <span class="p">},</span>
+    <span class="na">getLocale</span><span class="p">:</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="nx">locale</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p>But this is too naive: react-admin expects that i18nProviders support string interpolation for translation, and asynchronous message loading for locale change. That’s why react-admin bundles an <code class="language-plaintext highlighter-rouge">i18nProvider</code> <em>factory</em> called <code class="language-plaintext highlighter-rouge">polyglotI18nProvider</code>. This factory relies on <a href="https://airbnb.io/polyglot.js/">polyglot.js</a>, which uses JSON files for translations. It only expects one argument: a function returning a list of messages based on a locale passed as argument.</p>
+
+<p>So the previous provider can be written as:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nx">polyglotI18nProvider</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">ra-i18n-polyglot</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">const</span> <span class="nx">englishMessages</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="na">ra</span><span class="p">:</span> <span class="p">{</span>
+        <span class="na">notification</span><span class="p">:</span> <span class="p">{</span>
+            <span class="na">http_error</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Network error. Please retry</span><span class="dl">'</span><span class="p">,</span>
+        <span class="p">},</span>
+        <span class="na">action</span><span class="p">:</span> <span class="p">{</span>
+            <span class="na">save</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Save</span><span class="dl">'</span><span class="p">,</span>
+            <span class="na">delete</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Delete</span><span class="dl">'</span><span class="p">,</span>
+        <span class="p">},</span>
+    <span class="p">},</span>
+<span class="p">};</span>
+<span class="kd">const</span> <span class="nx">frenchMessages</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="na">ra</span><span class="p">:</span> <span class="p">{</span>
+        <span class="na">notification</span><span class="p">:</span> <span class="p">{</span>
+            <span class="na">http_error</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Erreur réseau, veuillez réessayer</span><span class="dl">'</span><span class="p">,</span>
+        <span class="p">},</span>
+        <span class="na">action</span><span class="p">:</span> <span class="p">{</span>
+            <span class="na">save</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Enregistrer</span><span class="dl">'</span><span class="p">,</span>
+            <span class="na">delete</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Supprimer</span><span class="dl">'</span><span class="p">,</span>
+        <span class="p">},</span>
+    <span class="p">},</span>
+<span class="p">};</span>
+
+<span class="kd">const</span> <span class="nx">i18nProvider</span> <span class="o">=</span> <span class="nx">polyglotI18nProvider</span><span class="p">(</span><span class="nx">locale</span> <span class="o">=&gt;</span> 
+    <span class="nx">locale</span> <span class="o">===</span> <span class="dl">'</span><span class="s1">fr</span><span class="dl">'</span> <span class="p">?</span> <span class="nx">frenchMessages</span> <span class="p">:</span> <span class="nx">englishMessages</span><span class="p">,</span>
+    <span class="dl">'</span><span class="s1">en</span><span class="dl">'</span> <span class="c1">// Default locale</span>
+<span class="p">);</span>
+</code></pre></div></div>
+
+<h2 id="changing-the-default-locale">Changing The Default Locale</h2>
+
+<p>The default react-admin locale is <code class="language-plaintext highlighter-rouge">en</code>, for English. If you want to display the interface in another language by default, you’ll have to install a third-party package. For instance, to change the interface to French, you must install the <code class="language-plaintext highlighter-rouge">ra-language-french</code> npm package, then use it in a custom <code class="language-plaintext highlighter-rouge">i18nProvider</code>, as follows:</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="o">*</span> <span class="k">as</span> <span class="nx">React</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">react</span><span class="dl">"</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">Admin</span><span class="p">,</span> <span class="nx">Resource</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react-admin</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">polyglotI18nProvider</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">ra-i18n-polyglot</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">frenchMessages</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">ra-language-french</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">const</span> <span class="nx">i18nProvider</span> <span class="o">=</span> <span class="nx">polyglotI18nProvider</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="nx">frenchMessages</span><span class="p">,</span> <span class="dl">'</span><span class="s1">fr</span><span class="dl">'</span><span class="p">);</span>
+
+<span class="kd">const</span> <span class="nx">App</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">(</span>
+    <span class="p">&lt;</span><span class="nc">Admin</span> <span class="na">i18nProvider</span><span class="p">=</span><span class="si">{</span><span class="nx">i18nProvider</span><span class="si">}</span><span class="p">&gt;</span>
+        ...
+    <span class="p">&lt;/</span><span class="nc">Admin</span><span class="p">&gt;</span>
+<span class="p">);</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="nx">App</span><span class="p">;</span>
+</code></pre></div></div>
+
+<h2 id="available-locales">Available Locales</h2>
+
+<p>You can find translation packages for the following languages:</p>
+
+<ul>
+  <li>Arabic (<code class="language-plaintext highlighter-rouge">ar</code>): <a href="https://github.com/developerium/ra-language-arabic">developerium/ra-language-arabic</a></li>
+  <li>Armenian (<code class="language-plaintext highlighter-rouge">am</code>): <a href="https://github.com/mrdntgrn/ra-language-armenian">mrdntgrn/ra-language-armenian</a></li>
+  <li>Belarusian (<code class="language-plaintext highlighter-rouge">be</code>): <a href="https://github.com/tui-ru/ra-language-belarusian">tui-ru/ra-language-belarusian</a></li>
+  <li>Brazilian Portuguese (<code class="language-plaintext highlighter-rouge">pt-br</code>): <a href="https://github.com/gucarletto/ra-language-pt-br">gucarletto/ra-language-pt-br</a></li>
+  <li>Bulgarian (<code class="language-plaintext highlighter-rouge">bg</code>): <a href="https://github.com/ptodorov0/ra-language-bulgarian">ptodorov0/ra-language-bulgarian</a></li>
+  <li>Catalan (<code class="language-plaintext highlighter-rouge">ca</code>): <a href="https://github.com/joshf/ra-language-catalan">joshf/ra-language-catalan</a></li>
+  <li>Chinese (<code class="language-plaintext highlighter-rouge">zh-TW</code>): <a href="https://github.com/areyliu6/ra-language-chinese-traditional">areyliu6/ra-language-chinese-traditional</a></li>
+  <li>Chinese (<code class="language-plaintext highlighter-rouge">zh</code>): <a href="https://github.com/chen4w/ra-language-chinese">chen4w/ra-language-chinese</a></li>
+  <li>Czech (<code class="language-plaintext highlighter-rouge">cs</code>): <a href="https://github.com/binao/ra-language-czech">binao/ra-language-czech</a></li>
+  <li>Danish (<code class="language-plaintext highlighter-rouge">da</code>): <a href="https://github.com/nikri/ra-language-danish">nikri/ra-language-danish</a></li>
+  <li>Dutch (<code class="language-plaintext highlighter-rouge">nl</code>): <a href="https://github.com/nickwaelkens/ra-language-dutch">nickwaelkens/ra-language-dutch</a></li>
+  <li>English (<code class="language-plaintext highlighter-rouge">en</code>): <a href="https://github.com/marmelab/react-admin/tree/master/packages/ra-language-english">marmelab/ra-language-english</a></li>
+  <li>Estonian (<code class="language-plaintext highlighter-rouge">et</code>): <a href="https://github.com/tui-ru/ra-language-estonian">tui-ru/ra-language-estonian</a></li>
+  <li>Farsi (<code class="language-plaintext highlighter-rouge">fa</code>): <a href="https://github.com/hamidfzm/ra-language-farsi">hamidfzm/ra-language-farsi</a></li>
+  <li>Finnish (<code class="language-plaintext highlighter-rouge">fi</code>): <a href="https://github.com/aikain/ra-language-finnish">aikain/ra-language-finnish</a></li>
+  <li>French (<code class="language-plaintext highlighter-rouge">fr</code>): <a href="https://github.com/marmelab/react-admin/tree/master/packages/ra-language-french">marmelab/ra-language-french</a></li>
+  <li>German (<code class="language-plaintext highlighter-rouge">de</code>): <a href="https://github.com/greenbananaCH/ra-language-german">greenbananaCH/ra-language-german</a> (tree translation: <a href="https://github.com/straurob/ra-tree-language-german">straurob/ra-tree-language-german</a>)</li>
+  <li>Hebrew (<code class="language-plaintext highlighter-rouge">he</code>): <a href="https://github.com/ak-il/ra-language-hebrew">ak-il/ra-language-hebrew</a></li>
+  <li>Hindi (<code class="language-plaintext highlighter-rouge">hi</code>): <a href="https://github.com/harshit-budhraja/ra-language-hindi">harshit-budhraja/ra-language-hindi</a></li>
+  <li>Hungarian (<code class="language-plaintext highlighter-rouge">hu</code>): <a href="https://github.com/phelion/ra-language-hungarian">phelion/ra-language-hungarian</a></li>
+  <li>Indonesian (<code class="language-plaintext highlighter-rouge">id</code>): <a href="https://github.com/danangekal/ra-language-indonesian-new">danangekal/ra-language-indonesian-new</a></li>
+  <li>Italian (<code class="language-plaintext highlighter-rouge">it</code>): <a href="https://github.com/stefsava/ra-italian">stefsava/ra-italian</a></li>
+  <li>Japanese (<code class="language-plaintext highlighter-rouge">ja</code>): <a href="https://github.com/bicstone/ra-language-japanese">bicstone/ra-language-japanese</a></li>
+  <li>Korean (<code class="language-plaintext highlighter-rouge">ko</code>): <a href="https://github.com/acidsound/ra-language-korean">acidsound/ra-language-korean</a></li>
+  <li>Latvian (<code class="language-plaintext highlighter-rouge">lv</code>): <a href="https://github.com/tui-ru/ra-language-latvian">tui-ru/ra-language-latvian</a></li>
+  <li>Lithuanian (<code class="language-plaintext highlighter-rouge">lt</code>): <a href="https://github.com/tui-ru/ra-language-lithuanian">tui-ru/ra-language-lithuanian</a></li>
+  <li>Malay (<code class="language-plaintext highlighter-rouge">ms</code>): <a href="https://github.com/kayuapi/ra-language-malay.git">kayuapi/ra-language-malay</a></li>
+  <li>Norwegian (<code class="language-plaintext highlighter-rouge">no</code>): <a href="https://github.com/jon-harald/ra-language-norwegian">jon-harald/ra-language-norwegian</a></li>
+  <li>Polish (<code class="language-plaintext highlighter-rouge">pl</code>): <a href="https://github.com/tymek/ra-language-polish">tymek/ra-language-polish</a></li>
+  <li>Portuguese (<code class="language-plaintext highlighter-rouge">pt</code>): <a href="https://github.com/henriko202/ra-language-portuguese">henriko202/ra-language-portuguese</a></li>
+  <li>Romanian (<code class="language-plaintext highlighter-rouge">ro</code>): <a href="https://github.com/gyhaLabs/ra-language-romanian">gyhaLabs/ra-language-romanian</a></li>
+  <li>Russian (<code class="language-plaintext highlighter-rouge">ru</code>): <a href="https://github.com/klucherev/ra-language-russian">klucherev/ra-language-russian</a></li>
+  <li>Slovak (<code class="language-plaintext highlighter-rouge">sk</code>): <a href="https://github.com/zavadpe/ra-language-slovak">zavadpe/ra-language-slovak</a></li>
+  <li>Spanish (<code class="language-plaintext highlighter-rouge">es</code>): <a href="https://github.com/BlackBoxVision/ra-language-spanish">blackboxvision/ra-language-spanish</a></li>
+  <li>Swedish (<code class="language-plaintext highlighter-rouge">sv</code>): <a href="https://github.com/kolben/ra-language-swedish">kolben/ra-language-swedish</a></li>
+  <li>Turkish (<code class="language-plaintext highlighter-rouge">tr</code>): <a href="https://github.com/KamilGunduz/ra-language-turkish">KamilGunduz/ra-language-turkish</a></li>
+  <li>Ukrainian (<code class="language-plaintext highlighter-rouge">ua</code>): <a href="https://github.com/koresar/ra-language-ukrainian">koresar/ra-language-ukrainian</a></li>
+  <li>Vietnamese (<code class="language-plaintext highlighter-rouge">vi</code>): <a href="https://github.com/hieunguyendut/ra-language-vietnamese">hieunguyendut/ra-language-vietnamese</a></li>
+</ul>
+
+<p>In addition, the previous version of react-admin, called admin-on-rest, was translated in the following languages:</p>
+
+<ul>
+  <li>Chinese (Traditional) (<code class="language-plaintext highlighter-rouge">cht</code>): <a href="https://github.com/leesei/aor-language-chinese-traditional">leesei/aor-language-chinese-traditional</a></li>
+  <li>Croatian (<code class="language-plaintext highlighter-rouge">hr</code>): <a href="https://github.com/ariskemper/aor-language-croatian">ariskemper/aor-language-croatian</a></li>
+  <li>Greek (<code class="language-plaintext highlighter-rouge">el</code>): <a href="https://github.com/zifnab87/aor-language-greek">zifnab87/aor-language-greek</a></li>
+  <li>Slovenian (<code class="language-plaintext highlighter-rouge">sl</code>): <a href="https://github.com/ariskemper/aor-language-slovenian">ariskemper/aor-language-slovenian</a></li>
+  <li>Thai (<code class="language-plaintext highlighter-rouge">th</code>): <a href="https://github.com/liverbool/aor-language-thai">liverbool/aor-language-thai</a></li>
+</ul>
+
+<p>These packages are not directly interoperable with react-admin, but the upgrade is straightforward; rename the root key from “aor” to “ra”. We invite the authors of the packages listed above to republish their translations for react-admin, using a different package name.</p>
+
+<p>If you want to contribute a new translation, feel free to submit a pull request to update <a href="https://github.com/marmelab/react-admin/blob/master/docs/Translation.md">this page</a> with a link to your package.</p>
+
+<h2 id="usesetlocale-changing-locale-at-runtime"><code class="language-plaintext highlighter-rouge">useSetLocale</code>: Changing Locale At Runtime</h2>
+
+<p>If you want to offer the ability to change locale at runtime, you must provide an <code class="language-plaintext highlighter-rouge">i18nProvider</code> that contains the messages for all possible locales:</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="o">*</span> <span class="k">as</span> <span class="nx">React</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">react</span><span class="dl">"</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">Admin</span><span class="p">,</span> <span class="nx">Resource</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react-admin</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">polyglotI18nProvider</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">ra-i18n-polyglot</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">englishMessages</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">ra-language-english</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">frenchMessages</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">ra-language-french</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">const</span> <span class="nx">messages</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="na">fr</span><span class="p">:</span> <span class="nx">frenchMessages</span><span class="p">,</span>
+    <span class="na">en</span><span class="p">:</span> <span class="nx">englishMessages</span><span class="p">,</span>
+<span class="p">};</span>
+<span class="kd">const</span> <span class="nx">i18nProvider</span> <span class="o">=</span> <span class="nx">polyglotI18nProvider</span><span class="p">(</span><span class="nx">locale</span> <span class="o">=&gt;</span> <span class="nx">messages</span><span class="p">[</span><span class="nx">locale</span><span class="p">]);</span>
+
+<span class="kd">const</span> <span class="nx">App</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">(</span>
+    <span class="p">&lt;</span><span class="nc">Admin</span> <span class="na">locale</span><span class="p">=</span><span class="s">"en"</span> <span class="na">i18nProvider</span><span class="p">=</span><span class="si">{</span><span class="nx">i18nProvider</span><span class="si">}</span><span class="p">&gt;</span>
+        ...
+    <span class="p">&lt;/</span><span class="nc">Admin</span><span class="p">&gt;</span>
+<span class="p">);</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="nx">App</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>Then, use the <code class="language-plaintext highlighter-rouge">useSetLocale</code> hook to change locale. For instance, the following component allows the user to switch the interface language between English and French:</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="o">*</span> <span class="k">as</span> <span class="nx">React</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">react</span><span class="dl">"</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">Button</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">@material-ui/core/Button</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">useSetLocale</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react-admin</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">const</span> <span class="nx">LocaleSwitcher</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">setLocale</span> <span class="o">=</span> <span class="nx">useSetLocale</span><span class="p">();</span>
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span>
+            <span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span>Language<span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+            <span class="p">&lt;</span><span class="nc">Button</span> <span class="na">onClick</span><span class="p">=</span><span class="si">{</span><span class="p">()</span> <span class="o">=&gt;</span> <span class="nx">setLocale</span><span class="p">(</span><span class="dl">'</span><span class="s1">fr</span><span class="dl">'</span><span class="p">)</span><span class="si">}</span><span class="p">&gt;</span>English<span class="p">&lt;/</span><span class="nc">Button</span><span class="p">&gt;</span>
+            <span class="p">&lt;</span><span class="nc">Button</span> <span class="na">onClick</span><span class="p">=</span><span class="si">{</span><span class="p">()</span> <span class="o">=&gt;</span> <span class="nx">setLocale</span><span class="p">(</span><span class="dl">'</span><span class="s1">en</span><span class="dl">'</span><span class="p">)</span><span class="si">}</span><span class="p">&gt;</span>French<span class="p">&lt;/</span><span class="nc">Button</span><span class="p">&gt;</span>
+        <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+    <span class="p">);</span>
+<span class="p">};</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="nx">LocaleSwitcher</span><span class="p">;</span>
+</code></pre></div></div>
+
+<h2 id="uselocale-getting-the-current-locale"><code class="language-plaintext highlighter-rouge">useLocale</code>: Getting The Current Locale</h2>
+
+<p>Your language switcher component probably needs to know the current locale, in order to disable/transform the button for the current language. The <code class="language-plaintext highlighter-rouge">useLocale</code> hook returns the current locale:</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="o">*</span> <span class="k">as</span> <span class="nx">React</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">Component</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">Button</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">@material-ui/core/Button</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">useLocale</span><span class="p">,</span> <span class="nx">useSetLocale</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react-admin</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">const</span> <span class="nx">LocaleSwitcher</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">locale</span> <span class="o">=</span> <span class="nx">useLocale</span><span class="p">();</span>
+    <span class="kd">const</span> <span class="nx">setLocale</span> <span class="o">=</span> <span class="nx">useSetLocale</span><span class="p">();</span>
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span>
+            <span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span>Language<span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+            <span class="p">&lt;</span><span class="nc">Button</span> 
+                <span class="na">disabled</span><span class="p">=</span><span class="si">{</span><span class="nx">locale</span> <span class="o">===</span> <span class="dl">'</span><span class="s1">fr</span><span class="dl">'</span><span class="si">}</span>
+                <span class="na">onClick</span><span class="p">=</span><span class="si">{</span><span class="p">()</span> <span class="o">=&gt;</span> <span class="nx">setLocale</span><span class="p">(</span><span class="dl">'</span><span class="s1">fr</span><span class="dl">'</span><span class="p">)</span><span class="si">}</span>
+            <span class="p">&gt;</span>
+                English
+            <span class="p">&lt;/</span><span class="nc">Button</span><span class="p">&gt;</span>
+            <span class="p">&lt;</span><span class="nc">Button</span>
+                <span class="na">disabled</span><span class="p">=</span><span class="si">{</span><span class="nx">locale</span> <span class="o">===</span> <span class="dl">'</span><span class="s1">en</span><span class="dl">'</span><span class="si">}</span>
+                <span class="na">onClick</span><span class="p">=</span><span class="si">{</span><span class="p">()</span> <span class="o">=&gt;</span> <span class="nx">setLocale</span><span class="p">(</span><span class="dl">'</span><span class="s1">en</span><span class="dl">'</span><span class="p">)</span><span class="si">}</span>
+            <span class="p">&gt;</span>
+                French
+            <span class="p">&lt;/</span><span class="nc">Button</span><span class="p">&gt;</span>
+        <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+    <span class="p">);</span>
+<span class="p">};</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="nx">LocaleSwitcher</span><span class="p">;</span>
+</code></pre></div></div>
+
+<h2 id="lazy-loading-locales">Lazy-Loading Locales</h2>
+
+<p>Bundling all the possible locales in the <code class="language-plaintext highlighter-rouge">i18nProvider</code> is a great recipe to increase your bundle size, and slow down the initial application load. Fortunately, the <code class="language-plaintext highlighter-rouge">i18nProvider</code> returns a <em>promise</em> for locale change calls to load secondary locales on demand. And the <code class="language-plaintext highlighter-rouge">polyglotI18nProvider</code> accepts when its argument function returns a Promise, too. For example:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nx">polyglotI18nProvider</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">ra-i18n-polyglot</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">englishMessages</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">../en.js</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">const</span> <span class="nx">i18nProvider</span> <span class="o">=</span> <span class="nx">polyglotI18nProvider</span><span class="p">(</span><span class="nx">locale</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">locale</span> <span class="o">===</span> <span class="dl">'</span><span class="s1">en</span><span class="dl">'</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">// initial call, must return synchronously</span>
+        <span class="k">return</span> <span class="nx">englishMessages</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">locale</span> <span class="o">===</span> <span class="dl">'</span><span class="s1">fr</span><span class="dl">'</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="k">import</span><span class="p">(</span><span class="dl">'</span><span class="s1">../i18n/fr.js</span><span class="dl">'</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span><span class="nx">messages</span> <span class="o">=&gt;</span> <span class="nx">messages</span><span class="p">.</span><span class="k">default</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">},</span> <span class="dl">'</span><span class="s1">en</span><span class="dl">'</span><span class="p">);</span>
+
+<span class="kd">const</span> <span class="nx">App</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">(</span>
+    <span class="o">&lt;</span><span class="nx">Admin</span> <span class="nx">i18nProvider</span><span class="o">=</span><span class="p">{</span><span class="nx">i18nProvider</span><span class="p">}</span><span class="o">&gt;</span>
+        <span class="p">...</span>
+    <span class="o">&lt;</span><span class="sr">/Admin</span><span class="err">&gt;
+</span><span class="p">);</span>
+</code></pre></div></div>
+
+<h2 id="using-the-browser-locale">Using The Browser Locale</h2>
+
+<p>React-admin provides a helper function named <code class="language-plaintext highlighter-rouge">resolveBrowserLocale()</code>, which detects the user’s browser locale. To use it, simply pass the function as the <code class="language-plaintext highlighter-rouge">initialLocale</code> argument of <code class="language-plaintext highlighter-rouge">polyglotI18nProvider</code>.</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="o">*</span> <span class="k">as</span> <span class="nx">React</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">react</span><span class="dl">"</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> 
+    <span class="nx">Admin</span><span class="p">,</span>
+    <span class="nx">Resource</span><span class="p">,</span>
+    <span class="nx">resolveBrowserLocale</span><span class="p">,</span>
+<span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react-admin</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">polyglotI18nProvider</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">ra-i18n-polyglot</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">englishMessages</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">ra-language-english</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">frenchMessages</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">ra-language-french</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">const</span> <span class="nx">messages</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="na">fr</span><span class="p">:</span> <span class="nx">frenchMessages</span><span class="p">,</span>
+    <span class="na">en</span><span class="p">:</span> <span class="nx">englishMessages</span><span class="p">,</span>
+<span class="p">};</span>
+<span class="kd">const</span> <span class="nx">i18nProvider</span> <span class="o">=</span> <span class="nx">polyglotI18nProvider</span><span class="p">(</span>
+    <span class="nx">locale</span> <span class="o">=&gt;</span> <span class="nx">messages</span><span class="p">[</span><span class="nx">locale</span><span class="p">]</span> <span class="p">?</span> <span class="nx">messages</span><span class="p">[</span><span class="nx">locale</span><span class="p">]</span> <span class="p">:</span> <span class="nx">messages</span><span class="p">.</span><span class="nx">en</span><span class="p">,</span>
+    <span class="nx">resolveBrowserLocale</span><span class="p">()</span>
+<span class="p">);</span>
+
+<span class="kd">const</span> <span class="nx">App</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">(</span>
+    <span class="p">&lt;</span><span class="nc">Admin</span> <span class="na">i18nProvider</span><span class="p">=</span><span class="si">{</span><span class="nx">i18nProvider</span><span class="si">}</span><span class="p">&gt;</span>
+        ...
+    <span class="p">&lt;/</span><span class="nc">Admin</span><span class="p">&gt;</span>
+<span class="p">);</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="nx">App</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>Beware that users from all around the world may use your application, so make sure the <code class="language-plaintext highlighter-rouge">i18nProvider</code> returns default messages even for unknown locales?</p>
+
+<h2 id="restoring-the-locale-choice">Restoring The Locale Choice</h2>
+
+<p>The <code class="language-plaintext highlighter-rouge">&lt;LanguageSwitcher&gt;</code> component is part of <code class="language-plaintext highlighter-rouge">ra-preferences</code>, an <a href="https://marmelab.com/ra-enterprise">Enterprise Edition</a><img class="icon" src="./img/premium.svg" /> module. It displays a button in the App Bar letting users choose their preferred language, and <strong>persists that choice in localStorage</strong>. Users only have to set their preferred locale once per browser.</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="o">*</span> <span class="k">as</span> <span class="nx">React</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">LanguageSwitcher</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">@react-admin/ra-preferences</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">polyglotI18nProvider</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">ra-i18n-polyglot</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">englishMessages</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">ra-language-english</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">frenchMessages</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">ra-language-french</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">Admin</span><span class="p">,</span> <span class="nx">Resource</span><span class="p">,</span> <span class="nx">List</span><span class="p">,</span> <span class="nx">SimpleList</span><span class="p">,</span> <span class="nx">Layout</span><span class="p">,</span> <span class="nx">AppBar</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react-admin</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">Box</span><span class="p">,</span> <span class="nx">Typography</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">@material-ui/core</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">const</span> <span class="nx">MyAppBar</span> <span class="o">=</span> <span class="nx">props</span> <span class="o">=&gt;</span> <span class="p">(</span>
+    <span class="p">&lt;</span><span class="nc">AppBar</span> <span class="si">{</span><span class="p">...</span><span class="nx">props</span><span class="si">}</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nc">Box</span> <span class="na">flex</span><span class="p">=</span><span class="s">"1"</span><span class="p">&gt;</span>
+            <span class="p">&lt;</span><span class="nc">Typography</span> <span class="na">variant</span><span class="p">=</span><span class="s">"h6"</span> <span class="na">id</span><span class="p">=</span><span class="s">"react-admin-title"</span><span class="p">&gt;&lt;/</span><span class="nc">Typography</span><span class="p">&gt;</span>
+        <span class="p">&lt;/</span><span class="nc">Box</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nc">LanguageSwitcher</span>
+            <span class="na">languages</span><span class="p">=</span><span class="si">{</span><span class="p">[</span>
+                <span class="p">{</span> <span class="na">locale</span><span class="p">:</span> <span class="dl">'</span><span class="s1">en</span><span class="dl">'</span><span class="p">,</span> <span class="na">name</span><span class="p">:</span> <span class="dl">'</span><span class="s1">English</span><span class="dl">'</span> <span class="p">},</span>
+                <span class="p">{</span> <span class="na">locale</span><span class="p">:</span> <span class="dl">'</span><span class="s1">fr</span><span class="dl">'</span><span class="p">,</span> <span class="na">name</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Français</span><span class="dl">'</span> <span class="p">},</span>
+            <span class="p">]</span><span class="si">}</span>
+            <span class="na">defaultLanguage</span><span class="p">=</span><span class="s">"English"</span>
+        <span class="p">/&gt;</span>
+    <span class="p">&lt;/</span><span class="nc">AppBar</span><span class="p">&gt;</span>
+<span class="p">);</span>
+
+<span class="kd">const</span> <span class="nx">MyLayout</span> <span class="o">=</span> <span class="nx">props</span> <span class="o">=&gt;</span> <span class="p">&lt;</span><span class="nc">Layout</span> <span class="si">{</span><span class="p">...</span><span class="nx">props</span><span class="si">}</span> <span class="na">appBar</span><span class="p">=</span><span class="si">{</span><span class="nx">MyAppBar</span><span class="si">}</span> <span class="p">/&gt;;</span>
+
+<span class="kd">const</span> <span class="nx">i18nProvider</span> <span class="o">=</span> <span class="nx">polyglotI18nProvider</span><span class="p">(</span>
+    <span class="nx">locale</span> <span class="o">=&gt;</span> <span class="p">(</span><span class="nx">locale</span> <span class="o">===</span> <span class="dl">'</span><span class="s1">fr</span><span class="dl">'</span> <span class="p">?</span> <span class="nx">frenchMessages</span> <span class="p">:</span> <span class="nx">englishMessages</span><span class="p">),</span>
+    <span class="dl">'</span><span class="s1">en</span><span class="dl">'</span> <span class="c1">// Default locale</span>
+<span class="p">);</span>
+
+<span class="kd">const</span> <span class="nx">App</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">(</span>
+    <span class="p">&lt;</span><span class="nc">Admin</span>
+        <span class="na">i18nProvider</span><span class="p">=</span><span class="si">{</span><span class="nx">i18nProvider</span><span class="si">}</span>
+        <span class="na">dataProvider</span><span class="p">=</span><span class="si">{</span><span class="nx">dataProvider</span><span class="si">}</span>
+        <span class="na">layout</span><span class="p">=</span><span class="si">{</span><span class="nx">MyLayout</span><span class="si">}</span>
+    <span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nc">Resource</span> <span class="na">name</span><span class="p">=</span><span class="s">"posts"</span> <span class="na">list</span><span class="p">=</span><span class="si">{</span><span class="nx">PostList</span><span class="si">}</span> <span class="p">/&gt;</span>
+    <span class="p">&lt;/</span><span class="nc">Admin</span><span class="p">&gt;</span>
+<span class="p">);</span>
+</code></pre></div></div>
+
+<p>Check <a href="https://marmelab.com/ra-enterprise/modules/ra-preferences">the <code class="language-plaintext highlighter-rouge">ra-preferences</code> documentation</a> for more details.</p>
+
+<h2 id="translation-messages">Translation Messages</h2>
+
+<p>The <code class="language-plaintext highlighter-rouge">message</code> returned by the <code class="language-plaintext highlighter-rouge">polyglotI18nProvider</code> function argument should be a dictionary where the keys identify interface components, and values are the translated string. This dictionary is a simple JavaScript object looking like the following:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span>
+    <span class="nl">ra</span><span class="p">:</span> <span class="p">{</span>
+        <span class="na">action</span><span class="p">:</span> <span class="p">{</span>
+            <span class="na">delete</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Delete</span><span class="dl">'</span><span class="p">,</span>
+            <span class="na">show</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Show</span><span class="dl">'</span><span class="p">,</span>
+            <span class="na">list</span><span class="p">:</span> <span class="dl">'</span><span class="s1">List</span><span class="dl">'</span><span class="p">,</span>
+            <span class="na">save</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Save</span><span class="dl">'</span><span class="p">,</span>
+            <span class="na">create</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Create</span><span class="dl">'</span><span class="p">,</span>
+            <span class="na">edit</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Edit</span><span class="dl">'</span><span class="p">,</span>
+            <span class="na">cancel</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Cancel</span><span class="dl">'</span><span class="p">,</span>
+        <span class="p">},</span>
+        <span class="p">...</span>
+    <span class="p">},</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>All core translations are in the <code class="language-plaintext highlighter-rouge">ra</code> namespace, in order to prevent collisions with your own custom translations. The root key used at runtime is determined by the value of the <code class="language-plaintext highlighter-rouge">locale</code> prop.</p>
+
+<p>The default messages are available <a href="https://github.com/marmelab/react-admin/blob/master/packages/ra-language-english/src/index.ts">here</a>.</p>
+
+<h2 id="translating-resource-and-field-names">Translating Resource and Field Names</h2>
+
+<p>By default, React-admin uses resource names (“post”, “comment”, etc) and field names (“title”, “first_name”, etc) everywhere in the interface. It simply “humanizes” the technical identifiers to make them look better (e.g. “first_name” becomes “First name”).</p>
+
+<p>However, before humanizing names, react-admin checks the <code class="language-plaintext highlighter-rouge">messages</code> dictionary for a possible translation, with the following keys:</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">resources.${resourceName}.name</code> for resource names (used for the menu and page titles)</li>
+  <li><code class="language-plaintext highlighter-rouge">resources.${resourceName}.fields.${fieldName}</code> for field names (used for datagrid header and form input labels)</li>
+</ul>
+
+<p>This lets you translate your own resource and field names by passing a <code class="language-plaintext highlighter-rouge">messages</code> object with a <code class="language-plaintext highlighter-rouge">resources</code> key:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span>
+    <span class="nl">resources</span><span class="p">:</span> <span class="p">{</span>
+        <span class="na">shoe</span><span class="p">:</span> <span class="p">{</span>
+            <span class="na">name</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Shoe |||| Shoes</span><span class="dl">'</span><span class="p">,</span>
+            <span class="na">fields</span><span class="p">:</span> <span class="p">{</span>
+                <span class="na">model</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Model</span><span class="dl">'</span><span class="p">,</span>
+                <span class="na">stock</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Nb in stock</span><span class="dl">'</span><span class="p">,</span>
+                <span class="na">color</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Color</span><span class="dl">'</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">},</span>
+        <span class="na">customer</span><span class="p">:</span> <span class="p">{</span>
+            <span class="na">name</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Customer |||| Customers</span><span class="dl">'</span><span class="p">,</span>
+            <span class="na">fields</span><span class="p">:</span> <span class="p">{</span>
+                <span class="na">first_name</span><span class="p">:</span> <span class="dl">'</span><span class="s1">First name</span><span class="dl">'</span><span class="p">,</span>
+                <span class="na">last_name</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Last name</span><span class="dl">'</span><span class="p">,</span>
+                <span class="na">dob</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Date of birth</span><span class="dl">'</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="p">...</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>As you can see, <a href="https://airbnb.io/polyglot.js/#pluralization">polyglot pluralization</a> is used here, but it is optional.</p>
+
+<p>Using <code class="language-plaintext highlighter-rouge">resources</code> keys is an alternative to using the <code class="language-plaintext highlighter-rouge">label</code> prop in Field and Input components, with the advantage of supporting translation.</p>
+
+<h2 id="mixing-interface-and-domain-translations">Mixing Interface and Domain Translations</h2>
+
+<p>When translating an admin, interface messages (e.g. “List”, “Page”, etc.) usually come from a third-party package, while your domain messages (e.g. “Shoe”, “Date of birth”, etc.) come from your own code. That means you need to combine these messages before passing them to <code class="language-plaintext highlighter-rouge">&lt;Admin&gt;</code>. The recipe for combining messages is to use ES6 destructuring:</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">{</span> <span class="nx">Admin</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react-admin</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">polyglotI18nProvider</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">ra-i18n-polyglot</span><span class="dl">'</span><span class="p">;</span>
+<span class="c1">// interface translations</span>
+<span class="k">import</span> <span class="nx">englishMessages</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">ra-language-english</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">frenchMessages</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">ra-language-french</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="c1">// domain translations</span>
+<span class="k">import</span> <span class="o">*</span> <span class="k">as</span> <span class="nx">domainMessages</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">./i18n</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">const</span> <span class="nx">messages</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="na">fr</span><span class="p">:</span> <span class="p">{</span> <span class="p">...</span><span class="nx">frenchMessages</span><span class="p">,</span> <span class="p">...</span><span class="nx">domainMessages</span><span class="p">.</span><span class="nx">fr</span> <span class="p">},</span>
+    <span class="na">en</span><span class="p">:</span> <span class="p">{</span> <span class="p">...</span><span class="nx">englishMessages</span><span class="p">,</span> <span class="p">...</span><span class="nx">domainMessages</span><span class="p">.</span><span class="nx">en</span> <span class="p">},</span>
+<span class="p">};</span>
+<span class="kd">const</span> <span class="nx">i18nProvider</span> <span class="o">=</span> <span class="nx">polyglotI18nProvider</span><span class="p">(</span><span class="nx">locale</span> <span class="o">=&gt;</span> <span class="nx">messages</span><span class="p">[</span><span class="nx">locale</span><span class="p">]);</span>
+
+<span class="kd">const</span> <span class="nx">App</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">(</span>
+    <span class="p">&lt;</span><span class="nc">Admin</span> <span class="na">i18nProvider</span><span class="p">=</span><span class="si">{</span><span class="nx">i18nProvider</span><span class="si">}</span><span class="p">&gt;</span>
+        ...
+    <span class="p">&lt;/</span><span class="nc">Admin</span><span class="p">&gt;</span>
+<span class="p">);</span>
+</code></pre></div></div>
+
+<h2 id="usetranslate-hook"><code class="language-plaintext highlighter-rouge">useTranslate</code> Hook</h2>
+
+<p>If you need to translate messages in your own components, React-admin provides a <code class="language-plaintext highlighter-rouge">useTranslate</code> hook, which returns the <code class="language-plaintext highlighter-rouge">translate</code> function:</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// in src/MyHelloButton.js</span>
+<span class="k">import</span> <span class="o">*</span> <span class="k">as</span> <span class="nx">React</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">react</span><span class="dl">"</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">useTranslate</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react-admin</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">const</span> <span class="nx">MyHelloButton</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">translate</span> <span class="o">=</span> <span class="nx">useTranslate</span><span class="p">();</span>
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="p">&lt;</span><span class="nt">button</span><span class="p">&gt;</span><span class="si">{</span><span class="nx">translate</span><span class="p">(</span><span class="dl">'</span><span class="s1">myroot.hello.world</span><span class="dl">'</span><span class="p">)</span><span class="si">}</span><span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+    <span class="p">);</span>
+<span class="p">};</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="nx">MyHelloButton</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p><strong>Tip</strong>: For your message identifiers, choose a different root name than <code class="language-plaintext highlighter-rouge">ra</code> and <code class="language-plaintext highlighter-rouge">resources</code>, which are reserved.</p>
+
+<p><strong>Tip</strong>: Don’t use <code class="language-plaintext highlighter-rouge">useTranslate</code> for Field and Input labels, or for page titles, as they are already translated:</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// don't do this</span>
+<span class="p">&lt;</span><span class="nc">TextField</span> <span class="na">source</span><span class="p">=</span><span class="s">"first_name"</span> <span class="na">label</span><span class="p">=</span><span class="si">{</span><span class="nx">translate</span><span class="p">(</span><span class="dl">'</span><span class="s1">myroot.first_name</span><span class="dl">'</span><span class="p">)</span><span class="si">}</span> <span class="p">/&gt;</span>
+
+<span class="c1">// do this instead</span>
+<span class="p">&lt;</span><span class="nc">TextField</span> <span class="na">source</span><span class="p">=</span><span class="s">"first_name"</span> <span class="na">label</span><span class="p">=</span><span class="s">"myroot.first_name"</span> <span class="p">/&gt;</span>
+
+<span class="c1">// or even better, use the default translation key</span>
+<span class="p">&lt;</span><span class="nc">TextField</span> <span class="na">source</span><span class="p">=</span><span class="s">"first_name"</span> <span class="p">/&gt;</span>
+<span class="c1">// and translate the `resources.customers.fields.first_name` key</span>
+</code></pre></div></div>
+
+<h2 id="withtranslate-hoc"><code class="language-plaintext highlighter-rouge">withTranslate</code> HOC</h2>
+
+<p>If you’re stuck with class components, react-admin also exports a <code class="language-plaintext highlighter-rouge">withTranslate</code> higher-order component, which injects the <code class="language-plaintext highlighter-rouge">translate</code> function as prop.</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// in src/MyHelloButton.js</span>
+<span class="k">import</span> <span class="o">*</span> <span class="k">as</span> <span class="nx">React</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">Component</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">withTranslate</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react-admin</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">class</span> <span class="nx">MyHelloButton</span> <span class="kd">extends</span> <span class="nx">Component</span> <span class="p">{</span>
+    <span class="nx">render</span><span class="p">()</span> <span class="p">{</span>
+        <span class="kd">const</span> <span class="p">{</span> <span class="nx">translate</span> <span class="p">}</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">props</span><span class="p">;</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="p">&lt;</span><span class="nt">button</span><span class="p">&gt;</span><span class="si">{</span><span class="nx">translate</span><span class="p">(</span><span class="dl">'</span><span class="s1">myroot.hello.world</span><span class="dl">'</span><span class="p">)</span><span class="si">}</span><span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+        <span class="p">);</span>
+    <span class="p">}</span> 
+<span class="p">};</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="nx">withTranslate</span><span class="p">(</span><span class="nx">MyHelloButton</span><span class="p">);</span>
+</code></pre></div></div>
+
+<h2 id="using-specific-polyglot-features">Using Specific Polyglot Features</h2>
+
+<p>Polyglot.js is a fantastic library: in addition to being small, fully maintained, and totally framework agnostic, it provides some nice features such as interpolation and pluralization, that you can use in react-admin.</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">messages</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="dl">'</span><span class="s1">hello_name</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Hello, %{name}</span><span class="dl">'</span><span class="p">,</span>
+    <span class="dl">'</span><span class="s1">count_beer</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">One beer |||| %{smart_count} beers</span><span class="dl">'</span><span class="p">,</span>
+<span class="p">};</span>
+
+<span class="c1">// interpolation</span>
+<span class="nx">translate</span><span class="p">(</span><span class="dl">'</span><span class="s1">hello_name</span><span class="dl">'</span><span class="p">,</span> <span class="p">{</span> <span class="na">name</span><span class="p">:</span> <span class="dl">'</span><span class="s1">John Doe</span><span class="dl">'</span> <span class="p">});</span>
+<span class="o">=&gt;</span> <span class="dl">'</span><span class="s1">Hello, John Doe.</span><span class="dl">'</span>
+
+<span class="c1">// pluralization</span>
+<span class="nx">translate</span><span class="p">(</span><span class="dl">'</span><span class="s1">count_beer</span><span class="dl">'</span><span class="p">,</span> <span class="p">{</span> <span class="na">smart_count</span><span class="p">:</span> <span class="mi">1</span> <span class="p">});</span>
+<span class="o">=&gt;</span> <span class="dl">'</span><span class="s1">One beer</span><span class="dl">'</span>
+
+<span class="nx">translate</span><span class="p">(</span><span class="dl">'</span><span class="s1">count_beer</span><span class="dl">'</span><span class="p">,</span> <span class="p">{</span> <span class="na">smart_count</span><span class="p">:</span> <span class="mi">2</span> <span class="p">});</span>
+<span class="o">=&gt;</span> <span class="dl">'</span><span class="s1">2 beers</span><span class="dl">'</span>
+
+<span class="c1">// default value</span>
+<span class="nx">translate</span><span class="p">(</span><span class="dl">'</span><span class="s1">not_yet_translated</span><span class="dl">'</span><span class="p">,</span> <span class="p">{</span> <span class="na">_</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Default translation</span><span class="dl">'</span> <span class="p">});</span>
+<span class="o">=&gt;</span> <span class="dl">'</span><span class="s1">Default translation</span><span class="dl">'</span>
+</code></pre></div></div>
+
+<p>To find more detailed examples, please refer to <a href="https://airbnb.io/polyglot.js/">https://airbnb.io/polyglot.js/</a></p>
+
+<h2 id="translating-validation-errors">Translating Validation Errors</h2>
+
+<p>In Create and Edit views, forms can use custom validators. These validator functions should return translation keys rather than translated messages. React-admin automatically passes these identifiers to the translation function:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// in validators/required.js</span>
+<span class="kd">const</span> <span class="nx">required</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">(</span><span class="nx">value</span><span class="p">,</span> <span class="nx">allValues</span><span class="p">,</span> <span class="nx">props</span><span class="p">)</span> <span class="o">=&gt;</span>
+    <span class="nx">value</span>
+        <span class="p">?</span> <span class="kc">undefined</span>
+        <span class="p">:</span> <span class="dl">'</span><span class="s1">myroot.validation.required</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="c1">// in i18n/en.json</span>
+<span class="k">export</span> <span class="k">default</span> <span class="p">{</span>
+    <span class="na">myroot</span><span class="p">:</span> <span class="p">{</span>
+        <span class="na">validation</span><span class="p">:</span> <span class="p">{</span>
+            <span class="na">required</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Required field</span><span class="dl">'</span><span class="p">,</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p>If the translation depends on a variable, the validator can return an object rather than a translation identifier:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// in validators/minLength.js</span>
+<span class="kd">const</span> <span class="nx">minLength</span> <span class="o">=</span> <span class="p">(</span><span class="nx">min</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">(</span><span class="nx">value</span><span class="p">,</span> <span class="nx">allValues</span><span class="p">,</span> <span class="nx">props</span><span class="p">)</span> <span class="o">=&gt;</span> 
+    <span class="nx">value</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;=</span> <span class="nx">min</span>
+        <span class="p">?</span> <span class="kc">undefined</span>
+        <span class="p">:</span> <span class="p">{</span> <span class="na">message</span><span class="p">:</span> <span class="dl">'</span><span class="s1">myroot.validation.minLength</span><span class="dl">'</span><span class="p">,</span> <span class="na">args</span><span class="p">:</span> <span class="p">{</span> <span class="nx">min</span> <span class="p">}</span> <span class="p">};</span>
+
+<span class="c1">// in i18n/en.js</span>
+<span class="k">export</span> <span class="k">default</span> <span class="p">{</span>
+    <span class="na">myroot</span><span class="p">:</span> <span class="p">{</span>
+        <span class="na">validation</span><span class="p">:</span> <span class="p">{</span>
+            <span class="na">minLength</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Must be %{min} characters at least</span><span class="dl">'</span><span class="p">,</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<h2 id="translating-notification-messages">Translating Notification Messages</h2>
+
+<p>By default, react-admin translates the notification messages. You can pass variables for polyglot interpolation with custom notifications. For example:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">notify</span><span class="p">(</span><span class="dl">'</span><span class="s1">myroot.hello.world</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">info</span><span class="dl">'</span><span class="p">,</span> <span class="p">{</span> <span class="na">name</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Planet Earth</span><span class="dl">'</span> <span class="p">});</span>
+</code></pre></div></div>
+
+<p>Assuming you have the following in your custom messages:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// in src/App.js</span>
+<span class="kd">const</span> <span class="nx">messages</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="na">en</span><span class="p">:</span> <span class="p">{</span>
+        <span class="na">myroot</span><span class="p">:</span> <span class="p">{</span>
+            <span class="na">hello</span><span class="p">:</span> <span class="p">{</span>
+                <span class="na">world</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Hello, %{name}!</span><span class="dl">'</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">},</span>
+    <span class="p">},</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<h2 id="translating-the-empty-page">Translating The Empty Page</h2>
+
+<p>React-admin uses the keys <code class="language-plaintext highlighter-rouge">ra.page.empty</code> and <code class="language-plaintext highlighter-rouge">ra.page.invite</code> when displaying the page inviting the user to create the first record.</p>
+
+<p>If you want to override these messages in a specific resource you can add the following keys to your translation:</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">resources.${resourceName}.empty</code> for the primary message (e.g. “No posts yet.”)</li>
+  <li><code class="language-plaintext highlighter-rouge">resources.${resourceName}.invite</code> for the message inviting the user to create one (e.g. “Do you want to create one?”)</li>
+</ul>
+
+<h2 id="specific-case-in-confirm-messages-and-empty-page">Specific case in Confirm messages and Empty Page</h2>
+
+<p>In confirm messages and in the empty page, the resource name appears in the middle of sentences, and react-admin automatically sets the resource name translation to lower case.</p>
+
+<blockquote>
+  <p>Are you sure you want to delete this comment?</p>
+</blockquote>
+
+<p>This works in English, but you may want to display resources in another way to match with language rules, like in German, where names are always capitalized.
+ie: <code class="language-plaintext highlighter-rouge">Sind Sie sicher, dass Sie diesen Kommentar löschen möchten?</code></p>
+
+<p>To do this, simply add a <code class="language-plaintext highlighter-rouge">forcedCaseName</code> key next to the <code class="language-plaintext highlighter-rouge">name</code> key in your translation file.</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">resources</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nl">comments</span><span class="p">:</span> <span class="p">{</span>
+        <span class="na">name</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Kommentar |||| Kommentare</span><span class="dl">'</span><span class="p">,</span>
+        <span class="na">forcedCaseName</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Kommentar |||| Kommentare</span><span class="dl">'</span><span class="p">,</span>
+        <span class="na">fields</span><span class="p">:</span> <span class="p">{</span>
+            <span class="na">id</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Id</span><span class="dl">'</span><span class="p">,</span>
+            <span class="na">name</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Bezeichnung</span><span class="dl">'</span><span class="p">,</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="silencing-translation-warnings">Silencing Translation Warnings</h2>
+
+<p>By default, the <code class="language-plaintext highlighter-rouge">polyglotI18nProvider</code> logs a warning in the console each time it is called with a message that can’t be found in the current translations. This is a Polyglot feature that helps to track missing translation messages.</p>
+
+<p>But you may want to avoid this for some messages, e.g. error messages from a data source you don’t control (like a web server).</p>
+
+<p>The fastest way to do so is to use the third parameter of the <code class="language-plaintext highlighter-rouge">polyglotI18nProvider</code> function to pass the <code class="language-plaintext highlighter-rouge">allowMissing</code> option to Polyglot at initialization:</p>
+
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">import polyglotI18nProvider from 'ra-i18n-polyglot';
+import englishMessages from './i18n/englishMessages';
+import frenchMessages from './i18n/frenchMessages';
+</span>
+const i18nProvider = polyglotI18nProvider(locale =&gt; 
+    locale === 'fr' ? frenchMessages : englishMessages,
+    'en', // Default locale
+<span class="gi">+   {
++       allowMissing: true
++   }
+</span><span class="err">);</span>
+</code></pre></div></div>
+
+<p><strong>Tip</strong>: Check <a href="https://airbnb.io/polyglot.js/#options-overview">the Polyglot documentation</a> for a list of options you can pass to Polyglot at startup.</p>
+
+<p>This solution is all-or-nothing: you can’t silence only <em>some</em> missing translation warnings. An alternative solution consists of passing a default translation using the <code class="language-plaintext highlighter-rouge">_</code> translation option, as explained in the <a href="#using-specific-polyglot-features">Using Specific Polyglot Features section</a> above.</p>
+
+<h2 id="translating-record-fields">Translating Record Fields</h2>
+
+<p>Some of your records may contain fields that are translated in multiple languages. It’s common, in such cases, to offer an interface allowing admin users to see and edit each translation. React-admin provides 2 components for that:</p>
+
+<ul>
+  <li>To display translatable fields, use the <a href="./Fields.md#translatable-fields"><code class="language-plaintext highlighter-rouge">&lt;TranslatableFields&gt;</code></a> component</li>
+  <li>To edit translatable fields, use the <a href="./Inputs.md#translatable-inputs"><code class="language-plaintext highlighter-rouge">&lt;TranslatableInputs&gt;</code></a> component</li>
+</ul>
+
+<p>They both expect the translatable values to have the following structure:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span>
+    <span class="nl">name</span><span class="p">:</span> <span class="p">{</span>
+        <span class="na">en</span><span class="p">:</span> <span class="dl">'</span><span class="s1">The english value</span><span class="dl">'</span><span class="p">,</span>
+        <span class="na">fr</span><span class="p">:</span> <span class="dl">'</span><span class="s1">The french value</span><span class="dl">'</span><span class="p">,</span>
+        <span class="na">tlh</span><span class="p">:</span> <span class="dl">'</span><span class="s1">The klingon value</span><span class="dl">'</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="nx">description</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nl">en</span><span class="p">:</span> <span class="dl">'</span><span class="s1">The english value</span><span class="dl">'</span><span class="p">,</span>
+        <span class="nx">fr</span><span class="p">:</span> <span class="dl">'</span><span class="s1">The french value</span><span class="dl">'</span><span class="p">,</span>
+        <span class="nx">tlh</span><span class="p">:</span> <span class="dl">'</span><span class="s1">The klingon value</span><span class="dl">'</span><span class="p">,</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+:ET

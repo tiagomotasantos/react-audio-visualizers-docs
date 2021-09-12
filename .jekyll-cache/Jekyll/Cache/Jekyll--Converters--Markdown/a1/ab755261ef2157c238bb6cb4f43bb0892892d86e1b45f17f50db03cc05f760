@@ -1,0 +1,162 @@
+I"�V<h1 id="the-resource-component">The <code class="language-plaintext highlighter-rouge">&lt;Resource&gt;</code> component</h1>
+
+<p><code class="language-plaintext highlighter-rouge">&lt;Resource&gt;</code> components are fundamental building blocks in react-admin apps. They form the skeleton of the application, and of its internal data store.</p>
+
+<p>In react-admin terms, a <em>resource</em> is a string that refers to an entity type (like ‘products’, ‘subscribers’, or ‘tags’). <em>Records</em> are objects with an <code class="language-plaintext highlighter-rouge">id</code> field, and two records of the same <em>resource</em> have the same field structure (e.g. all posts records have a title, a publication date, etc).</p>
+
+<p>A <code class="language-plaintext highlighter-rouge">&lt;Resource&gt;</code> component has 3 responsibilities:</p>
+
+<ul>
+  <li>It defines the page components to use for interacting with the resource records (to display a list of records, the details of a record, or to create a new one).</li>
+  <li>It initializes the internal data store so that react-admin components can see it as a mirror of the API for a given resource.</li>
+  <li>It creates a context that lets every descendent component know in which resource they are used (this context is called <code class="language-plaintext highlighter-rouge">ResourceContext</code>).</li>
+</ul>
+
+<p><code class="language-plaintext highlighter-rouge">&lt;Resource&gt;</code> components can only be used as children of <a href="./Admin.md">the <code class="language-plaintext highlighter-rouge">&lt;Admin&gt;</code> component</a>.</p>
+
+<h2 id="basic-usage">Basic Usage</h2>
+
+<p>For instance, the following admin app offers an interface to the resources exposed by the JSONPlaceholder API (<a href="https://jsonplaceholder.typicode.com/posts">posts</a>, <a href="https://jsonplaceholder.typicode.com/users">users</a>, <a href="https://jsonplaceholder.typicode.com/comments">comments</a>, and <a href="https://jsonplaceholder.typicode.com/tags">tags</a>):</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="o">*</span> <span class="k">as</span> <span class="nx">React</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">react</span><span class="dl">"</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">Admin</span><span class="p">,</span> <span class="nx">Resource</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react-admin</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">jsonServerProvider</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">ra-data-json-server</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="k">import</span> <span class="p">{</span> <span class="nx">PostList</span><span class="p">,</span> <span class="nx">PostCreate</span><span class="p">,</span> <span class="nx">PostEdit</span><span class="p">,</span> <span class="nx">PostShow</span><span class="p">,</span> <span class="nx">PostIcon</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">./posts</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">UserList</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">./posts</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">CommentList</span><span class="p">,</span> <span class="nx">CommentEdit</span><span class="p">,</span> <span class="nx">CommentCreate</span><span class="p">,</span> <span class="nx">CommentIcon</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">./comments</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">const</span> <span class="nx">App</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">(</span>
+    <span class="p">&lt;</span><span class="nc">Admin</span> <span class="na">dataProvider</span><span class="p">=</span><span class="si">{</span><span class="nx">jsonServerProvider</span><span class="p">(</span><span class="dl">'</span><span class="s1">https://jsonplaceholder.typicode.com</span><span class="dl">'</span><span class="p">)</span><span class="si">}</span><span class="p">&gt;</span>
+        <span class="si">{</span><span class="cm">/* complete CRUD pages for posts */</span><span class="si">}</span>
+        <span class="p">&lt;</span><span class="nc">Resource</span> <span class="na">name</span><span class="p">=</span><span class="s">"posts"</span> <span class="na">list</span><span class="p">=</span><span class="si">{</span><span class="nx">PostList</span><span class="si">}</span> <span class="na">create</span><span class="p">=</span><span class="si">{</span><span class="nx">PostCreate</span><span class="si">}</span> <span class="na">edit</span><span class="p">=</span><span class="si">{</span><span class="nx">PostEdit</span><span class="si">}</span> <span class="na">show</span><span class="p">=</span><span class="si">{</span><span class="nx">PostShow</span><span class="si">}</span> <span class="p">/&gt;</span>
+        <span class="si">{</span><span class="cm">/* read-only user list */</span><span class="si">}</span>
+        <span class="p">&lt;</span><span class="nc">Resource</span> <span class="na">name</span><span class="p">=</span><span class="s">"users"</span> <span class="na">list</span><span class="p">=</span><span class="si">{</span><span class="nx">UserList</span><span class="si">}</span> <span class="p">/&gt;</span>
+        <span class="si">{</span><span class="cm">/* no show page for the comments resource */</span><span class="si">}</span>
+        <span class="p">&lt;</span><span class="nc">Resource</span> <span class="na">name</span><span class="p">=</span><span class="s">"comments"</span> <span class="na">list</span><span class="p">=</span><span class="si">{</span><span class="nx">CommentList</span><span class="si">}</span> <span class="na">create</span><span class="p">=</span><span class="si">{</span><span class="nx">CommentCreate</span><span class="si">}</span> <span class="na">edit</span><span class="p">=</span><span class="si">{</span><span class="nx">CommentEdit</span><span class="si">}</span> <span class="na">icon</span><span class="p">=</span><span class="si">{</span><span class="nx">CommentIcon</span><span class="si">}</span> <span class="p">/&gt;</span>
+        <span class="si">{</span><span class="cm">/* no standalone page for tags, but the resource is required to display tags in posts */</span><span class="si">}</span>
+        <span class="p">&lt;</span><span class="nc">Resource</span> <span class="na">name</span><span class="p">=</span><span class="s">"tags"</span> <span class="p">/&gt;</span>
+    <span class="p">&lt;/</span><span class="nc">Admin</span><span class="p">&gt;</span>
+<span class="p">);</span>
+</code></pre></div></div>
+
+<p><strong>Tip</strong>: You must add a <code class="language-plaintext highlighter-rouge">&lt;Resource&gt;</code> when you declare a reference (via <code class="language-plaintext highlighter-rouge">&lt;ReferenceField&gt;</code>, <code class="language-plaintext highlighter-rouge">&lt;ReferenceArrayField&gt;</code>, <code class="language-plaintext highlighter-rouge">&lt;ReferenceManyField&gt;</code>, <code class="language-plaintext highlighter-rouge">&lt;ReferenceInput&gt;</code> or <code class="language-plaintext highlighter-rouge">&lt;ReferenceArrayInput&gt;</code>), because react-admin uses resources to define the data store structure. That’s why there is an empty <code class="language-plaintext highlighter-rouge">tags</code> resource in the example above.</p>
+
+<p><strong>Tip</strong>: How does a resource map to an API endpoint? The <code class="language-plaintext highlighter-rouge">&lt;Resource&gt;</code> component doesn’t know this mapping - it’s <a href="./DataProviders.md">the <code class="language-plaintext highlighter-rouge">dataProvider</code>’s job</a> to define it.</p>
+
+<h2 id="name"><code class="language-plaintext highlighter-rouge">name</code></h2>
+
+<p><code class="language-plaintext highlighter-rouge">name</code> is the only required prop for a <code class="language-plaintext highlighter-rouge">&lt;Resource&gt;</code>. React-admin uses the <code class="language-plaintext highlighter-rouge">name</code> prop both to determine the API endpoint (passed to the <code class="language-plaintext highlighter-rouge">dataProvider</code>), and to form the URL for the resource.</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">&lt;</span><span class="nc">Resource</span> <span class="na">name</span><span class="p">=</span><span class="s">"posts"</span> <span class="na">list</span><span class="p">=</span><span class="si">{</span><span class="nx">PostList</span><span class="si">}</span> <span class="na">create</span><span class="p">=</span><span class="si">{</span><span class="nx">PostCreate</span><span class="si">}</span> <span class="na">edit</span><span class="p">=</span><span class="si">{</span><span class="nx">PostEdit</span><span class="si">}</span> <span class="na">show</span><span class="p">=</span><span class="si">{</span><span class="nx">PostShow</span><span class="si">}</span> <span class="p">/&gt;</span>
+</code></pre></div></div>
+
+<p>For this resource react-admin will fetch the <code class="language-plaintext highlighter-rouge">https://jsonplaceholder.typicode.com/posts</code> endpoint for data.</p>
+
+<p>The routing will map the component as follows:</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">/posts/</code> maps to <code class="language-plaintext highlighter-rouge">PostList</code></li>
+  <li><code class="language-plaintext highlighter-rouge">/posts/create</code> maps to <code class="language-plaintext highlighter-rouge">PostCreate</code></li>
+  <li><code class="language-plaintext highlighter-rouge">/posts/:id</code> maps to <code class="language-plaintext highlighter-rouge">PostEdit</code></li>
+  <li><code class="language-plaintext highlighter-rouge">/posts/:id/show</code> maps to <code class="language-plaintext highlighter-rouge">PostShow</code></li>
+</ul>
+
+<p><strong>Tip</strong>: If you want to use a special API endpoint (e.g. ‘https://jsonplaceholder.typicode.com/my-custom-posts-endpoint’) without altering the URL in the react-admin application (so still use <code class="language-plaintext highlighter-rouge">/posts</code>), write the mapping from the resource <code class="language-plaintext highlighter-rouge">name</code> (<code class="language-plaintext highlighter-rouge">posts</code>) to the API endpoint (<code class="language-plaintext highlighter-rouge">my-custom-posts-endpoint</code>) in your own <a href="./Admin.md#dataprovider"><code class="language-plaintext highlighter-rouge">dataProvider</code></a>.</p>
+
+<h2 id="crud-props">CRUD Props</h2>
+
+<p><code class="language-plaintext highlighter-rouge">&lt;Resource&gt;</code> allows you to define a component for each CRUD operation, using the following prop names:</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">list</code> (if defined, the resource is displayed on the Menu)</li>
+  <li><code class="language-plaintext highlighter-rouge">create</code></li>
+  <li><code class="language-plaintext highlighter-rouge">edit</code></li>
+  <li><code class="language-plaintext highlighter-rouge">show</code></li>
+</ul>
+
+<p><strong>Tip</strong>: Under the hood, the <code class="language-plaintext highlighter-rouge">&lt;Resource&gt;</code> component uses <a href="https://reactrouter.com/web/guides/quick-start">react-router</a> to create several routes:</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">/</code> maps to the <code class="language-plaintext highlighter-rouge">list</code> component</li>
+  <li><code class="language-plaintext highlighter-rouge">/create</code> maps to the <code class="language-plaintext highlighter-rouge">create</code> component</li>
+  <li><code class="language-plaintext highlighter-rouge">/:id</code> maps to the <code class="language-plaintext highlighter-rouge">edit</code> component</li>
+  <li><code class="language-plaintext highlighter-rouge">/:id/show</code> maps to the <code class="language-plaintext highlighter-rouge">show</code> component</li>
+</ul>
+
+<p><code class="language-plaintext highlighter-rouge">&lt;Resource&gt;</code> also accepts additional props:</p>
+
+<ul>
+  <li><a href="#name"><code class="language-plaintext highlighter-rouge">name</code></a></li>
+  <li><a href="#icon"><code class="language-plaintext highlighter-rouge">icon</code></a></li>
+  <li><a href="#icon"><code class="language-plaintext highlighter-rouge">options</code></a></li>
+</ul>
+
+<h2 id="icon"><code class="language-plaintext highlighter-rouge">icon</code></h2>
+
+<p>React-admin will render the <code class="language-plaintext highlighter-rouge">icon</code> prop component in the menu:</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// in src/App.js</span>
+<span class="k">import</span> <span class="o">*</span> <span class="k">as</span> <span class="nx">React</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">react</span><span class="dl">"</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">PostIcon</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">@material-ui/icons/Book</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">UserIcon</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">@material-ui/icons/People</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">Admin</span><span class="p">,</span> <span class="nx">Resource</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react-admin</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">jsonServerProvider</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">ra-data-json-server</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="k">import</span> <span class="p">{</span> <span class="nx">PostList</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">./posts</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">const</span> <span class="nx">App</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">(</span>
+    <span class="p">&lt;</span><span class="nc">Admin</span> <span class="na">dataProvider</span><span class="p">=</span><span class="si">{</span><span class="nx">jsonServerProvider</span><span class="p">(</span><span class="dl">'</span><span class="s1">https://jsonplaceholder.typicode.com</span><span class="dl">'</span><span class="p">)</span><span class="si">}</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nc">Resource</span> <span class="na">name</span><span class="p">=</span><span class="s">"posts"</span> <span class="na">list</span><span class="p">=</span><span class="si">{</span><span class="nx">PostList</span><span class="si">}</span> <span class="na">icon</span><span class="p">=</span><span class="si">{</span><span class="nx">PostIcon</span><span class="si">}</span> <span class="p">/&gt;</span>
+        <span class="p">&lt;</span><span class="nc">Resource</span> <span class="na">name</span><span class="p">=</span><span class="s">"users"</span> <span class="na">list</span><span class="p">=</span><span class="si">{</span><span class="nx">UserList</span><span class="si">}</span> <span class="na">icon</span><span class="p">=</span><span class="si">{</span><span class="nx">UserIcon</span><span class="si">}</span> <span class="p">/&gt;</span>
+    <span class="p">&lt;/</span><span class="nc">Admin</span><span class="p">&gt;</span>
+<span class="p">);</span>
+</code></pre></div></div>
+
+<h2 id="options">options</h2>
+
+<p><code class="language-plaintext highlighter-rouge">options.label</code> allows to customize the display name of a given resource in the menu.</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">&lt;</span><span class="nc">Resource</span> <span class="na">name</span><span class="p">=</span><span class="s">"v2/posts"</span> <span class="na">options</span><span class="p">=</span><span class="si">{</span><span class="p">{</span> <span class="na">label</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Posts</span><span class="dl">'</span> <span class="p">}</span><span class="si">}</span> <span class="na">list</span><span class="p">=</span><span class="si">{</span><span class="nx">PostList</span><span class="si">}</span> <span class="p">/&gt;</span>
+</code></pre></div></div>
+
+<h2 id="resource-context">Resource Context</h2>
+
+<p><code class="language-plaintext highlighter-rouge">&lt;Resource&gt;</code> also creates a <code class="language-plaintext highlighter-rouge">ResourceContext</code>, that gives access to the current resource name to all descendents of the main page components (<code class="language-plaintext highlighter-rouge">list</code>, <code class="language-plaintext highlighter-rouge">create</code>, <code class="language-plaintext highlighter-rouge">edit</code>, <code class="language-plaintext highlighter-rouge">show</code>).</p>
+
+<p>to read the current resource name, use the <code class="language-plaintext highlighter-rouge">useResourceContext()</code> hook.</p>
+
+<p>For instance, the following component displays the name of the current resource:</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="o">*</span> <span class="k">as</span> <span class="nx">React</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">Datagrid</span><span class="p">,</span> <span class="nx">DateField</span><span class="p">,</span> <span class="nx">TextField</span><span class="p">,</span> <span class="nx">List</span><span class="p">,</span> <span class="nx">useResourceContext</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react-admin</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">const</span> <span class="nx">ResourceName</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="p">{</span> <span class="nx">resource</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">useResourceContext</span><span class="p">();</span>
+    <span class="k">return</span> <span class="p">&lt;&gt;</span><span class="si">{</span><span class="nx">resource</span><span class="si">}</span><span class="p">&lt;/&gt;;</span>
+<span class="p">}</span>
+
+<span class="kd">const</span> <span class="nx">PostList</span> <span class="o">=</span> <span class="p">(</span><span class="nx">props</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">(</span>
+    <span class="p">&lt;</span><span class="nc">List</span> <span class="si">{</span><span class="p">...</span><span class="nx">props</span><span class="si">}</span><span class="p">&gt;</span>
+        <span class="p">&lt;&gt;</span>
+            <span class="p">&lt;</span><span class="nc">ResourceName</span> <span class="p">/&gt;</span> <span class="si">{</span><span class="cm">/* renders 'posts' */</span><span class="si">}</span>
+            <span class="p">&lt;</span><span class="nc">Datagrid</span><span class="p">&gt;</span>
+                <span class="p">&lt;</span><span class="nc">TextField</span> <span class="na">source</span><span class="p">=</span><span class="s">"title"</span> <span class="p">/&gt;</span>
+                <span class="p">&lt;</span><span class="nc">DateField</span> <span class="na">source</span><span class="p">=</span><span class="s">"published_at"</span> <span class="p">/&gt;</span>
+            <span class="p">&lt;/</span><span class="nc">Datagrid</span><span class="p">&gt;</span>
+        <span class="p">&lt;/&gt;</span>
+    <span class="p">&lt;/</span><span class="nc">List</span><span class="p">&gt;</span>
+<span class="p">)</span>
+</code></pre></div></div>
+
+<p><strong>Tip</strong>: You can <em>change</em> the current resource context, e.g. to use a component designed for a related resource inside another entity. Use the <code class="language-plaintext highlighter-rouge">&lt;ResourceContextProvider&gt;</code> component for that:</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">MyComponent</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">(</span>
+    <span class="p">&lt;</span><span class="nc">ResourceContextProvider</span> <span class="na">value</span><span class="p">=</span><span class="s">"comments"</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nc">ResourceName</span> <span class="p">/&gt;</span> <span class="si">{</span><span class="cm">/* renders 'comments' */</span><span class="si">}</span>
+        ...
+    <span class="p">&lt;/</span><span class="nc">ResourceContextProvider</span><span class="p">&gt;</span>
+<span class="p">);</span>
+</code></pre></div></div>
+
+:ET

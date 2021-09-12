@@ -1,0 +1,172 @@
+I"�R<h1 id="react-admin">react-admin</h1>
+
+<p>A frontend Framework for building data-driven applications running in the browser, on top of REST/GraphQL APIs, using <a href="https://facebook.github.io/react/">React</a> and <a href="https://material.io/">Material Design</a>. Open sourced and maintained by <a href="https://marmelab.com/">marmelab</a>.</p>
+
+<p><a href="https://vimeo.com/474999017"><img src="https://marmelab.com/react-admin/img/react-admin-demo-still.png" alt="react-admin-demo" /></a></p>
+
+<p>Check out <a href="./Demos.md">the demos page</a> for real-life examples.</p>
+
+<h2 id="installation">Installation</h2>
+
+<p>React-admin is available from npm. You can install it (and its required dependencies)
+using:</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>npm <span class="nb">install </span>react-admin
+<span class="c">#or</span>
+yarn add react-admin
+</code></pre></div></div>
+
+<h2 id="how-to-learn-react-admin">How To Learn React-Admin</h2>
+
+<ol>
+  <li>Read the <a href="./Tutorial.md">Tutorial</a> for a 30 minutes introduction.</li>
+  <li>Read the source code of <a href="./Demos.md">the demos</a> for real-life examples.</li>
+  <li>Read the <a href="./Admin.md">Documentation</a> for a deep dive into the react-admin components and hooks.</li>
+  <li>Read the <a href="./Architecture.md">Architecture decisions</a> to better understand why features are implemented that way.</li>
+  <li>Check out the <a href="./Reference.md">API Reference</a> for a complete list of the public API.</li>
+  <li>Get <a href="#support">Support</a> for fixing your own problems</li>
+</ol>
+
+<h2 id="usage">Usage</h2>
+
+<p>Here is a simple example of how to use React-admin:</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// in app.js</span>
+<span class="k">import</span> <span class="o">*</span> <span class="k">as</span> <span class="nx">React</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">react</span><span class="dl">"</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">render</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react-dom</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">Admin</span><span class="p">,</span> <span class="nx">Resource</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react-admin</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">simpleRestProvider</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">ra-data-simple-rest</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="k">import</span> <span class="p">{</span> <span class="nx">PostList</span><span class="p">,</span> <span class="nx">PostEdit</span><span class="p">,</span> <span class="nx">PostCreate</span><span class="p">,</span> <span class="nx">PostIcon</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">./posts</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="nx">render</span><span class="p">(</span>
+    <span class="p">&lt;</span><span class="nc">Admin</span> <span class="na">dataProvider</span><span class="p">=</span><span class="si">{</span><span class="nx">simpleRestProvider</span><span class="p">(</span><span class="dl">'</span><span class="s1">http://localhost:3000</span><span class="dl">'</span><span class="p">)</span><span class="si">}</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nc">Resource</span> <span class="na">name</span><span class="p">=</span><span class="s">"posts"</span> <span class="na">list</span><span class="p">=</span><span class="si">{</span><span class="nx">PostList</span><span class="si">}</span> <span class="na">edit</span><span class="p">=</span><span class="si">{</span><span class="nx">PostEdit</span><span class="si">}</span> <span class="na">create</span><span class="p">=</span><span class="si">{</span><span class="nx">PostCreate</span><span class="si">}</span> <span class="na">icon</span><span class="p">=</span><span class="si">{</span><span class="nx">PostIcon</span><span class="si">}</span><span class="p">/&gt;</span>
+    <span class="p">&lt;/</span><span class="nc">Admin</span><span class="p">&gt;,</span>
+    <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="dl">'</span><span class="s1">root</span><span class="dl">'</span><span class="p">)</span>
+<span class="p">);</span>
+</code></pre></div></div>
+
+<p>The <code class="language-plaintext highlighter-rouge">&lt;Resource&gt;</code> component is a configuration component that allows defining sub components for each of the admin view: <code class="language-plaintext highlighter-rouge">list</code>, <code class="language-plaintext highlighter-rouge">edit</code>, and <code class="language-plaintext highlighter-rouge">create</code>. These components use Material UI and custom components from react-admin:</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// in posts.js</span>
+<span class="k">import</span> <span class="o">*</span> <span class="k">as</span> <span class="nx">React</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">react</span><span class="dl">"</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">List</span><span class="p">,</span> <span class="nx">Datagrid</span><span class="p">,</span> <span class="nx">Edit</span><span class="p">,</span> <span class="nx">Create</span><span class="p">,</span> <span class="nx">SimpleForm</span><span class="p">,</span> <span class="nx">DateField</span><span class="p">,</span> <span class="nx">TextField</span><span class="p">,</span> <span class="nx">EditButton</span><span class="p">,</span> <span class="nx">TextInput</span><span class="p">,</span> <span class="nx">DateInput</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react-admin</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">BookIcon</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">@material-ui/icons/Book</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">export</span> <span class="kd">const</span> <span class="nx">PostIcon</span> <span class="o">=</span> <span class="nx">BookIcon</span><span class="p">;</span>
+
+<span class="k">export</span> <span class="kd">const</span> <span class="nx">PostList</span> <span class="o">=</span> <span class="p">(</span><span class="nx">props</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">(</span>
+    <span class="p">&lt;</span><span class="nc">List</span> <span class="si">{</span><span class="p">...</span><span class="nx">props</span><span class="si">}</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nc">Datagrid</span><span class="p">&gt;</span>
+            <span class="p">&lt;</span><span class="nc">TextField</span> <span class="na">source</span><span class="p">=</span><span class="s">"id"</span> <span class="p">/&gt;</span>
+            <span class="p">&lt;</span><span class="nc">TextField</span> <span class="na">source</span><span class="p">=</span><span class="s">"title"</span> <span class="p">/&gt;</span>
+            <span class="p">&lt;</span><span class="nc">DateField</span> <span class="na">source</span><span class="p">=</span><span class="s">"published_at"</span> <span class="p">/&gt;</span>
+            <span class="p">&lt;</span><span class="nc">TextField</span> <span class="na">source</span><span class="p">=</span><span class="s">"average_note"</span> <span class="p">/&gt;</span>
+            <span class="p">&lt;</span><span class="nc">TextField</span> <span class="na">source</span><span class="p">=</span><span class="s">"views"</span> <span class="p">/&gt;</span>
+            <span class="p">&lt;</span><span class="nc">EditButton</span> <span class="na">basePath</span><span class="p">=</span><span class="s">"/posts"</span> <span class="p">/&gt;</span>
+        <span class="p">&lt;/</span><span class="nc">Datagrid</span><span class="p">&gt;</span>
+    <span class="p">&lt;/</span><span class="nc">List</span><span class="p">&gt;</span>
+<span class="p">);</span>
+
+<span class="kd">const</span> <span class="nx">PostTitle</span> <span class="o">=</span> <span class="p">({</span> <span class="nx">record</span> <span class="p">})</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="p">&lt;</span><span class="nt">span</span><span class="p">&gt;</span>Post <span class="si">{</span><span class="nx">record</span> <span class="p">?</span> <span class="s2">`"</span><span class="p">${</span><span class="nx">record</span><span class="p">.</span><span class="nx">title</span><span class="p">}</span><span class="s2">"`</span> <span class="p">:</span> <span class="dl">''</span><span class="si">}</span><span class="p">&lt;/</span><span class="nt">span</span><span class="p">&gt;;</span>
+<span class="p">};</span>
+
+<span class="k">export</span> <span class="kd">const</span> <span class="nx">PostEdit</span> <span class="o">=</span> <span class="p">(</span><span class="nx">props</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">(</span>
+    <span class="p">&lt;</span><span class="nc">Edit</span> <span class="na">title</span><span class="p">=</span><span class="si">{</span><span class="p">&lt;</span><span class="nc">PostTitle</span> <span class="p">/&gt;</span><span class="si">}</span> <span class="si">{</span><span class="p">...</span><span class="nx">props</span><span class="si">}</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nc">SimpleForm</span><span class="p">&gt;</span>
+            <span class="p">&lt;</span><span class="nc">TextInput</span> <span class="na">disabled</span> <span class="na">source</span><span class="p">=</span><span class="s">"id"</span> <span class="p">/&gt;</span>
+            <span class="p">&lt;</span><span class="nc">TextInput</span> <span class="na">source</span><span class="p">=</span><span class="s">"title"</span> <span class="p">/&gt;</span>
+            <span class="p">&lt;</span><span class="nc">TextInput</span> <span class="na">source</span><span class="p">=</span><span class="s">"teaser"</span> <span class="na">options</span><span class="p">=</span><span class="si">{</span><span class="p">{</span> <span class="na">multiline</span><span class="p">:</span> <span class="kc">true</span> <span class="p">}</span><span class="si">}</span> <span class="p">/&gt;</span>
+            <span class="p">&lt;</span><span class="nc">TextInput</span> <span class="na">multiline</span> <span class="na">source</span><span class="p">=</span><span class="s">"body"</span> <span class="p">/&gt;</span>
+            <span class="p">&lt;</span><span class="nc">DateInput</span> <span class="na">label</span><span class="p">=</span><span class="s">"Publication date"</span> <span class="na">source</span><span class="p">=</span><span class="s">"published_at"</span> <span class="p">/&gt;</span>
+            <span class="p">&lt;</span><span class="nc">TextInput</span> <span class="na">source</span><span class="p">=</span><span class="s">"average_note"</span> <span class="p">/&gt;</span>
+            <span class="p">&lt;</span><span class="nc">TextInput</span> <span class="na">disabled</span> <span class="na">label</span><span class="p">=</span><span class="s">"Nb views"</span> <span class="na">source</span><span class="p">=</span><span class="s">"views"</span> <span class="p">/&gt;</span>
+        <span class="p">&lt;/</span><span class="nc">SimpleForm</span><span class="p">&gt;</span>
+    <span class="p">&lt;/</span><span class="nc">Edit</span><span class="p">&gt;</span>
+<span class="p">);</span>
+
+<span class="k">export</span> <span class="kd">const</span> <span class="nx">PostCreate</span> <span class="o">=</span> <span class="p">(</span><span class="nx">props</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">(</span>
+    <span class="p">&lt;</span><span class="nc">Create</span> <span class="na">title</span><span class="p">=</span><span class="s">"Create a Post"</span> <span class="si">{</span><span class="p">...</span><span class="nx">props</span><span class="si">}</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nc">SimpleForm</span><span class="p">&gt;</span>
+            <span class="p">&lt;</span><span class="nc">TextInput</span> <span class="na">source</span><span class="p">=</span><span class="s">"title"</span> <span class="p">/&gt;</span>
+            <span class="p">&lt;</span><span class="nc">TextInput</span> <span class="na">source</span><span class="p">=</span><span class="s">"teaser"</span> <span class="na">options</span><span class="p">=</span><span class="si">{</span><span class="p">{</span> <span class="na">multiline</span><span class="p">:</span> <span class="kc">true</span> <span class="p">}</span><span class="si">}</span> <span class="p">/&gt;</span>
+            <span class="p">&lt;</span><span class="nc">TextInput</span> <span class="na">multiline</span> <span class="na">source</span><span class="p">=</span><span class="s">"body"</span> <span class="p">/&gt;</span>
+            <span class="p">&lt;</span><span class="nc">TextInput</span> <span class="na">label</span><span class="p">=</span><span class="s">"Publication date"</span> <span class="na">source</span><span class="p">=</span><span class="s">"published_at"</span> <span class="p">/&gt;</span>
+            <span class="p">&lt;</span><span class="nc">TextInput</span> <span class="na">source</span><span class="p">=</span><span class="s">"average_note"</span> <span class="p">/&gt;</span>
+        <span class="p">&lt;/</span><span class="nc">SimpleForm</span><span class="p">&gt;</span>
+    <span class="p">&lt;/</span><span class="nc">Create</span><span class="p">&gt;</span>
+<span class="p">);</span>
+</code></pre></div></div>
+
+<h2 id="does-it-work-with-my-api">Does It Work With My API?</h2>
+
+<p>Yes.</p>
+
+<p>React-admin uses an adapter approach, with a concept called <em>Data Providers</em>. Existing providers can be used as a blueprint to design your API, or you can write your own Data Provider to query an existing API. Writing a custom Data Provider is a matter of hours.</p>
+
+<p><img src="./img/data-provider.png" alt="Data Provider architecture" /></p>
+
+<p>See the <a href="./DataProviders.md">Data Providers documentation</a> for details.</p>
+
+<h2 id="architecture-batteries-included-but-removable">Architecture: Batteries Included But Removable</h2>
+
+<p>React-admin is designed as a library of loosely coupled React components built on top of <a href="https://material-ui.com/">material-ui</a>, in addition to React hooks allowing to reuse the logic with a custom UI.</p>
+
+<p>You may replace one part of react-admin with your own, e.g. to use a custom Datagrid, GraphQL instead of REST, or Bootstrap instead of Material Design.</p>
+
+<p>Read more about the <a href="./Architecture.md">Architecture choices</a>.</p>
+
+<h2 id="support">Support</h2>
+
+<ul>
+  <li>Get professional support from Marmelab via <a href="https://marmelab.com/ra-enterprise">React-Admin Enterprise Edition</a></li>
+  <li>Get community support via <a href="https://stackoverflow.com/questions/tagged/react-admin">StackOverflow</a></li>
+</ul>
+
+<h2 id="enterprise-edition">Enterprise Edition</h2>
+
+<p>The <a href="https://marmelab.com/ra-enterprise">React-Admin Enterprise Edition</a> <img class="icon" src="./img/premium.svg" /> offers additional features and services for react-admin:</p>
+
+<ul>
+  <li>Save weeks of development thanks to the <strong>Private Modules</strong>, valid on an unlimited number of domains and projects.
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">ra-preferences</code>: Persist user preferences (language, theme, filters, datagrid columns, sidebar position, etc) in local storage.</li>
+      <li><code class="language-plaintext highlighter-rouge">ra-navigation</code>: Multi-level menu and breadcrumb, with the ability to define a custom path for your resources.</li>
+      <li><code class="language-plaintext highlighter-rouge">ra-realtime</code>: Display live notifications, auto-update content on the screen, lock content when editing, with adapters for real-time backends.</li>
+      <li><code class="language-plaintext highlighter-rouge">ra-editable-datagrid</code>: Edit data directly in the list view, for better productivity. Excel-like editing experience.</li>
+      <li><code class="language-plaintext highlighter-rouge">ra-form-layout</code>: New form layouts for complex data entry tasks (accordion, wizard, etc.)</li>
+      <li><code class="language-plaintext highlighter-rouge">ra-relationships</code>: Visualize and edit complex relationships, including many-to-many relationships.</li>
+      <li><code class="language-plaintext highlighter-rouge">ra-tree</code>: Edit and visualize tree structures. Reorganize by drag and drop. Adapts to any data structure on the backend (parent_id, children, nested sets, etc).</li>
+      <li><code class="language-plaintext highlighter-rouge">ra-tour</code>: Guided tours for react-admin applications. Step-by-step instructions, Material-ui skin.</li>
+      <li><code class="language-plaintext highlighter-rouge">ra-markdown</code>: Read Markdown data, and edit it using a WYSIWYG editor in your admin</li>
+    </ul>
+  </li>
+  <li>Get <strong>Support</strong> from experienced react and react-admin developers, who will help you find the right information and troubleshoot your bugs.</li>
+  <li>Get a <strong>50% Discount on Professional Services</strong> in case you need coaching, audit, or custom development by our experts.</li>
+  <li>Get access to exclusive <strong>Learning Material</strong>, including a Storybook full of examples, and a dedicated demo app.</li>
+  <li>Prioritize your needs in the react-admin <strong>Development Roadmap</strong> thanks to a priority vote.</li>
+</ul>
+
+<p><a href="https://marmelab.com/ra-enterprise/"><img src="https://marmelab.com/ra-enterprise/assets/ra-enterprise-demo.png" alt="React-admin enterprise Edition" /></a></p>
+
+<h2 id="contributing">Contributing</h2>
+
+<p>If you want to give a hand: Thank you! There are many things you can do to help making react-admin better.</p>
+
+<p>The easiest task is <strong>bug triaging</strong>. Check that new issues on GitHub follow the issue template and give a way to reproduce the issue. If not, comment on the issue to ask precisions. Then, try and reproduce the issue following the description. If you managed to reproduce the issue, add a comment to say it. Otherwise, add a comment to say that something is missing.</p>
+
+<p>The second way to contribute is to <strong>answer support questions on <a href="https://stackoverflow.com/questions/tagged/react-admin">StackOverflow</a></strong>. There are many beginner questions there, so even if you’re not super experienced with react-admin, there is someone you can help there.</p>
+
+<p>Pull requests for <strong>bug fixes</strong> are welcome on the <a href="https://github.com/marmelab/react-admin">GitHub repository</a>. There is always a bunch of <a href="https://github.com/marmelab/react-admin/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22">issues labeled “Good First Issue”</a> in the bug tracker - start with these. Check the contributing guidelines in <a href="https://github.com/marmelab/react-admin#contributing">the repository README</a>.</p>
+
+<p>If you want to <strong>add a feature</strong>, you can open a Pull request on the <code class="language-plaintext highlighter-rouge">next</code> branch. We don’t accept all features - we try to keep the react-admin code small and manageable. Try and see if your feature can be built as an additional <code class="language-plaintext highlighter-rouge">npm</code> package. If you’re in doubt, open a “Feature Request” issue to see if the core team would accept your feature before developing it.</p>
+
+<h2 id="license">License</h2>
+
+<p>React-admin is licensed under the <a href="https://github.com/marmelab/react-admin/blob/master/LICENSE.md">MIT Licence</a>, sponsored and supported by <a href="https://marmelab.com">marmelab</a>.</p>
+
+<h2 id="donate">Donate</h2>
+
+<p>This library is free to use, even for commercial purpose. If you want to give back, please talk about it, help newcomers, or contribute code. But the best way to give back is to <strong>donate to a charity</strong>. We recommend <a href="https://www.doctorswithoutborders.org/">Doctors Without Borders</a>.</p>
+:ET

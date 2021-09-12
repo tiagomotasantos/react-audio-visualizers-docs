@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="en-US">
+    <head>
+        <title>React-admin - Admin and Resource Components</title>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+        <meta name="description" content="" />
+        <meta name="HandheldFriendly" content="true" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+        <link
+            rel="canonical"
+            href="/AudioVisualizer.html"
+        />
+        <link
+            rel="stylesheet"
+            href="/css/materialize.min.css"
+        />
+        <link
+            rel="stylesheet"
+            href="/css/style-v11.css"
+        />
+        <link rel="stylesheet" href="/css/syntax.css" />
+        <link rel="stylesheet" href="/css/prism.css" />
+        <link rel="stylesheet" href="/css/tocbot.css" />
+        <link
+            rel="stylesheet"
+            href="https://fonts.googleapis.com/icon?family=Material+Icons"
+        />
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/@docsearch/css@1.0.0-alpha.28"
+        />
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.12.0/tocbot.css"
+        />
+        <link
+            rel="stylesheet"
+            href="/css/docsearch.css"
+        />
+    </head>
+
+    <body>
+        <header>
+            <div id="banner" style="background-color: #4b3165; padding: 3px;text-align:center;color: white;display:none">
+                We're hiring! 
+                <a href="https://marmelab.com/en/jobs/developer" style="color:white;text-decoration:underline">Join the react-admin team today</a> 
+                and get paid to work on the library you love. Remote friendly.
+                <span style="position:absolute;right:10px"><a href="javascript:hideBanner()" style="color:white;">X</a></span>
+            </div>
+            <script>
+                function hideBanner() {
+                    document.getElementById('banner').style.display = 'none';
+                    window.localStorage.setItem('hideBannerDate', Date.now());
+                }
+                const hideBannerDate = parseInt(window.localStorage.getItem('hideBannerDate'), 10);
+                if (!hideBannerDate || (Date.now() - hideBannerDate) > 14 * 24 * 60 * 60 * 1000) { // two weeks
+                    document.getElementById('banner').style.display = 'block';
+                }
+            </script>
+            <nav>
+                <a href="#" data-target="slide-out" class="sidenav-trigger"
+                    ><i class="material-icons">menu</i></a
+                >
+                <div
+                    class="nav-wrapper"
+                    style="
+                        background: linear-gradient(
+                            145deg,
+                            #027be3 11%,
+                            #1a237e 75%
+                        );
+                    "
+                >
+                    <div class="left">
+                        <div id="docsearch" class="center"></div>
+                    </div>
+                    <ul id="nav-mobile" class="right hide-on-med-and-down">
+                        <li class="active">
+                            <a
+                                href="https://marmelab.com/react-admin/Readme.html"
+                                >Documentation</a
+                            >
+                        </li>
+                        <li>
+                            <a href="https://marmelab.com/react-admin/Demos.html"
+                                >Demos</a
+                            >
+                        </li>
+                        <li>
+                            <a href="https://marmelab.com/en/blog/#react-admin"
+                                >Blog</a
+                            >
+                        </li>
+                        <li>
+                            <a
+                                href="https://marmelab.com/ra-enterprise/"
+                                style="color: #f0c070"
+                                >Enterprise Edition</a
+                            >
+                        </li>
+                        <li>
+                            <a href="https://github.com/marmelab/react-admin">
+                                <svg
+                                    viewBox="0 0 256 250"
+                                    preserveAspectRatio="xMidYMid"
+                                    style="
+                                        height: 20px;
+                                        vertical-align: middle;
+                                        margin-right: 5px;
+                                        fill: #ffffff;
+                                    "
+                                >
+                                    <path
+                                        d="M128.001 0C57.317 0 0 57.307 0 128.001c0 56.554 36.676 104.535 87.535 121.46 6.397 1.185 8.746-2.777 8.746-6.158 0-3.052-.12-13.135-.174-23.83-35.61 7.742-43.124-15.103-43.124-15.103-5.823-14.795-14.213-18.73-14.213-18.73-11.613-7.944.876-7.78.876-7.78 12.853.902 19.621 13.19 19.621 13.19 11.417 19.568 29.945 13.911 37.249 10.64 1.149-8.272 4.466-13.92 8.127-17.116-28.431-3.236-58.318-14.212-58.318-63.258 0-13.975 5-25.394 13.188-34.358-1.329-3.224-5.71-16.242 1.24-33.874 0 0 10.749-3.44 35.21 13.121 10.21-2.836 21.16-4.258 32.038-4.307 10.878.049 21.837 1.47 32.066 4.307 24.431-16.56 35.165-13.12 35.165-13.12 6.967 17.63 2.584 30.65 1.255 33.873 8.207 8.964 13.173 20.383 13.173 34.358 0 49.163-29.944 59.988-58.447 63.157 4.591 3.972 8.682 11.762 8.682 23.704 0 17.126-.148 30.91-.148 35.126 0 3.407 2.304 7.398 8.792 6.14C219.37 232.5 256 184.537 256 128.002 256 57.307 198.691 0 128.001 0zm-80.06 182.34c-.282.636-1.283.827-2.194.39-.929-.417-1.45-1.284-1.15-1.922.276-.655 1.279-.838 2.205-.399.93.418 1.46 1.293 1.139 1.931zm6.296 5.618c-.61.566-1.804.303-2.614-.591-.837-.892-.994-2.086-.375-2.66.63-.566 1.787-.301 2.626.591.838.903 1 2.088.363 2.66zm4.32 7.188c-.785.545-2.067.034-2.86-1.104-.784-1.138-.784-2.503.017-3.05.795-.547 2.058-.055 2.861 1.075.782 1.157.782 2.522-.019 3.08zm7.304 8.325c-.701.774-2.196.566-3.29-.49-1.119-1.032-1.43-2.496-.726-3.27.71-.776 2.213-.558 3.315.49 1.11 1.03 1.45 2.505.701 3.27zm9.442 2.81c-.31 1.003-1.75 1.459-3.199 1.033-1.448-.439-2.395-1.613-2.103-2.626.301-1.01 1.747-1.484 3.207-1.028 1.446.436 2.396 1.602 2.095 2.622zm10.744 1.193c.036 1.055-1.193 1.93-2.715 1.95-1.53.034-2.769-.82-2.786-1.86 0-1.065 1.202-1.932 2.733-1.958 1.522-.03 2.768.818 2.768 1.868zm10.555-.405c.182 1.03-.875 2.088-2.387 2.37-1.485.271-2.861-.365-3.05-1.386-.184-1.056.893-2.114 2.376-2.387 1.514-.263 2.868.356 3.061 1.403z"
+                                    ></path>
+                                </svg>
+                                GitHub
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+            <ul id="slide-out" class="sidenav sidenav-fixed">
+                <li class="logo">
+                    <a href=""
+                        ><img src="/assets/logo_white.png"
+                    /></a>
+                </li>
+                <li class="version">
+<a class="dropdown-trigger" href="#" data-target="versions">
+    
+    
+    
+    <svg class="caret" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M7 10l5 5 5-5z"></path>
+        <path d="M0 0h24v24H0z" fill="none"></path>
+    </svg>
+</a>
+<ul id="versions" class="dropdown-content">
+    
+</ul>
+</li>
+                <li ><a href="./GettingStarted.html">Getting Started</a></li>
+
+<ul><div>Core</div>
+  <li  class="active" ><a href="./AudioVisualizer.html"><code>&lt;AudioVisualizer&gt;</code></a></li>
+  <li ><a href="./AudioVisualizerUtils.html"><code>AudioVisualizerUtils</code></a></li>
+  <li ><a href="./AudioVisualizerHooks.html"><code>AudioVisualizerHooks</code></a></li>
+  <li ><a href="./Types.html">Types</a></li>
+</ul>
+
+<ul><div>Visualizers</div>
+  <li ><a href="./SpectrumVisualizer.html"><code>&lt;SpectrumVisualizer&gt;</code></a></li>
+  <li ><a href="./WaveformVisualizer.html"><code>&lt;WaveformVisualizer&gt;</code></a></li>
+</ul>
+
+<li ><a href="./Architecture.html">Architecture</a></li>
+
+            </ul>
+        </header>
+
+        <main>
+            <div class="container">
+                <div class="row">
+                    <div
+                        class="col s12 m8 offset-m1 xl7 offset-xl1 markdown-section DocSearch-content toc-content"
+                    >
+                        <h1 id="the-admin-component">The <code class="language-plaintext highlighter-rouge">&lt;Admin&gt;</code> Component</h1>
+
+<p>The <code class="language-plaintext highlighter-rouge">&lt;Admin&gt;</code> component creates an application with its own state, routing, and controller logic. <code class="language-plaintext highlighter-rouge">&lt;Admin&gt;</code> requires only a <code class="language-plaintext highlighter-rouge">dataProvider</code> prop, and at least one child <code class="language-plaintext highlighter-rouge">&lt;Resource&gt;</code> to work:</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// in src/App.js</span>
+<span class="k">import</span> <span class="o">*</span> <span class="k">as</span> <span class="nx">React</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">react</span><span class="dl">"</span><span class="p">;</span>
+
+<span class="k">import</span> <span class="p">{</span> <span class="nx">Admin</span><span class="p">,</span> <span class="nx">Resource</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react-admin</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">simpleRestProvider</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">ra-data-simple-rest</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="k">import</span> <span class="p">{</span> <span class="nx">PostList</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">./posts</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">const</span> <span class="nx">App</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">(</span>
+    <span class="p">&lt;</span><span class="nc">Admin</span> <span class="na">dataProvider</span><span class="p">=</span><span class="si">{</span><span class="nx">simpleRestProvider</span><span class="p">(</span><span class="dl">'</span><span class="s1">http://path.to.my.api</span><span class="dl">'</span><span class="p">)</span><span class="si">}</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nc">Resource</span> <span class="na">name</span><span class="p">=</span><span class="s">"posts"</span> <span class="na">list</span><span class="p">=</span><span class="si">{</span><span class="nx">PostList</span><span class="si">}</span> <span class="p">/&gt;</span>
+    <span class="p">&lt;/</span><span class="nc">Admin</span><span class="p">&gt;</span>
+<span class="p">);</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="nx">App</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>Here are all the props accepted by the component:</p>
+
+<ul>
+  <li><a href="#dataprovider"><code class="language-plaintext highlighter-rouge">dataProvider</code></a></li>
+  <li><a href="#authprovider"><code class="language-plaintext highlighter-rouge">authProvider</code></a></li>
+  <li><a href="#i18nprovider"><code class="language-plaintext highlighter-rouge">i18nProvider</code></a></li>
+  <li><a href="#title"><code class="language-plaintext highlighter-rouge">title</code></a></li>
+  <li><a href="#dashboard"><code class="language-plaintext highlighter-rouge">dashboard</code></a></li>
+  <li><a href="#disabletelemetry"><code class="language-plaintext highlighter-rouge">disableTelemetry</code></a></li>
+  <li><a href="#catchall"><code class="language-plaintext highlighter-rouge">catchAll</code></a></li>
+  <li><a href="#menu"><code class="language-plaintext highlighter-rouge">menu</code></a></li>
+  <li><a href="#theme"><code class="language-plaintext highlighter-rouge">theme</code></a></li>
+  <li><a href="#layout"><code class="language-plaintext highlighter-rouge">layout</code></a></li>
+  <li><a href="#customreducers"><code class="language-plaintext highlighter-rouge">customReducers</code></a></li>
+  <li><a href="#customsagas"><code class="language-plaintext highlighter-rouge">customSagas</code></a></li>
+  <li><a href="#customroutes"><code class="language-plaintext highlighter-rouge">customRoutes</code></a></li>
+  <li><a href="#loginpage"><code class="language-plaintext highlighter-rouge">loginPage</code></a></li>
+  <li><a href="#logoutbutton"><code class="language-plaintext highlighter-rouge">logoutButton</code></a></li>
+  <li><a href="#initialstate"><code class="language-plaintext highlighter-rouge">initialState</code></a></li>
+  <li><a href="#history"><code class="language-plaintext highlighter-rouge">history</code></a></li>
+  <li><a href="#ready"><code class="language-plaintext highlighter-rouge">ready</code></a></li>
+</ul>
+
+<h2 id="dataprovider"><code class="language-plaintext highlighter-rouge">dataProvider</code></h2>
+
+<p>The only required prop, it must be an object with the following methods returning a promise:</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">dataProvider</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="na">getList</span><span class="p">:</span>    <span class="p">(</span><span class="nx">resource</span><span class="p">,</span> <span class="nx">params</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nb">Promise</span><span class="p">,</span>
+    <span class="na">getOne</span><span class="p">:</span>     <span class="p">(</span><span class="nx">resource</span><span class="p">,</span> <span class="nx">params</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nb">Promise</span><span class="p">,</span>
+    <span class="na">getMany</span><span class="p">:</span>    <span class="p">(</span><span class="nx">resource</span><span class="p">,</span> <span class="nx">params</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nb">Promise</span><span class="p">,</span>
+    <span class="na">getManyReference</span><span class="p">:</span> <span class="p">(</span><span class="nx">resource</span><span class="p">,</span> <span class="nx">params</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nb">Promise</span><span class="p">,</span>
+    <span class="na">create</span><span class="p">:</span>     <span class="p">(</span><span class="nx">resource</span><span class="p">,</span> <span class="nx">params</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nb">Promise</span><span class="p">,</span>
+    <span class="na">update</span><span class="p">:</span>     <span class="p">(</span><span class="nx">resource</span><span class="p">,</span> <span class="nx">params</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nb">Promise</span><span class="p">,</span>
+    <span class="na">updateMany</span><span class="p">:</span> <span class="p">(</span><span class="nx">resource</span><span class="p">,</span> <span class="nx">params</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nb">Promise</span><span class="p">,</span>
+    <span class="na">delete</span><span class="p">:</span>     <span class="p">(</span><span class="nx">resource</span><span class="p">,</span> <span class="nx">params</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nb">Promise</span><span class="p">,</span>
+    <span class="na">deleteMany</span><span class="p">:</span> <span class="p">(</span><span class="nx">resource</span><span class="p">,</span> <span class="nx">params</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nb">Promise</span><span class="p">,</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>The <code class="language-plaintext highlighter-rouge">dataProvider</code> is also the ideal place to add custom HTTP headers, authentication, etc. The <a href="./DataProviders.md">Data Providers Chapter</a> of the documentation lists available data providers, and explains how to build your own.</p>
+
+<h2 id="authprovider"><code class="language-plaintext highlighter-rouge">authProvider</code></h2>
+
+<p>The <code class="language-plaintext highlighter-rouge">authProvider</code> prop expect an object with 5 methods, each returning a Promise, to control the authentication strategy:</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">authProvider</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="na">login</span><span class="p">:</span> <span class="nx">params</span> <span class="o">=&gt;</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(),</span>
+    <span class="na">logout</span><span class="p">:</span> <span class="nx">params</span> <span class="o">=&gt;</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(),</span>
+    <span class="na">checkAuth</span><span class="p">:</span> <span class="nx">params</span> <span class="o">=&gt;</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(),</span>
+    <span class="na">checkError</span><span class="p">:</span> <span class="nx">error</span> <span class="o">=&gt;</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(),</span>
+    <span class="na">getPermissions</span><span class="p">:</span> <span class="nx">params</span> <span class="o">=&gt;</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(),</span>
+<span class="p">};</span>
+
+<span class="kd">const</span> <span class="nx">App</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">(</span>
+    <span class="p">&lt;</span><span class="nc">Admin</span> <span class="na">authProvider</span><span class="p">=</span><span class="si">{</span><span class="nx">authProvider</span><span class="si">}</span> <span class="na">dataProvider</span><span class="p">=</span><span class="si">{</span><span class="nx">simpleRestProvider</span><span class="p">(</span><span class="dl">'</span><span class="s1">http://path.to.my.api</span><span class="dl">'</span><span class="p">)</span><span class="si">}</span><span class="p">&gt;</span>
+        ...
+    <span class="p">&lt;/</span><span class="nc">Admin</span><span class="p">&gt;</span>
+<span class="p">);</span>
+</code></pre></div></div>
+
+<p>The <a href="./Authentication.md">Auth Provider documentation</a> explains how to implement these functions in detail.</p>
+
+<h2 id="i18nprovider"><code class="language-plaintext highlighter-rouge">i18nProvider</code></h2>
+
+<p>The <code class="language-plaintext highlighter-rouge">i18nProvider</code> props let you translate the GUI. The <a href="./Translation.md">Translation Documentation</a> details this process.</p>
+
+<h2 id="title"><code class="language-plaintext highlighter-rouge">title</code></h2>
+
+<p>On error pages, the header of an admin app uses ‘React Admin’ as the main app title. Use the <code class="language-plaintext highlighter-rouge">title</code> to customize it.</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">App</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">(</span>
+    <span class="p">&lt;</span><span class="nc">Admin</span> <span class="na">title</span><span class="p">=</span><span class="s">"My Custom Admin"</span> <span class="na">dataProvider</span><span class="p">=</span><span class="si">{</span><span class="nx">simpleRestProvider</span><span class="p">(</span><span class="dl">'</span><span class="s1">http://path.to.my.api</span><span class="dl">'</span><span class="p">)</span><span class="si">}</span><span class="p">&gt;</span>
+        // ...
+    <span class="p">&lt;/</span><span class="nc">Admin</span><span class="p">&gt;</span>
+<span class="p">);</span>
+</code></pre></div></div>
+
+<h2 id="dashboard"><code class="language-plaintext highlighter-rouge">dashboard</code></h2>
+
+<p>By default, the homepage of an admin app is the <code class="language-plaintext highlighter-rouge">list</code> of the first child <code class="language-plaintext highlighter-rouge">&lt;Resource&gt;</code>. But you can also specify a custom component instead. To fit in the general design, use Material UI’s <code class="language-plaintext highlighter-rouge">&lt;Card&gt;</code> component, and react-admin’s <code class="language-plaintext highlighter-rouge">&lt;Title&gt;</code> component to set the title in the AppBar:</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// in src/Dashboard.js</span>
+<span class="k">import</span> <span class="o">*</span> <span class="k">as</span> <span class="nx">React</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">react</span><span class="dl">"</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">Card</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">@material-ui/core/Card</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">CardContent</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">@material-ui/core/CardContent</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">Title</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react-admin</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">export</span> <span class="k">default</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">(</span>
+    <span class="p">&lt;</span><span class="nc">Card</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nc">Title</span> <span class="na">title</span><span class="p">=</span><span class="s">"Welcome to the administration"</span> <span class="p">/&gt;</span>
+        <span class="p">&lt;</span><span class="nc">CardContent</span><span class="p">&gt;</span>Lorem ipsum sic dolor amet...<span class="p">&lt;/</span><span class="nc">CardContent</span><span class="p">&gt;</span>
+    <span class="p">&lt;/</span><span class="nc">Card</span><span class="p">&gt;</span>
+<span class="p">);</span>
+</code></pre></div></div>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// in src/App.js</span>
+<span class="k">import</span> <span class="o">*</span> <span class="k">as</span> <span class="nx">React</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">react</span><span class="dl">"</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">Admin</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react-admin</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">simpleRestProvider</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">ra-data-simple-rest</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="k">import</span> <span class="nx">Dashboard</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">./Dashboard</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">const</span> <span class="nx">App</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">(</span>
+    <span class="p">&lt;</span><span class="nc">Admin</span> <span class="na">dashboard</span><span class="p">=</span><span class="si">{</span><span class="nx">Dashboard</span><span class="si">}</span> <span class="na">dataProvider</span><span class="p">=</span><span class="si">{</span><span class="nx">simpleRestProvider</span><span class="p">(</span><span class="dl">'</span><span class="s1">http://path.to.my.api</span><span class="dl">'</span><span class="p">)</span><span class="si">}</span><span class="p">&gt;</span>
+        // ...
+    <span class="p">&lt;/</span><span class="nc">Admin</span><span class="p">&gt;</span>
+<span class="p">);</span>
+</code></pre></div></div>
+
+<p><img src="./img/dashboard.png" alt="Custom home page" /></p>
+
+<h2 id="disabletelemetry"><code class="language-plaintext highlighter-rouge">disableTelemetry</code></h2>
+
+<p>In production, react-admin applications send an anonymous request on mount to a telemetry server operated by marmelab. You can see this request by looking at the Network tab of your browser DevTools:</p>
+
+<p><code class="language-plaintext highlighter-rouge">https://react-admin-telemetry.marmelab.com/react-admin-telemetry</code></p>
+
+<p>The only data sent to the telemetry server is the admin domain (e.g. “example.com”) - no personal data is ever sent, and no cookie is included in the response. The react-admin team uses these domains to track the usage of the framework.</p>
+
+<p>You can opt out of telemetry by simply adding <code class="language-plaintext highlighter-rouge">disableTelemetry</code> to the <code class="language-plaintext highlighter-rouge">&lt;Admin&gt;</code> component:</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// in src/App.js</span>
+<span class="k">import</span> <span class="o">*</span> <span class="k">as</span> <span class="nx">React</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">react</span><span class="dl">"</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">Admin</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react-admin</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">const</span> <span class="nx">App</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">(</span>
+    <span class="p">&lt;</span><span class="nc">Admin</span> <span class="na">disableTelemetry</span><span class="p">&gt;</span>
+        // ...
+    <span class="p">&lt;/</span><span class="nc">Admin</span><span class="p">&gt;</span>
+<span class="p">);</span>
+</code></pre></div></div>
+
+<h2 id="catchall"><code class="language-plaintext highlighter-rouge">catchAll</code></h2>
+
+<p>When users type URLs that don’t match any of the children <code class="language-plaintext highlighter-rouge">&lt;Resource&gt;</code> components, they see a default “Not Found” page.</p>
+
+<p><img src="./img/not-found.png" alt="Not Found" /></p>
+
+<p>You can customize this page to use the component of your choice by passing it as the <code class="language-plaintext highlighter-rouge">catchAll</code> prop. To fit in the general design, use Material UI’s <code class="language-plaintext highlighter-rouge">&lt;Card&gt;</code> component, and react-admin’s <code class="language-plaintext highlighter-rouge">&lt;Title&gt;</code> component:</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// in src/NotFound.js</span>
+<span class="k">import</span> <span class="o">*</span> <span class="k">as</span> <span class="nx">React</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">react</span><span class="dl">"</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">Card</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">@material-ui/core/Card</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">CardContent</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">@material-ui/core/CardContent</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">Title</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react-admin</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">(</span>
+    <span class="p">&lt;</span><span class="nc">Card</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nc">Title</span> <span class="na">title</span><span class="p">=</span><span class="s">"Not Found"</span> <span class="p">/&gt;</span>
+        <span class="p">&lt;</span><span class="nc">CardContent</span><span class="p">&gt;</span>
+            <span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span>404: Page not found<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+        <span class="p">&lt;/</span><span class="nc">CardContent</span><span class="p">&gt;</span>
+    <span class="p">&lt;/</span><span class="nc">Card</span><span class="p">&gt;</span>
+<span class="p">);</span>
+</code></pre></div></div>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// in src/App.js</span>
+<span class="k">import</span> <span class="o">*</span> <span class="k">as</span> <span class="nx">React</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">react</span><span class="dl">"</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">Admin</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react-admin</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">simpleRestProvider</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">ra-data-simple-rest</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="k">import</span> <span class="nx">NotFound</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">./NotFound</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">const</span> <span class="nx">App</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">(</span>
+    <span class="p">&lt;</span><span class="nc">Admin</span> <span class="na">catchAll</span><span class="p">=</span><span class="si">{</span><span class="nx">NotFound</span><span class="si">}</span> <span class="na">dataProvider</span><span class="p">=</span><span class="si">{</span><span class="nx">simpleRestProvider</span><span class="p">(</span><span class="dl">'</span><span class="s1">http://path.to.my.api</span><span class="dl">'</span><span class="p">)</span><span class="si">}</span><span class="p">&gt;</span>
+        // ...
+    <span class="p">&lt;/</span><span class="nc">Admin</span><span class="p">&gt;</span>
+<span class="p">);</span>
+</code></pre></div></div>
+
+<p><strong>Tip</strong>: If your custom <code class="language-plaintext highlighter-rouge">catchAll</code> component contains react-router <code class="language-plaintext highlighter-rouge">&lt;Route&gt;</code> components, this allows you to register new routes displayed within the react-admin layout easily. Note that these routes will match <em>after</em> all the react-admin resource routes have been tested. To add custom routes <em>before</em> the react-admin ones, and therefore override the default resource routes, use the <a href="#customroutes"><code class="language-plaintext highlighter-rouge">customRoutes</code> prop</a> instead.</p>
+
+<h2 id="menu"><code class="language-plaintext highlighter-rouge">menu</code></h2>
+
+<p><strong>Tip</strong>: This prop is deprecated. To override the menu component, use a <a href="#layout">custom layout</a> instead.</p>
+
+<p>React-admin uses the list of <code class="language-plaintext highlighter-rouge">&lt;Resource&gt;</code> components passed as children of <code class="language-plaintext highlighter-rouge">&lt;Admin&gt;</code> to build a menu to each resource with a <code class="language-plaintext highlighter-rouge">&lt;List&gt;</code> component.</p>
+
+<p>If you want to add or remove menu items, for instance to link to non-resources pages, you can create your own menu component:</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// in src/Menu.js</span>
+<span class="k">import</span> <span class="o">*</span> <span class="k">as</span> <span class="nx">React</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">createElement</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">useSelector</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react-redux</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">useMediaQuery</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">@material-ui/core</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">MenuItemLink</span><span class="p">,</span> <span class="nx">getResources</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react-admin</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">withRouter</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react-router-dom</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">LabelIcon</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">@material-ui/icons/Label</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">const</span> <span class="nx">Menu</span> <span class="o">=</span> <span class="p">({</span> <span class="nx">onMenuClick</span><span class="p">,</span> <span class="nx">logout</span> <span class="p">})</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">isXSmall</span> <span class="o">=</span> <span class="nx">useMediaQuery</span><span class="p">(</span><span class="nx">theme</span> <span class="o">=&gt;</span> <span class="nx">theme</span><span class="p">.</span><span class="nx">breakpoints</span><span class="p">.</span><span class="nx">down</span><span class="p">(</span><span class="dl">'</span><span class="s1">xs</span><span class="dl">'</span><span class="p">));</span>
+    <span class="kd">const</span> <span class="nx">open</span> <span class="o">=</span> <span class="nx">useSelector</span><span class="p">(</span><span class="nx">state</span> <span class="o">=&gt;</span> <span class="nx">state</span><span class="p">.</span><span class="nx">admin</span><span class="p">.</span><span class="nx">ui</span><span class="p">.</span><span class="nx">sidebarOpen</span><span class="p">);</span>
+    <span class="kd">const</span> <span class="nx">resources</span> <span class="o">=</span> <span class="nx">useSelector</span><span class="p">(</span><span class="nx">getResources</span><span class="p">);</span>
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span>
+            <span class="si">{</span><span class="nx">resources</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">resource</span> <span class="o">=&gt;</span> <span class="p">(</span>
+                <span class="p">&lt;</span><span class="nc">MenuItemLink</span>
+                    <span class="na">key</span><span class="p">=</span><span class="si">{</span><span class="nx">resource</span><span class="p">.</span><span class="nx">name</span><span class="si">}</span>
+                    <span class="na">to</span><span class="p">=</span><span class="si">{</span><span class="s2">`/</span><span class="p">${</span><span class="nx">resource</span><span class="p">.</span><span class="nx">name</span><span class="p">}</span><span class="s2">`</span><span class="si">}</span>
+                    <span class="na">primaryText</span><span class="p">=</span><span class="si">{</span><span class="nx">resource</span><span class="p">.</span><span class="nx">options</span> <span class="o">&amp;&amp;</span> <span class="nx">resource</span><span class="p">.</span><span class="nx">options</span><span class="p">.</span><span class="nx">label</span> <span class="o">||</span> <span class="nx">resource</span><span class="p">.</span><span class="nx">name</span><span class="si">}</span>
+                    <span class="na">leftIcon</span><span class="p">=</span><span class="si">{</span><span class="nx">createElement</span><span class="p">(</span><span class="nx">resource</span><span class="p">.</span><span class="nx">icon</span><span class="p">)</span><span class="si">}</span>
+                    <span class="na">onClick</span><span class="p">=</span><span class="si">{</span><span class="nx">onMenuClick</span><span class="si">}</span>
+                    <span class="na">sidebarIsOpen</span><span class="p">=</span><span class="si">{</span><span class="nx">open</span><span class="si">}</span>
+                <span class="p">/&gt;</span>
+            <span class="p">))</span><span class="si">}</span>
+            <span class="p">&lt;</span><span class="nc">MenuItemLink</span>
+                <span class="na">to</span><span class="p">=</span><span class="s">"/custom-route"</span>
+                <span class="na">primaryText</span><span class="p">=</span><span class="s">"Miscellaneous"</span>
+                <span class="na">leftIcon</span><span class="p">=</span><span class="si">{</span><span class="p">&lt;</span><span class="nc">LabelIcon</span> <span class="p">/&gt;</span><span class="si">}</span>
+                <span class="na">onClick</span><span class="p">=</span><span class="si">{</span><span class="nx">onMenuClick</span><span class="si">}</span>
+                <span class="na">sidebarIsOpen</span><span class="p">=</span><span class="si">{</span><span class="nx">open</span><span class="si">}</span>
+            <span class="p">/&gt;</span>
+            <span class="si">{</span><span class="nx">isXSmall</span> <span class="o">&amp;&amp;</span> <span class="nx">logout</span><span class="si">}</span>
+        <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+    <span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="nx">withRouter</span><span class="p">(</span><span class="nx">Menu</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p><strong>Tip</strong>: Note the <code class="language-plaintext highlighter-rouge">MenuItemLink</code> component. It must be used to avoid unwanted side effects in mobile views. It supports a custom text and icon (which must be a material-ui <code class="language-plaintext highlighter-rouge">&lt;SvgIcon&gt;</code>).</p>
+
+<p><strong>Tip</strong>: Note that we include the <code class="language-plaintext highlighter-rouge">logout</code> item only on small devices. Indeed, the <code class="language-plaintext highlighter-rouge">logout</code> button is already displayed in the AppBar on larger devices.</p>
+
+<p>Then, pass it to the <code class="language-plaintext highlighter-rouge">&lt;Admin&gt;</code> component as the <code class="language-plaintext highlighter-rouge">menu</code> prop:</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// in src/App.js</span>
+<span class="k">import</span> <span class="nx">Menu</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">./Menu</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">const</span> <span class="nx">App</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">(</span>
+    <span class="p">&lt;</span><span class="nc">Admin</span> <span class="na">menu</span><span class="p">=</span><span class="si">{</span><span class="nx">Menu</span><span class="si">}</span> <span class="na">dataProvider</span><span class="p">=</span><span class="si">{</span><span class="nx">simpleRestProvider</span><span class="p">(</span><span class="dl">'</span><span class="s1">http://path.to.my.api</span><span class="dl">'</span><span class="p">)</span><span class="si">}</span><span class="p">&gt;</span>
+        // ...
+    <span class="p">&lt;/</span><span class="nc">Admin</span><span class="p">&gt;</span>
+<span class="p">);</span>
+</code></pre></div></div>
+
+<p>See the <a href="./Theming.md#using-a-custom-menu">Theming documentation</a> for more details.</p>
+
+<h2 id="theme"><code class="language-plaintext highlighter-rouge">theme</code></h2>
+
+<p>Material UI supports <a href="https://material-ui.com/customization/themes">theming</a>. This lets you customize the look and feel of an admin by overriding fonts, colors, and spacing. You can provide a custom material ui theme by using the <code class="language-plaintext highlighter-rouge">theme</code> prop:</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">{</span> <span class="nx">createMuiTheme</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">@material-ui/core/styles</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">const</span> <span class="nx">theme</span> <span class="o">=</span> <span class="nx">createMuiTheme</span><span class="p">({</span>
+  <span class="na">palette</span><span class="p">:</span> <span class="p">{</span>
+    <span class="na">type</span><span class="p">:</span> <span class="dl">'</span><span class="s1">dark</span><span class="dl">'</span><span class="p">,</span> <span class="c1">// Switching the dark mode on is a single property value change.</span>
+  <span class="p">},</span>
+<span class="p">});</span>
+
+<span class="kd">const</span> <span class="nx">App</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">(</span>
+    <span class="p">&lt;</span><span class="nc">Admin</span> <span class="na">theme</span><span class="p">=</span><span class="si">{</span><span class="nx">theme</span><span class="si">}</span> <span class="na">dataProvider</span><span class="p">=</span><span class="si">{</span><span class="nx">simpleRestProvider</span><span class="p">(</span><span class="dl">'</span><span class="s1">http://path.to.my.api</span><span class="dl">'</span><span class="p">)</span><span class="si">}</span><span class="p">&gt;</span>
+        // ...
+    <span class="p">&lt;/</span><span class="nc">Admin</span><span class="p">&gt;</span>
+<span class="p">);</span>
+</code></pre></div></div>
+
+<p><img src="./img/dark-theme.png" alt="Dark theme" /></p>
+
+<p>For more details on predefined themes and custom themes, refer to the <a href="https://material-ui.com/customization/themes/">Material UI Customization documentation</a>.</p>
+
+<h2 id="layout"><code class="language-plaintext highlighter-rouge">layout</code></h2>
+
+<p>If you want to deeply customize the app header, the menu, or the notifications, the best way is to provide a custom layout component. It must contain a <code class="language-plaintext highlighter-rouge">{children}</code> placeholder, where react-admin will render the resources. If you use material UI fields and inputs, it should contain a <code class="language-plaintext highlighter-rouge">&lt;ThemeProvider&gt;</code> element. And finally, if you want to show the spinner in the app header when the app fetches data in the background, the Layout should connect to the redux store.</p>
+
+<p>Use the <a href="https://github.com/marmelab/react-admin/blob/master/packages/ra-ui-materialui/src/layout/Layout.tsx">default layout</a> as a starting point, and check <a href="./Theming.md#using-a-custom-layout">the Theming documentation</a> for examples.</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// in src/App.js</span>
+<span class="k">import</span> <span class="nx">MyLayout</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">./MyLayout</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">const</span> <span class="nx">App</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">(</span>
+    <span class="p">&lt;</span><span class="nc">Admin</span> <span class="na">layout</span><span class="p">=</span><span class="si">{</span><span class="nx">MyLayout</span><span class="si">}</span> <span class="na">dataProvider</span><span class="p">=</span><span class="si">{</span><span class="nx">simpleRestProvider</span><span class="p">(</span><span class="dl">'</span><span class="s1">http://path.to.my.api</span><span class="dl">'</span><span class="p">)</span><span class="si">}</span><span class="p">&gt;</span>
+        // ...
+    <span class="p">&lt;/</span><span class="nc">Admin</span><span class="p">&gt;</span>
+<span class="p">);</span>
+</code></pre></div></div>
+
+<p>Your custom layout can simply extend the default <code class="language-plaintext highlighter-rouge">&lt;Layout&gt;</code> component if you only want to override the appBar, the menu, the notification component, or the error page. For instance:</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// in src/MyLayout.js</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">Layout</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react-admin</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">MyAppBar</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">./MyAppBar</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">MyMenu</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">./MyMenu</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">MyNotification</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">./MyNotification</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">const</span> <span class="nx">MyLayout</span> <span class="o">=</span> <span class="p">(</span><span class="nx">props</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">&lt;</span><span class="nc">Layout</span>
+    <span class="si">{</span><span class="p">...</span><span class="nx">props</span><span class="si">}</span>
+    <span class="na">appBar</span><span class="p">=</span><span class="si">{</span><span class="nx">MyAppBar</span><span class="si">}</span>
+    <span class="na">menu</span><span class="p">=</span><span class="si">{</span><span class="nx">MyMenu</span><span class="si">}</span>
+    <span class="na">notification</span><span class="p">=</span><span class="si">{</span><span class="nx">MyNotification</span><span class="si">}</span>
+<span class="p">/&gt;;</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="nx">MyLayout</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>For more details on custom layouts, check <a href="./Theming.md#using-a-custom-layout">the Theming documentation</a>.</p>
+
+<h2 id="customreducers"><code class="language-plaintext highlighter-rouge">customReducers</code></h2>
+
+<p>The <code class="language-plaintext highlighter-rouge">&lt;Admin&gt;</code> app uses <a href="https://redux.js.org/">Redux</a> to manage state. The state has the following keys:</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+    </span><span class="nl">"admin"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">/*...*/</span><span class="w"> </span><span class="p">},</span><span class="w"> </span><span class="err">//</span><span class="w"> </span><span class="err">used</span><span class="w"> </span><span class="err">by</span><span class="w"> </span><span class="err">react-admin</span><span class="w">
+    </span><span class="nl">"routing"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">/*...*/</span><span class="w"> </span><span class="p">},</span><span class="w"> </span><span class="err">//</span><span class="w"> </span><span class="err">used</span><span class="w"> </span><span class="err">by</span><span class="w"> </span><span class="err">connected-react-router</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p>If your components dispatch custom actions, you probably need to register your own reducers to update the state with these actions. Let’s imagine that you want to keep the bitcoin exchange rate inside the <code class="language-plaintext highlighter-rouge">bitcoinRate</code> key in the state. You probably have a reducer looking like the following:</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// in src/bitcoinRateReducer.js</span>
+<span class="k">export</span> <span class="k">default</span> <span class="p">(</span><span class="nx">previousState</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="p">{</span> <span class="nx">type</span><span class="p">,</span> <span class="nx">payload</span> <span class="p">})</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">type</span> <span class="o">===</span> <span class="dl">'</span><span class="s1">BITCOIN_RATE_RECEIVED</span><span class="dl">'</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">payload</span><span class="p">.</span><span class="nx">rate</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="nx">previousState</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>To register this reducer in the <code class="language-plaintext highlighter-rouge">&lt;Admin&gt;</code> app, simply pass it in the <code class="language-plaintext highlighter-rouge">customReducers</code> prop:</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// in src/App.js</span>
+<span class="k">import</span> <span class="o">*</span> <span class="k">as</span> <span class="nx">React</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">react</span><span class="dl">"</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">Admin</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react-admin</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="k">import</span> <span class="nx">bitcoinRateReducer</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">./bitcoinRateReducer</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">const</span> <span class="nx">App</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">(</span>
+    <span class="p">&lt;</span><span class="nc">Admin</span> <span class="na">customReducers</span><span class="p">=</span><span class="si">{</span><span class="p">{</span> <span class="na">bitcoinRate</span><span class="p">:</span> <span class="nx">bitcoinRateReducer</span> <span class="p">}</span><span class="si">}</span> <span class="na">dataProvider</span><span class="p">=</span><span class="si">{</span><span class="nx">simpleRestProvider</span><span class="p">(</span><span class="dl">'</span><span class="s1">http://path.to.my.api</span><span class="dl">'</span><span class="p">)</span><span class="si">}</span><span class="p">&gt;</span>
+        ...
+    <span class="p">&lt;/</span><span class="nc">Admin</span><span class="p">&gt;</span>
+<span class="p">);</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="nx">App</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>Now the state will look like:</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+    </span><span class="nl">"admin"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">/*...*/</span><span class="w"> </span><span class="p">},</span><span class="w"> </span><span class="err">//</span><span class="w"> </span><span class="err">used</span><span class="w"> </span><span class="err">by</span><span class="w"> </span><span class="err">react-admin</span><span class="w">
+    </span><span class="nl">"routing"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">/*...*/</span><span class="w"> </span><span class="p">},</span><span class="w"> </span><span class="err">//</span><span class="w"> </span><span class="err">used</span><span class="w"> </span><span class="err">by</span><span class="w"> </span><span class="err">connected-react-router</span><span class="w">
+    </span><span class="nl">"bitcoinRate"</span><span class="p">:</span><span class="w"> </span><span class="mi">123</span><span class="p">,</span><span class="w"> </span><span class="err">//</span><span class="w"> </span><span class="err">managed</span><span class="w"> </span><span class="err">by</span><span class="w"> </span><span class="err">rateReducer</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<h2 id="customsagas"><code class="language-plaintext highlighter-rouge">customSagas</code></h2>
+
+<p>The <code class="language-plaintext highlighter-rouge">&lt;Admin&gt;</code> app uses <a href="https://github.com/redux-saga/redux-saga">redux-saga</a> to handle side effects (AJAX calls, notifications, redirections, etc).</p>
+
+<p>If your components dispatch custom actions, you probably need to register your own side effects as sagas. Let’s imagine that you want to show a notification whenever the <code class="language-plaintext highlighter-rouge">BITCOIN_RATE_RECEIVED</code> action is dispatched. You probably have a saga looking like the following:</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// in src/bitcoinSaga.js</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">put</span><span class="p">,</span> <span class="nx">takeEvery</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">redux-saga/effects</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">showNotification</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react-admin</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="kd">function</span><span class="o">*</span> <span class="nx">bitcoinSaga</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">yield</span> <span class="nx">takeEvery</span><span class="p">(</span><span class="dl">'</span><span class="s1">BITCOIN_RATE_RECEIVED</span><span class="dl">'</span><span class="p">,</span> <span class="kd">function</span><span class="o">*</span> <span class="p">()</span> <span class="p">{</span>
+        <span class="k">yield</span> <span class="nx">put</span><span class="p">(</span><span class="nx">showNotification</span><span class="p">(</span><span class="dl">'</span><span class="s1">Bitcoin rate updated</span><span class="dl">'</span><span class="p">));</span>
+    <span class="p">})</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>To register this saga in the <code class="language-plaintext highlighter-rouge">&lt;Admin&gt;</code> app, simply pass it in the <code class="language-plaintext highlighter-rouge">customSagas</code> prop:</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// in src/App.js</span>
+<span class="k">import</span> <span class="o">*</span> <span class="k">as</span> <span class="nx">React</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">react</span><span class="dl">"</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">Admin</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react-admin</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="k">import</span> <span class="nx">bitcoinSaga</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">./bitcoinSaga</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">const</span> <span class="nx">App</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">(</span>
+    <span class="p">&lt;</span><span class="nc">Admin</span> <span class="na">customSagas</span><span class="p">=</span><span class="si">{</span><span class="p">[</span> <span class="nx">bitcoinSaga</span> <span class="p">]</span><span class="si">}</span> <span class="na">dataProvider</span><span class="p">=</span><span class="si">{</span><span class="nx">simpleRestProvider</span><span class="p">(</span><span class="dl">'</span><span class="s1">http://path.to.my.api</span><span class="dl">'</span><span class="p">)</span><span class="si">}</span><span class="p">&gt;</span>
+        ...
+    <span class="p">&lt;/</span><span class="nc">Admin</span><span class="p">&gt;</span>
+<span class="p">);</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="nx">App</span><span class="p">;</span>
+</code></pre></div></div>
+
+<h2 id="customroutes"><code class="language-plaintext highlighter-rouge">customRoutes</code></h2>
+
+<p>To register your own routes, create a module returning a list of <a href="https://reacttraining.com/react-router/web/guides/quick-start">react-router-dom</a> <code class="language-plaintext highlighter-rouge">&lt;Route&gt;</code> component:</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// in src/customRoutes.js</span>
+<span class="k">import</span> <span class="o">*</span> <span class="k">as</span> <span class="nx">React</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">react</span><span class="dl">"</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">Route</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react-router-dom</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">Foo</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">./Foo</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">Bar</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">./Bar</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="p">[</span>
+    <span class="p">&lt;</span><span class="nc">Route</span> <span class="na">exact</span> <span class="na">path</span><span class="p">=</span><span class="s">"/foo"</span> <span class="na">component</span><span class="p">=</span><span class="si">{</span><span class="nx">Foo</span><span class="si">}</span> <span class="p">/&gt;,</span>
+    <span class="p">&lt;</span><span class="nc">Route</span> <span class="na">exact</span> <span class="na">path</span><span class="p">=</span><span class="s">"/bar"</span> <span class="na">component</span><span class="p">=</span><span class="si">{</span><span class="nx">Bar</span><span class="si">}</span> <span class="p">/&gt;,</span>
+<span class="p">];</span>
+</code></pre></div></div>
+
+<p>Then, pass this array as <code class="language-plaintext highlighter-rouge">customRoutes</code> prop in the <code class="language-plaintext highlighter-rouge">&lt;Admin&gt;</code> component:</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// in src/App.js</span>
+<span class="k">import</span> <span class="o">*</span> <span class="k">as</span> <span class="nx">React</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">react</span><span class="dl">"</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">Admin</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react-admin</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="k">import</span> <span class="nx">customRoutes</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">./customRoutes</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">const</span> <span class="nx">App</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">(</span>
+    <span class="p">&lt;</span><span class="nc">Admin</span> <span class="na">customRoutes</span><span class="p">=</span><span class="si">{</span><span class="nx">customRoutes</span><span class="si">}</span> <span class="na">dataProvider</span><span class="p">=</span><span class="si">{</span><span class="nx">simpleRestProvider</span><span class="p">(</span><span class="dl">'</span><span class="s1">http://path.to.my.api</span><span class="dl">'</span><span class="p">)</span><span class="si">}</span><span class="p">&gt;</span>
+        ...
+    <span class="p">&lt;/</span><span class="nc">Admin</span><span class="p">&gt;</span>
+<span class="p">);</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="nx">App</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>Now, when a user browses to <code class="language-plaintext highlighter-rouge">/foo</code> or <code class="language-plaintext highlighter-rouge">/bar</code>, the components you defined will appear in the main part of the screen.</p>
+
+<p><strong>Tip</strong>: To look like other react-admin pages, your custom pages should have the following structure:</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// in src/Foo.js</span>
+<span class="k">import</span> <span class="o">*</span> <span class="k">as</span> <span class="nx">React</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">react</span><span class="dl">"</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">Card</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">@material-ui/core/Card</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">CardContent</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">@material-ui/core/CardContent</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">Title</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react-admin</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">const</span> <span class="nx">Foo</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">(</span>
+    <span class="p">&lt;</span><span class="nc">Card</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nc">Title</span> <span class="na">title</span><span class="p">=</span><span class="s">"My Page"</span> <span class="p">/&gt;</span>
+        <span class="p">&lt;</span><span class="nc">CardContent</span><span class="p">&gt;</span>
+            ...
+        <span class="p">&lt;/</span><span class="nc">CardContent</span><span class="p">&gt;</span>
+    <span class="p">&lt;/</span><span class="nc">Card</span><span class="p">&gt;</span>
+<span class="p">);</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="nx">Foo</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p><strong>Tip</strong>: It’s up to you to create a <a href="#menu">custom menu</a> entry, or custom buttons, to lead to your custom pages.</p>
+
+<p>Your custom pages take precedence over react-admin’s own routes. That means that <code class="language-plaintext highlighter-rouge">customRoutes</code> lets you override any route you want! If you want to add routes <em>after</em> all the react-admin routes, use the <a href="#catchall"><code class="language-plaintext highlighter-rouge">catchAll</code> prop</a> instead.</p>
+
+<p>If you want a custom route to render without the layout (without the menu and the appBar), e.g. for registration screens, then use the <code class="language-plaintext highlighter-rouge">&lt;RouteWithoutLayout&gt;</code> component from <code class="language-plaintext highlighter-rouge">react-admin</code> instead of <code class="language-plaintext highlighter-rouge">react-router-dom</code>’s <code class="language-plaintext highlighter-rouge">&lt;Route&gt;</code>:</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// in src/customRoutes.js</span>
+<span class="k">import</span> <span class="o">*</span> <span class="k">as</span> <span class="nx">React</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">react</span><span class="dl">"</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">Route</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react-router-dom</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">RouteWithoutLayout</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react-admin</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">Foo</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">./Foo</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">Register</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">./Register</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="p">[</span>
+    <span class="p">&lt;</span><span class="nc">Route</span> <span class="na">exact</span> <span class="na">path</span><span class="p">=</span><span class="s">"/foo"</span> <span class="na">component</span><span class="p">=</span><span class="si">{</span><span class="nx">Foo</span><span class="si">}</span> <span class="p">/&gt;,</span>
+    <span class="p">&lt;</span><span class="nc">RouteWithoutLayout</span> <span class="na">exact</span> <span class="na">path</span><span class="p">=</span><span class="s">"/register"</span> <span class="na">component</span><span class="p">=</span><span class="si">{</span><span class="nx">Register</span><span class="si">}</span> <span class="p">/&gt;,</span>
+<span class="p">];</span>
+</code></pre></div></div>
+
+<p>When a user browses to <code class="language-plaintext highlighter-rouge">/register</code>, the <code class="language-plaintext highlighter-rouge">&lt;Register&gt;</code> component will appear outside of the defined Layout, leaving you the freedom to design the screen the way you want.</p>
+
+<p><strong>Tip</strong>: In previous versions of react-admin, you had to write <code class="language-plaintext highlighter-rouge">&lt;Route noLayout&gt;</code> instead of <code class="language-plaintext highlighter-rouge">&lt;RouteWithoutLayout&gt;</code>. The former still works in Js projects but TypeScript won’t compile it.</p>
+
+<p><strong>Tip</strong>: Custom routes can be <a href="https://reacttraining.com/react-router/web/api/Redirect">a <code class="language-plaintext highlighter-rouge">&lt;Redirect&gt;</code> route</a>, too.</p>
+
+<h2 id="loginpage"><code class="language-plaintext highlighter-rouge">loginPage</code></h2>
+
+<p>If you want to customize the Login page, or switch to another authentication strategy than a username/password form, pass a component of your own as the <code class="language-plaintext highlighter-rouge">loginPage</code> prop. React-admin will display this component whenever the <code class="language-plaintext highlighter-rouge">/login</code> route is called.</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nx">MyLoginPage</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">./MyLoginPage</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">const</span> <span class="nx">App</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">(</span>
+    <span class="p">&lt;</span><span class="nc">Admin</span> <span class="na">loginPage</span><span class="p">=</span><span class="si">{</span><span class="nx">MyLoginPage</span><span class="si">}</span><span class="p">&gt;</span>
+        ...
+    <span class="p">&lt;/</span><span class="nc">Admin</span><span class="p">&gt;</span>
+<span class="p">);</span>
+</code></pre></div></div>
+
+<p>You can also disable it completely along with the <code class="language-plaintext highlighter-rouge">/login</code> route by passing <code class="language-plaintext highlighter-rouge">false</code> to this prop.</p>
+
+<p>See The <a href="./Authentication.md#customizing-the-login-and-logout-components">Authentication documentation</a> for more details.</p>
+
+<p><strong>Tip</strong>: Before considering writing your own login page component, please take a look at how to change the default <a href="./Theming.md#using-a-custom-login-page">background image</a> or the <a href="#theme">Material UI theme</a>. See the <a href="./Authentication.md#customizing-the-login-and-logout-components">Authentication documentation</a> for more details.</p>
+
+<h2 id="logoutbutton"><code class="language-plaintext highlighter-rouge">logoutButton</code></h2>
+
+<p>If you customize the <code class="language-plaintext highlighter-rouge">loginPage</code>, you probably need to override the <code class="language-plaintext highlighter-rouge">logoutButton</code>, too - because they share the authentication strategy.</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nx">MyLoginPage</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">./MyLoginPage</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">MyLogoutButton</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">./MyLogoutButton</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">const</span> <span class="nx">App</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">(</span>
+    <span class="p">&lt;</span><span class="nc">Admin</span> <span class="na">loginPage</span><span class="p">=</span><span class="si">{</span><span class="nx">MyLoginPage</span><span class="si">}</span> <span class="na">logoutButton</span><span class="p">=</span><span class="si">{</span><span class="nx">MyLogoutButton</span><span class="si">}</span><span class="p">&gt;</span>
+        ...
+    <span class="p">&lt;/</span><span class="nc">Admin</span><span class="p">&gt;</span>
+<span class="p">);</span>
+</code></pre></div></div>
+
+<h2 id="initialstate"><code class="language-plaintext highlighter-rouge">initialState</code></h2>
+
+<p>The <code class="language-plaintext highlighter-rouge">initialState</code> prop lets you pass preloaded state to Redux. See the <a href="https://redux.js.org/docs/api/createStore.html#createstorereducer-preloadedstate-enhancer">Redux Documentation</a> for more details.</p>
+
+<p>It accepts either a function or an object:</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">initialState</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="na">theme</span><span class="p">:</span> <span class="dl">'</span><span class="s1">dark</span><span class="dl">'</span><span class="p">,</span>
+    <span class="na">grid</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+<span class="p">};</span>
+
+<span class="kd">const</span> <span class="nx">App</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">(</span>
+    <span class="p">&lt;</span><span class="nc">Admin</span> <span class="na">initialState</span><span class="p">=</span><span class="si">{</span><span class="nx">initialState</span><span class="si">}</span> <span class="na">dataProvider</span><span class="p">=</span><span class="si">{</span><span class="nx">simpleRestProvider</span><span class="p">(</span><span class="dl">'</span><span class="s1">http://path.to.my.api</span><span class="dl">'</span><span class="p">)</span><span class="si">}</span><span class="p">&gt;</span>
+        // ...
+    <span class="p">&lt;/</span><span class="nc">Admin</span><span class="p">&gt;</span>
+<span class="p">);</span>
+</code></pre></div></div>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">initialState</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">({</span>
+    <span class="na">theme</span><span class="p">:</span> <span class="nx">localStorage</span><span class="p">.</span><span class="nx">getItem</span><span class="p">(</span><span class="dl">'</span><span class="s1">theme</span><span class="dl">'</span><span class="p">),</span>
+    <span class="na">grid</span><span class="p">:</span> <span class="nx">localStorage</span><span class="p">.</span><span class="nx">getItem</span><span class="p">(</span><span class="dl">'</span><span class="s1">grid</span><span class="dl">'</span><span class="p">),</span>
+<span class="p">});</span>
+
+<span class="kd">const</span> <span class="nx">App</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">(</span>
+    <span class="p">&lt;</span><span class="nc">Admin</span> <span class="na">initialState</span><span class="p">=</span><span class="si">{</span><span class="nx">initialState</span><span class="si">}</span> <span class="na">dataProvider</span><span class="p">=</span><span class="si">{</span><span class="nx">simpleRestProvider</span><span class="p">(</span><span class="dl">'</span><span class="s1">http://path.to.my.api</span><span class="dl">'</span><span class="p">)</span><span class="si">}</span><span class="p">&gt;</span>
+        // ...
+    <span class="p">&lt;/</span><span class="nc">Admin</span><span class="p">&gt;</span>
+<span class="p">);</span>
+</code></pre></div></div>
+
+<h2 id="history"><code class="language-plaintext highlighter-rouge">history</code></h2>
+
+<p>By default, react-admin creates URLs using a hash sign (e.g. “myadmin.acme.com/#/posts/123”). The hash portion of the URL (i.e. <code class="language-plaintext highlighter-rouge">#/posts/123</code> in the example) contains the main application route. This strategy has the benefit of working without a server, and with legacy web browsers. But you may want to use another routing strategy, e.g. to allow server-side rendering.</p>
+
+<p>You can create your own <code class="language-plaintext highlighter-rouge">history</code> function (compatible with <a href="https://github.com/reacttraining/history">the <code class="language-plaintext highlighter-rouge">history</code> npm package</a>), and pass it to the <code class="language-plaintext highlighter-rouge">&lt;Admin&gt;</code> component to override the default history strategy. For instance, to use <code class="language-plaintext highlighter-rouge">browserHistory</code>:</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="o">*</span> <span class="k">as</span> <span class="nx">React</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">react</span><span class="dl">"</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">createBrowserHistory</span> <span class="k">as</span> <span class="nx">createHistory</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">history</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">const</span> <span class="nx">history</span> <span class="o">=</span> <span class="nx">createHistory</span><span class="p">();</span>
+
+<span class="kd">const</span> <span class="nx">App</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">(</span>
+    <span class="p">&lt;</span><span class="nc">Admin</span> <span class="na">history</span><span class="p">=</span><span class="si">{</span><span class="nx">history</span><span class="si">}</span><span class="p">&gt;</span>
+        ...
+    <span class="p">&lt;/</span><span class="nc">Admin</span><span class="p">&gt;</span>
+<span class="p">);</span>
+</code></pre></div></div>
+
+<p><strong>Caution</strong>: Do not use the 5.x version of the <code class="language-plaintext highlighter-rouge">history</code> package. It’s currently incompatible with another dependency of react-admin, <code class="language-plaintext highlighter-rouge">connected-react-router</code>. <code class="language-plaintext highlighter-rouge">history@4.10.1</code> works fine.</p>
+
+<h2 id="ready"><code class="language-plaintext highlighter-rouge">ready</code></h2>
+
+<p>When you run an <code class="language-plaintext highlighter-rouge">&lt;Admin&gt;</code> with no child <code class="language-plaintext highlighter-rouge">&lt;Resource&gt;</code>, react-admin displays a “ready” screen:</p>
+
+<p><img src="./img/tutorial_empty.png" alt="Empty Admin" /></p>
+
+<p>You can replace that “ready” screen by passing a custom component as the <code class="language-plaintext highlighter-rouge">ready</code> prop:</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="o">*</span> <span class="k">as</span> <span class="nx">React</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">Admin</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react-admin</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">const</span> <span class="nx">Ready</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">(</span>
+    <span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span>Admin ready<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;</span>You can now add resources<span class="p">&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+    <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+<span class="p">)</span>
+
+<span class="kd">const</span> <span class="nx">App</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">(</span>
+    <span class="p">&lt;</span><span class="nc">Admin</span> <span class="na">ready</span><span class="p">=</span><span class="si">{</span><span class="nx">Ready</span><span class="si">}</span><span class="p">&gt;</span>
+        ...
+    <span class="p">&lt;/</span><span class="nc">Admin</span><span class="p">&gt;</span>
+<span class="p">);</span>
+</code></pre></div></div>
+
+<h2 id="declaring-resources-at-runtime">Declaring resources at runtime</h2>
+
+<p>You might want to dynamically define the resources when the app starts. To do so, you have two options: using a function as <code class="language-plaintext highlighter-rouge">&lt;Admin&gt;</code> child, or unplugging it to use a combination of <code class="language-plaintext highlighter-rouge">AdminContext</code> and <code class="language-plaintext highlighter-rouge">&lt;AdminUI&gt;</code> instead.</p>
+
+<h3 id="using-a-function-as-admin-child">Using a Function As <code class="language-plaintext highlighter-rouge">&lt;Admin&gt;</code> Child</h3>
+
+<p>The <code class="language-plaintext highlighter-rouge">&lt;Admin&gt;</code> component accepts a function as its child and this function can return a Promise. If you also defined an <code class="language-plaintext highlighter-rouge">authProvider</code>, the child function will receive the result of a call to <code class="language-plaintext highlighter-rouge">authProvider.getPermissions()</code> (you can read more about this in the <a href="./Authentication.md#authorization">Auth Provider</a> chapter).</p>
+
+<p>For instance, getting the resource from an API might look like:</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="o">*</span> <span class="k">as</span> <span class="nx">React</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">react</span><span class="dl">"</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">Admin</span><span class="p">,</span> <span class="nx">Resource</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react-admin</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">simpleRestProvider</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">ra-data-simple-rest</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="k">import</span> <span class="p">{</span> <span class="nx">PostList</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">./posts</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">CommentList</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">./comments</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">const</span> <span class="nx">knownResources</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">&lt;</span><span class="nc">Resource</span> <span class="na">name</span><span class="p">=</span><span class="s">"posts"</span> <span class="na">list</span><span class="p">=</span><span class="si">{</span><span class="nx">PostList</span><span class="si">}</span> <span class="p">/&gt;,</span>
+    <span class="p">&lt;</span><span class="nc">Resource</span> <span class="na">name</span><span class="p">=</span><span class="s">"comments"</span> <span class="na">list</span><span class="p">=</span><span class="si">{</span><span class="nx">CommentList</span><span class="si">}</span> <span class="p">/&gt;,</span>
+<span class="p">];</span>
+
+<span class="kd">const</span> <span class="nx">fetchResources</span> <span class="o">=</span> <span class="nx">permissions</span> <span class="o">=&gt;</span>
+    <span class="nx">fetch</span><span class="p">(</span><span class="dl">'</span><span class="s1">https://myapi/resources</span><span class="dl">'</span><span class="p">,</span> <span class="p">{</span>
+        <span class="na">method</span><span class="p">:</span> <span class="dl">'</span><span class="s1">POST</span><span class="dl">'</span><span class="p">,</span>
+        <span class="na">headers</span><span class="p">:</span> <span class="p">{</span>
+            <span class="dl">'</span><span class="s1">Content-Type</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">application/json</span><span class="dl">'</span>
+        <span class="p">},</span>
+        <span class="na">body</span><span class="p">:</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">permissions</span><span class="p">),</span>
+    <span class="p">})</span>
+    <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">response</span> <span class="o">=&gt;</span> <span class="nx">response</span><span class="p">.</span><span class="nx">json</span><span class="p">())</span>
+    <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">json</span> <span class="o">=&gt;</span> <span class="nx">knownResources</span><span class="p">.</span><span class="nx">filter</span><span class="p">(</span><span class="nx">resource</span> <span class="o">=&gt;</span> <span class="nx">json</span><span class="p">.</span><span class="nx">resources</span><span class="p">.</span><span class="nx">includes</span><span class="p">(</span><span class="nx">resource</span><span class="p">.</span><span class="nx">props</span><span class="p">.</span><span class="nx">name</span><span class="p">)));</span>
+
+<span class="kd">const</span> <span class="nx">App</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">(</span>
+    <span class="p">&lt;</span><span class="nc">Admin</span> <span class="na">dataProvider</span><span class="p">=</span><span class="si">{</span><span class="nx">simpleRestProvider</span><span class="p">(</span><span class="dl">'</span><span class="s1">http://path.to.my.api</span><span class="dl">'</span><span class="p">)</span><span class="si">}</span><span class="p">&gt;</span>
+        <span class="si">{</span><span class="nx">fetchResources</span><span class="si">}</span>
+    <span class="p">&lt;/</span><span class="nc">Admin</span><span class="p">&gt;</span>
+<span class="p">);</span>
+</code></pre></div></div>
+
+<h3 id="unplugging-the-admin-using-admincontext-and-adminui">Unplugging the <code class="language-plaintext highlighter-rouge">&lt;Admin&gt;</code> using <code class="language-plaintext highlighter-rouge">&lt;AdminContext&gt;</code> and <code class="language-plaintext highlighter-rouge">&lt;AdminUI&gt;</code></h3>
+
+<p>Setting Resources dynamically using the children-as-function syntax may not be enough in all cases, because this function can’t execute hooks.</p>
+
+<p>So it’s impossible, for instance, to have a dynamic list of resources based on a call to the <code class="language-plaintext highlighter-rouge">dataProvider</code> (since the <code class="language-plaintext highlighter-rouge">dataProvider</code> is only defined after the <code class="language-plaintext highlighter-rouge">&lt;Admin&gt;</code> component renders).</p>
+
+<p>To overcome this limitation, you can build your own <code class="language-plaintext highlighter-rouge">&lt;Admin&gt;</code> component using two lower-level components: <code class="language-plaintext highlighter-rouge">&lt;AdminContext&gt;</code> (responsible for putting the providers in contexts) and <code class="language-plaintext highlighter-rouge">&lt;AdminUI&gt;</code> (responsible for displaying the UI). Here is an example:</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="o">*</span> <span class="k">as</span> <span class="nx">React</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">useEffect</span><span class="p">,</span> <span class="nx">useState</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">AdminContext</span><span class="p">,</span> <span class="nx">AdminUI</span><span class="p">,</span> <span class="nx">Resource</span><span class="p">,</span> <span class="nx">ListGuesser</span><span class="p">,</span> <span class="nx">useDataProvider</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react-admin</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">function</span> <span class="nx">App</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="p">&lt;</span><span class="nc">AdminContext</span> <span class="na">dataProvider</span><span class="p">=</span><span class="si">{</span><span class="nx">myDataProvider</span><span class="si">}</span><span class="p">&gt;</span>
+            <span class="p">&lt;</span><span class="nc">AsyncResources</span> <span class="p">/&gt;</span>
+        <span class="p">&lt;/</span><span class="nc">AdminContext</span><span class="p">&gt;</span>
+    <span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kd">function</span> <span class="nx">AsyncResources</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="p">[</span><span class="nx">resources</span><span class="p">,</span> <span class="nx">setResources</span><span class="p">]</span> <span class="o">=</span> <span class="nx">useState</span><span class="p">([]);</span>
+    <span class="kd">const</span> <span class="nx">dataProvider</span> <span class="o">=</span> <span class="nx">useDataProvider</span><span class="p">();</span>
+
+    <span class="nx">useEffect</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+        <span class="c1">// Note that the `getResources` is not provided by react-admin. You have to implement your own custom verb.</span>
+        <span class="nx">dataProvider</span><span class="p">.</span><span class="nx">getResources</span><span class="p">().</span><span class="nx">then</span><span class="p">(</span><span class="nx">r</span> <span class="o">=&gt;</span> <span class="nx">setResources</span><span class="p">(</span><span class="nx">r</span><span class="p">));</span>
+    <span class="p">},</span> <span class="p">[]);</span>
+
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="p">&lt;</span><span class="nc">AdminUI</span><span class="p">&gt;</span>
+            <span class="si">{</span><span class="nx">resources</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">resource</span> <span class="o">=&gt;</span> <span class="p">(</span>
+                <span class="p">&lt;</span><span class="nc">Resource</span> <span class="na">name</span><span class="p">=</span><span class="si">{</span><span class="nx">resource</span><span class="p">.</span><span class="nx">name</span><span class="si">}</span> <span class="na">key</span><span class="p">=</span><span class="si">{</span><span class="nx">resource</span><span class="p">.</span><span class="nx">key</span><span class="si">}</span> <span class="na">list</span><span class="p">=</span><span class="si">{</span><span class="nx">ListGuesser</span><span class="si">}</span> <span class="p">/&gt;</span>
+            <span class="p">))</span><span class="si">}</span>
+        <span class="p">&lt;/</span><span class="nc">AdminUI</span><span class="p">&gt;</span>
+    <span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="using-react-admin-without-admin-and-resource">Using react-admin without <code class="language-plaintext highlighter-rouge">&lt;Admin&gt;</code> and <code class="language-plaintext highlighter-rouge">&lt;Resource&gt;</code></h2>
+
+<p>Using <code class="language-plaintext highlighter-rouge">&lt;Admin&gt;</code> and <code class="language-plaintext highlighter-rouge">&lt;Resource&gt;</code> is completely optional. If you feel like bootstrapping a redux app yourself, it’s totally possible. Head to <a href="./CustomApp.md">Including in another app</a> for a detailed how-to.</p>
+
+                    </div>
+                    <div class="col hide-on-small-only m3 xl3 offset-xl1">
+                        <div class="toc"></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <script src="/js/materialize.min.js"></script>
+        <script src="/js/prism.js"></script>
+        <script>
+            function slugify(text) {
+                return text
+                    .toString()
+                    .toLowerCase()
+                    .replace(/\s+/g, '-') // Replace spaces with -
+                    .replace(/[^\w\-]+/g, '') // Remove all non-word chars
+                    .replace(/\-\-+/g, '-') // Replace multiple - with single -
+                    .replace(/^-+/, '') // Trim - from start of text
+                    .replace(/-+$/, ''); // Trim - from end of text
+            }
+            document.addEventListener('DOMContentLoaded', function () {
+                M.Sidenav.init(document.querySelectorAll('.sidenav'));
+                // Initialize version selector
+                M.Dropdown.init(document.querySelectorAll('.dropdown-trigger'));
+                /* Generate table of contents */
+                tocbot.init({
+                    // Where to render the table of contents
+                    tocSelector: '.toc',
+                    positionFixedSelector: '.toc',
+                    // Where to grab the headings to build the table of contents
+                    contentSelector: '.toc-content',
+                    // More options
+                    headingSelector: 'h2, h3, h4',
+                    includeHtml: true,
+                    collapseDepth: 2,
+                    hasInnerContainers: true,
+                });
+            });
+        </script>
+        <script
+            type="text/javascript"
+            src="https://cdn.jsdelivr.net/npm/@docsearch/js@1.0.0-alpha.28"
+        ></script>
+        <script type="text/javascript">
+            docsearch({
+                apiKey: '32f254b1de6a25a96665d1229b6eb8f7',
+                indexName: 'marmelab-react-admin',
+                container: '#docsearch',
+            });
+        </script>
+        <script
+            src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.12.0/tocbot.min.js"
+            defer
+        ></script>
+        <!--
+        React-admin protects your privacy!
+        We use our own self-hosted tracking solution to collect some raw metrics,
+        like page views, device type (mobile, desktop, etc.) or country.
+        We don't track any personal information about our visitors.
+    -->
+        <script
+            async
+            defer
+            data-website-id="ef7f8242-2808-4cbf-9dff-564daa515bbd"
+            src="https://analytics.marmelab.com/umami.js"
+        ></script>
+    </body>
+</html>
