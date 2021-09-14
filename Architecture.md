@@ -5,7 +5,7 @@ title: "Architecture"
 
 # Architecture
 
- Undestanding the architecture of react-audio-visualizers is u.
+Architecture describes how the library is structured, the decisions that led to that structure, a typical flow of interaction between components and how visualizer components are implemented inside react-audio-visualizers.
 
 ## Packages 
 
