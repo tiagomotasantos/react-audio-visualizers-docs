@@ -5,23 +5,23 @@ title: "Architecture"
 
 # Architecture
 
-Architecture describes how the library is structured, the decisions that led to that structure, a typical flow of interaction between components and how visualizer components are implemented inside react-audio-visualizers.
+Architecture describes how the library is structured, the decisions that led to that structure, a typical flow of interaction between components, and how visualizer components are implemented inside react-audio-visualizers.
 
 ## Packages 
 
-react-audio-visualizers is divided in three main architecture level packages that are all available through npm.
+React-audio-visualizers is divided in three main architecture level packages that are all available through npm.
 
-![packages](./img/packages.png)
+![packages](./img/packages.jpg)
 
-- **react-audio-visualizers-core**: core funcionality to deal with audio (e.g. load, play, pause, ...) and UI for the main play/pause action. Here you can find the core <code>&lt;AudioVisualizer&gt;</code> component as well as helpful types, hooks and utilities to deal with audio.
+- **react-audio-visualizers-core**: core funcionality to deal with audio (e.g. load, play, pause, ...) and UI for the main play/pause action. Here you can find the core <code>&lt;AudioVisualizer&gt;</code> component, as well as helpful types, hooks and utilities to deal with audio.
 - **react-audio-visualizers**: all standard and free visualizers are here. This is the main package of the library and the only one that is required to import to use visualizers. Only contains logic to render/draw visualizers and uses functionality from the core package.
 - **react-audio-visualizers-pro**: paid package that contains extra visualizers. Like the main package it only contains render logic and uses the core package for the rest.
 
 There were three main reasons that led to this structure. 
 
-The first reason is to facilitate users of the library. It is only required to import one package, **react-audio-visualizers**, import the visualizer component from there and use it. Every visualizer component, like <code>&lt;SpectrumVisualizer&gt;</code>, uses the core <code>&lt;AudioVisualizer&gt;</code> component under the hood to deal with audio logic, so it has to accept all the common props that <code>&lt;AudioVisualizer&gt;</code> requires. The benefit here is that users don't have to import this component themselves making the library easy to use as this is done "automatically" by the visualizer component. The downside is that every visualizer has to duplicate a call to <code>&lt;AudioVisualizer&gt;</code> component, but weighing the prons and cons it is worth to make the life of users easier.
+The first reason is to facilitate users to use the library. It is only required to import one package, **react-audio-visualizers**, import the visualizer component from there and use it. Every visualizer component, like <code>&lt;SpectrumVisualizer&gt;</code>, uses the core <code>&lt;AudioVisualizer&gt;</code> component under the hood to deal with audio logic, so it has to accept all the common props that <code>&lt;AudioVisualizer&gt;</code> requires. The benefit here is that users don't have to import this component themselves, making the library easy to use as this is done "automatically" by the visualizer component. The downside is that every visualizer has to duplicate a call to <code>&lt;AudioVisualizer&gt;</code>, but weighing the prons and cons it is worth it.
 
-The second reason is to facilitate developers contributing to the library. To create new visualizers developers can either contribute to **react-audio-visualizers** or create their own project and use only **react-audio-visualizers-core** to get all the audio features and maintain the same interface, thus is only required to implement the rendering for the visualizers.
+The second reason is to facilitate developers to contribute to the library. To create new visualizers developers can either contribute to **react-audio-visualizers** or create their own project and use only **react-audio-visualizers-core** to get all audio features and maintain the same interface, thus is only required to implement the rendering for the visualizers.
 
 The third and last reason is to separate between free and paid content. As **react-audio-visualizers** is open source it is not possible to keep there paid visualizers, otherwise it would make little to no sense to pay for it's content. While **react-audio-visualizers-pro** is not open source, so paying users can be sure of the exclusivity of it's visualizers. 
 
@@ -29,16 +29,13 @@ The third and last reason is to separate between free and paid content. As **rea
 
 The flow of interaction between components of the library is shown in the image below.
 
-![flow](./img/flow.png)
+![flow](./img/flow.jpg)
 
-- The user of **react-audio-visualizers** package imports any visualizer, such as <code>&lt;SpectrumVisualizer&gt;</code>, and adds it to the project.
-- The visualizer renders <code>&lt;AudioVisualizer&gt;</code> from the core and passes to it common props as well as the rendering logic of the visualizer as children.
+- The user of react-audio-visualizers package imports any visualizer, such as <code>&lt;SpectrumVisualizer&gt;</code>, and adds it to the project.
+- The visualizer renders <code>&lt;AudioVisualizer&gt;</code> from the core passing common props as well as the rendering logic of the visualizer as children.
 - <code>&lt;AudioVisualizer&gt;</code> then renders <code>&lt;AudioVisualizerScene&gt;</code> to render the HTML canvas, and <code>&lt;AudioVisualizerUI&gt;</code> to render UI for interacting with the audio.
 - <code>&lt;AudioVisualizerScene&gt;</code> renders the rendering logic of <code>&lt;SpectrumVisualizer&gt;</code> that got passed as children, leveraging ThreeJS through react-three-fiber, and uses <code>&lt;useAudioVisualizerContext&gt;</code> hook to get audio data to animate the visualizer.
 - <code>&lt;AudioVisualizerController&gt;</code> deals with loading the audio and changing it's state, updating the context accordingly.
-
-For instance, the interface for reading, editing and deleting data is the `dataProvider` interface: 
-
 
 ## Visualizer Component
 
@@ -73,9 +70,10 @@ export const LineSpectrumVisualizer = (props: LineSpectrumVisualizerProps) => {
     colors = [DEFAULT_COLOR],
     ...audioVisualizerCommonProps
   } = props;
+  const canvasProps = { orthographic: true };
 
   return (
-    <AudioVisualizer canvasProps={{ orthographic: true }} {...audioVisualizerCommonProps}>
+    <AudioVisualizer canvasProps={canvasProps} {...audioVisualizerCommonProps}>
       <LineSpectrumVisualizerRender
         numBars={numBars}
         lowFrequency={lowFrequency}
