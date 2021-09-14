@@ -25,9 +25,17 @@ The second reason is to facilitate developers contributing to the library. To cr
 
 The third and last reason is to separate between free and paid content. As **react-audio-visualizers** is open source it is not possible to keep there paid visualizers, otherwise it would make little to no sense to pay for it's content. While **react-audio-visualizers-pro** is not open source, so paying users can be sure of the exclusivity of it's visualizers. 
 
-React-admin apps must integrate with existing backends, but there isn't any standard way to do so (or rather, there are too many standards to do so, e.g. REST, GraphQL, SOAP for data access).
+## Flow
 
-So react-admin uses the Adapter pattern to let developers plug their backends in. The idea is that react-admin defines an interface to interacts with data, authentication, and internationalization. You must provide an object that satisfies this interface. How that translates to actual HTTP calls is up to you.
+The flow of interaction between components of the library is shown in the image below.
+
+![flow](./img/flow.png)
+
+- The user of **react-audio-visualizers** package imports any visualizer, such as <code>&lt;SpectrumVisualizer&gt;</code>, and adds it to the project.
+- The visualizer renders <code>&lt;AudioVisualizer&gt;</code> from the core and passes to it common props as well as the rendering logic of the visualizer as children.
+- <code>&lt;AudioVisualizer&gt;</code> then renders <code>&lt;AudioVisualizerScene&gt;</code> to render the HTML canvas, and <code>&lt;AudioVisualizerUI&gt;</code> to render UI for interacting with the audio.
+- <code>&lt;AudioVisualizerScene&gt;</code> renders the rendering logic of <code>&lt;SpectrumVisualizer&gt;</code> that got passed as children, leveraging ThreeJS through react-three-fiber, and uses <code>&lt;useAudioVisualizerContext&gt;</code> hook to get audio data to animate the visualizer.
+- <code>&lt;AudioVisualizerController&gt;</code> deals with loading the audio and changing it's state, updating the context accordingly.
 
 For instance, the interface for reading, editing and deleting data is the `dataProvider` interface: 
 
