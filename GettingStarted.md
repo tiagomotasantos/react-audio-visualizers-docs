@@ -12,7 +12,7 @@ Check out [the demo page](./Demos.md) for a live example.
 
 ## Installation
 
-react-audio-visualizers is available from npm. You can add it to your project using:
+React-audio-visualizers is available from npm. You can add it to your project using:
 
 ```sh
 npm install react-audio-visualizers
@@ -45,7 +45,7 @@ You can see all available visualizers on the menu. For each visualizer there's a
 
 ## Pro
 
-The library offers a pro version with some extra audio visualizers. Every visualizer that is only available in the pro version is tagged with a label on the menu. Click [here](https://google.com/) if you want to have access to this version.
+The library offers a pro version with some extra audio visualizers. Every visualizer that is only available in pro version is tagged with a label on the menu. Click [here](https://google.com/) if you want to have access to this version.
 
 ## Contributing
 
