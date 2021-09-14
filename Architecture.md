@@ -5,17 +5,25 @@ title: "Architecture"
 
 # Architecture
 
-React-admin relies on a few design decisions that structure its codebase.
+ Undestanding the architecture of react-audio-visualizers is u.
 
-## Model View Controller
+## Packages 
 
-React-admin loosely implements [the Model-View-Controller pattern](https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller) for page components, and for complex components. 
+react-audio-visualizers is divided in three main architecture level packages that are all available through npm.
 
-- The Controller logic is provided by React hooks (e.g. `useListController`).
-- The view logic by React components (e.g. `<List>`).
-- The model logic is up to the developer, and react-admin only forces the interface that the model must expose via its Providers.
+![packages](./img/packages.png)
 
-## Providers
+- **react-audio-visualizers-core**: core funcionality to deal with audio (e.g. load, play, pause, ...) and UI for the main play/pause action. Here you can find the core <code>&lt;AudioVisualizer&gt;</code> component as well as helpful types, hooks and utilities to deal with audio.
+- **react-audio-visualizers**: all standard and free visualizers are here. This is the main package of the library and the only one that is required to import to use visualizers. Only contains logic to render/draw visualizers and uses functionality from the core package.
+- **react-audio-visualizers-pro**: paid package that contains extra visualizers. Like the main package it only contains render logic and uses the core package for the rest.
+
+There were three main reasons that led to this structure. 
+
+The first reason is to facilitate users of the library. It is only required to import one package, **react-audio-visualizers**, import the visualizer component from there and use it. Every visualizer component, like <code>&lt;SpectrumVisualizer&gt;</code>, uses the core <code>&lt;AudioVisualizer&gt;</code> component under the hood to deal with audio logic, so it has to accept all the common props that <code>&lt;AudioVisualizer&gt;</code> requires. The benefit here is that users don't have to import this component themselves making the library easy to use as this is done "automatically" by the visualizer component. The downside is that every visualizer has to duplicate a call to <code>&lt;AudioVisualizer&gt;</code> component, but weighing the prons and cons it is worth to make the life of users easier.
+
+The second reason is to facilitate developers contributing to the library. To create new visualizers developers can either contribute to **react-audio-visualizers** or create their own project and use only **react-audio-visualizers-core** to get all the audio features and maintain the same interface, thus is only required to implement the rendering for the visualizers.
+
+The third and last reason is to separate between free and paid content. As **react-audio-visualizers** is open source it is not possible to keep there paid visualizers, otherwise it would make little to no sense to pay for it's content. While **react-audio-visualizers-pro** is not open source, so paying users can be sure of the exclusivity of it's visualizers. 
 
 React-admin apps must integrate with existing backends, but there isn't any standard way to do so (or rather, there are too many standards to do so, e.g. REST, GraphQL, SOAP for data access).
 
