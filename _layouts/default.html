@@ -31,15 +31,7 @@
         />
         <link
             rel="stylesheet"
-            href="https://cdn.jsdelivr.net/npm/@docsearch/css@1.0.0-alpha.28"
-        />
-        <link
-            rel="stylesheet"
             href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.12.0/tocbot.css"
-        />
-        <link
-            rel="stylesheet"
-            href="{{ '/css/docsearch.css' | relative_url }}"
         />
     </head>
 
@@ -119,7 +111,7 @@
             <div class="container">
                 <div class="row">
                     <div
-                        class="col s12 m8 offset-m1 xl7 offset-xl1 markdown-section DocSearch-content toc-content"
+                        class="col s12 m8 offset-m1 xl7 offset-xl1 markdown-section toc-content"
                     >
                         {{ content }}
                     </div>
@@ -158,17 +150,6 @@
                     collapseDepth: 2,
                     hasInnerContainers: true,
                 });
-            });
-        </script>
-        <script
-            type="text/javascript"
-            src="https://cdn.jsdelivr.net/npm/@docsearch/js@1.0.0-alpha.28"
-        ></script>
-        <script type="text/javascript">
-            docsearch({
-                apiKey: '32f254b1de6a25a96665d1229b6eb8f7',
-                indexName: 'marmelab-react-admin',
-                container: '#docsearch',
             });
         </script>
         <script
