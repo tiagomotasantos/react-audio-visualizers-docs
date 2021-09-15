@@ -1,98 +1,53 @@
 ---
 layout: default
-title: "Admin and Resource Components"
+title: "AudioVisualizer Component"
 ---
 
-# The `<Admin>` Component
+# `<AudioVisualizer>`
 
-The `<Admin>` component creates an application with its own state, routing, and controller logic. `<Admin>` requires only a `dataProvider` prop, and at least one child `<Resource>` to work:
-
-```jsx
-// in src/App.js
-import * as React from "react";
-
-import { Admin, Resource } from 'react-admin';
-import simpleRestProvider from 'ra-data-simple-rest';
-
-import { PostList } from './posts';
-
-const App = () => (
-    <Admin dataProvider={simpleRestProvider('http://path.to.my.api')}>
-        <Resource name="posts" list={PostList} />
-    </Admin>
-);
-
-export default App;
-```
-
-Here are all the props accepted by the component:
-
-- [`dataProvider`](#dataprovider)
-- [`authProvider`](#authprovider)
-- [`i18nProvider`](#i18nprovider)
-- [`title`](#title)
-- [`dashboard`](#dashboard)
-- [`disableTelemetry`](#disabletelemetry)
-- [`catchAll`](#catchall)
-- [`menu`](#menu)
-- [`theme`](#theme)
-- [`layout`](#layout)
-- [`customReducers`](#customreducers)
-- [`customSagas`](#customsagas)
-- [`customRoutes`](#customroutes)
-- [`loginPage`](#loginpage)
-- [`logoutButton`](#logoutbutton)
-- [`initialState`](#initialstate)
-- [`history`](#history)
-- [`ready`](#ready)
-
-## `dataProvider`
-
-The only required prop, it must be an object with the following methods returning a promise:
+The `<AudioVisualizer>` component is part of react-audio-visualizers-core package. It is responsible to place the visualizer rendering logic inside the canvas and mainly to take care of audio functionality through the Web Audio API, like loading the audio and interacting with it (e.g. play, pause, change volume, ...).
 
 ```jsx
-const dataProvider = {
-    getList:    (resource, params) => Promise,
-    getOne:     (resource, params) => Promise,
-    getMany:    (resource, params) => Promise,
-    getManyReference: (resource, params) => Promise,
-    create:     (resource, params) => Promise,
-    update:     (resource, params) => Promise,
-    updateMany: (resource, params) => Promise,
-    delete:     (resource, params) => Promise,
-    deleteMany: (resource, params) => Promise,
-}
-```
+import { AudioVisualizer, AudioVisualizerCommonProps } from 'react-audio-visualizers-core';
 
-The `dataProvider` is also the ideal place to add custom HTTP headers, authentication, etc. The [Data Providers Chapter](./DataProviders.md) of the documentation lists available data providers, and explains how to build your own.
-
-## `authProvider`
-
-The `authProvider` prop expect an object with 5 methods, each returning a Promise, to control the authentication strategy:
-
-```jsx
-const authProvider = {
-    login: params => Promise.resolve(),
-    logout: params => Promise.resolve(),
-    checkAuth: params => Promise.resolve(),
-    checkError: error => Promise.resolve(),
-    getPermissions: params => Promise.resolve(),
-};
-
-const App = () => (
-    <Admin authProvider={authProvider} dataProvider={simpleRestProvider('http://path.to.my.api')}>
-        ...
-    </Admin>
+export const YourVisualizer = (commonProps: AudioVisualizerCommonProps) => (
+    <AudioVisualizer {...commonProps}>
+        <YourVisualizerRenderComponent />
+    </AudioVisualizer>
 );
 ```
 
-The [Auth Provider documentation](./Authentication.md) explains how to implement these functions in detail.
+Every prop (besides children) that `<AudioVisualizer>` receives is passed from the visualizer component, so every visualizer should accept them. These are referred as common props. 
 
-## `i18nProvider`
+Here's a list of common props:
+
+- [`chidlren`](#children)
+- [`audio`](#audio)
+- [`canvasProps`](#canvasProps)
+- [`smoothingTimeConstant`](#smoothingTimeConstant)
+- [`fftSize`](#fftSize)
+- [`volume`](#volume)
+- [`iconsColor`](#iconsColor)
+- [`showMainActionIcon`](#showMainActionIcon)
+- [`showLoaderIcon`](#showLoaderIcon)
+- [`backgroundColor`](#backgroundColor)
+- [`backgroundImage`](#backgroundImage)
+- [`mainActionRender`](#mainActionRender)
+- [`onEvent`](#onEvent)
+
+## `children`
+
+The children is required and is a `ReactElement` that is passed as children to the `Canvas` component of react-three-fiber and it should contain the rendering logic of the visualizer besides being a component that react-three-fiber can handle.
+
+## `audio`
+
+The `audio` is required and can either be a JavaScript `File`, a `string` with a path/URL to the audio file or an `ArrayBuffer` with audio data.
+
+## `canvasProps`
 
 The `i18nProvider` props let you translate the GUI. The [Translation Documentation](./Translation.md) details this process.
 
-## `title`
+## `smoothingTimeConstant`
 
 On error pages, the header of an admin app uses 'React Admin' as the main app title. Use the `title` to customize it.
 
