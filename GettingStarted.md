@@ -4,7 +4,7 @@ title: "Documentation"
 ---
 # React Audio Visualizers
 
-A library of audio visualizer components for [React](https://facebook.github.io/react/).
+A library of audio visualizer components for [React](https://facebook.github.io/react/) built with ThreeJS, through react-three-fiber, and the Web Audio API.
 
 ![react-audio-visualizers](./img/radial-squared-spectrum.png)
 
