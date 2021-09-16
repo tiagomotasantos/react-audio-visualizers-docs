@@ -23,17 +23,17 @@ Here's a list of common props:
 
 - [`chidlren`](#children)
 - [`audio`](#audio)
-- [`canvasProps`](#canvasProps)
-- [`smoothingTimeConstant`](#smoothingTimeConstant)
-- [`fftSize`](#fftSize)
+- [`canvasProps`](#canvasprops)
+- [`smoothingTimeConstant`](#smoothingtimeconstant)
+- [`fftSize`](#fftsize)
 - [`volume`](#volume)
 - [`iconsColor`](#iconsColor)
-- [`showMainActionIcon`](#showMainActionIcon)
-- [`showLoaderIcon`](#showLoaderIcon)
-- [`backgroundColor`](#backgroundColor)
-- [`backgroundImage`](#backgroundImage)
-- [`mainActionRender`](#mainActionRender)
-- [`onEvent`](#onEvent)
+- [`showMainActionIcon`](#showmainactionicon)
+- [`showLoaderIcon`](#showloadericon)
+- [`backgroundColor`](#backgroundcolor)
+- [`backgroundImage`](#backgroundimage)
+- [`mainActionRender`](#mainactionrender)
+- [`onEvent`](#onevent)
 
 ## `children`
 
@@ -73,11 +73,11 @@ A `boolean` value to show/hide the icon for the loader.
 
 ## `backgroundColor`
 
-A `string` that accepts a [CSS color](https://www.w3schools.com/css/css_colors.asp) used as background color of the canvas. It overwrites the background color specified in [`canvasProps`](#canvasProps).
+A `string` that accepts a [CSS color](https://www.w3schools.com/css/css_colors.asp) used as background color of the canvas. It overwrites the background color specified in [`canvasProps`](#canvasprops).
 
 ## `backgroundImage`
 
-A `string` that accepts an URL pointing to an image to use as background. It overwrites the [`backgroundColor`](#backgroundColor).
+A `string` that accepts an URL pointing to an image to use as background. It overwrites the [`backgroundColor`](#backgroundcolor).
 
 ## `mainActionRender`
 
