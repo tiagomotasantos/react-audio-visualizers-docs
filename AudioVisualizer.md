@@ -41,7 +41,7 @@ The children is required and is a `ReactElement` that is passed as children to t
 
 ## `audio`
 
-The `audio` is required and can either be a JavaScript `File`, a `string` with a path/URL to the audio file or an `ArrayBuffer` with audio data.
+The `audio` prop is required and can either be a JavaScript `File`, a `string` with a path/URL to the audio file or an `ArrayBuffer` with audio data.
 
 ## `canvasProps`
 
