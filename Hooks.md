@@ -11,7 +11,7 @@ A set of hooks exposed from react-audio-visualizers-core.
 
 ## `useAudioVisualizerContext`
 
-The `useAudioVisualizerContext` hook gives access to the context of the core `<AudioVisualizer>` by returning an object with `audioContext` of type [`AudioContext`](https://developer.mozilla.org/en-US/docs/Web/API/AudioContext), `analyser` of type [`AnalyserNode`](https://developer.mozilla.org/en-US/docs/Web/API/AnalyserNode) and `status` of type `AudioVisualizerStatus`.
+The `useAudioVisualizerContext` hook gives access to the context of the core `<AudioVisualizer>` by returning an object with `audioContext` of type [`AudioContext`](https://developer.mozilla.org/en-US/docs/Web/API/AudioContext), `analyser` of type [`AnalyserNode`](https://developer.mozilla.org/en-US/docs/Web/API/AnalyserNode) and `status` of type [`AudioVisualizerStatus`](./Types.html#audiovisualizertatus).
 
 See an usage example bellow:
 
