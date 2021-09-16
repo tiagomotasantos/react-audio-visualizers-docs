@@ -17,7 +17,7 @@ export const YourVisualizer = (commonProps: AudioVisualizerCommonProps) => (
 );
 ```
 
-Every prop (besides children) that `<AudioVisualizer>` receives is passed from the visualizer component, so every visualizer should accept them. These are referred as common props. 
+Every prop (besides children) that `<AudioVisualizer>` receives is passed from the visualizer component, so every visualizer should accept them. These are referred as common props ([`AudioVisualizerCommonProps`](./Types.html#audiovisualizercommonprops)).
 
 Here's a list of common props:
 
