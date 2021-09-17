@@ -37,7 +37,7 @@ Here's a list of common props:
 
 ## `children`
 
-The children is required and is a `ReactElement` that is passed as children to the `Canvas` component of react-three-fiber and it should contain the rendering logic of the visualizer besides being a component that react-three-fiber can handle.
+The `children` is required and is a `ReactElement` that is passed as children to the `Canvas` component of react-three-fiber and it should contain the rendering logic of the visualizer besides being a component that react-three-fiber can handle.
 
 ## `audio`
 
