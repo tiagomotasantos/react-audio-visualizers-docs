@@ -40,16 +40,16 @@ The `theme` prop changes the aspect of the visualizer and is required.
 
 It can be one of the following:
 
-- [`squaredBars`](#squaredbars)
 - [`line`](#line)
-
-#### squaredBars
-
-![SquaredBarsWaveformVisualizer](./img/waveform_squared.png)
+- [`squaredBars`](#squaredbars)
 
 #### line
 
 ![LineWaveformVisualizer](./img/waveform_line.png)
+
+#### squaredBars
+
+![SquaredBarsWaveformVisualizer](./img/waveform_squared.png)
 
 ### `colors`
 
