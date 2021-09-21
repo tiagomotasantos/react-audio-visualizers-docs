@@ -8,6 +8,8 @@ A library of audio visualizer components for [React](https://facebook.github.io/
 
 ![react-audio-visualizers](./img/spectrum_radial_squared.png)
 
+An audio visualizer (or music visualizer) generates animations in real time synchronized with the audio.
+
 Check out [the demo page](./Demos.md) for a live example.
 
 ## Installation
