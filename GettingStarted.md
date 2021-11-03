@@ -61,5 +61,5 @@ Finally, and the most fun thing to do, is to **write your own visualizers**. Che
 
 ## License
 
-react-audio-visualizers is licensed under the [TODO Licence](https://github.com/tiagomotasantos/react-audio-visualizers).
+react-audio-visualizers is licensed under the [MIT Licence](https://github.com/tiagomotasantos/react-audio-visualizers/blob/main/LICENSE.md).
 
