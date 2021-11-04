@@ -27,9 +27,12 @@ yarn add react-audio-visualizers
 Here is an example of how to use a visualizer from react-audio-visualizers:
 
 ```jsx
+import React from 'react';
+import ReactDOM from 'react-dom';
 import { SpectrumVisualizer, SpectrumVisualizerTheme } from 'react-audio-visualizers';
 
-export const YourApp = () => (
+function App() {
+  return (
     <SpectrumVisualizer
         audio="https://your.domain.com/yourAudioFile.mp3"
         theme={SpectrumVisualizerTheme.radialSquaredBars}
@@ -40,7 +43,10 @@ export const YourApp = () => (
         showLoaderIcon
         highFrequency={8000}
     />
-);
+  );
+}
+
+ReactDOM.render(<App />, document.querySelector('root'));
 ```
 
 You can see all available visualizers on the menu. For each visualizer there's a list of possible props and a description of what each prop does. There are some common props for each visualizer that come from the [<code>&lt;AudioVisualizer&gt;</code>](./AudioVisualizer.html) component, but for most visualizers the only required prop is the audio file (and the theme if the visualizer has multiple themes).
