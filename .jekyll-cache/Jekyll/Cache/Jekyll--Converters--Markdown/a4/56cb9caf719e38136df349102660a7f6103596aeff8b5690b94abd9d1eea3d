@@ -1,0 +1,47 @@
+I"°<h1 id="audiovisualizerutils"><code class="language-plaintext highlighter-rouge">AudioVisualizerUtils</code></h1>
+
+<p>The <code class="language-plaintext highlighter-rouge">AudioVisualizerUtils</code> class contains utility functions to help deal with common audio tasks.</p>
+
+<p>Hereâ€™s a list of the functions available:</p>
+
+<ul>
+  <li><a href="#map"><code class="language-plaintext highlighter-rouge">map</code></a></li>
+  <li><a href="#filterfrequencies"><code class="language-plaintext highlighter-rouge">filterFrequencies</code></a></li>
+  <li><a href="#getfrequencyinterval"><code class="language-plaintext highlighter-rouge">getFrequencyInterval</code></a></li>
+</ul>
+
+<h2 id="map"><code class="language-plaintext highlighter-rouge">map</code></h2>
+
+<p><strong>map(n, start1, stop1, start2, stop2): number</strong></p>
+
+<p>The <code class="language-plaintext highlighter-rouge">map</code> function maps a number value <strong>n</strong> from one interval, <strong>[start1, stop1]</strong>, to another interval, <strong>[start2, stop2]</strong>.</p>
+
+<h2 id="filterfrequencies"><code class="language-plaintext highlighter-rouge">filterFrequencies</code></h2>
+
+<p><strong>filterFrequencies(lowFrequency, highFrequency, dataArray, sampleRate): Uint8Array</strong></p>
+
+<p>The <code class="language-plaintext highlighter-rouge">filterFrequencies</code> function returns a <code class="language-plaintext highlighter-rouge">Uint8Array</code> containing the frequency data from <strong>dataArray</strong> but filtered between <strong>lowFrequency</strong> and <strong>highFrequency</strong>. This function also requires the <strong>sampleRate</strong> of the audio. The default value for low frequency is <strong>20</strong> and the default value for high frequency is <strong>20000</strong> in Hz.</p>
+
+<h2 id="getfrequencyinterval"><code class="language-plaintext highlighter-rouge">getFrequencyInterval</code></h2>
+
+<p><strong>getFrequencyInterval(lowFrequency, highFrequency, nBars, dataArray, sampleRate): number</strong></p>
+
+<p>The <code class="language-plaintext highlighter-rouge">getFrequencyInterval</code> function returns a <code class="language-plaintext highlighter-rouge">number</code> representing the interval required to cover the <strong>dataArray</strong> <strong>nBars</strong> times, having in consideration the frequency range passed.</p>
+
+<p>See an example bellow:</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">{</span> <span class="nx">AudioVisualizerUtils</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react-audio-visualizers-core</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">const</span> <span class="nx">sampleRate</span> <span class="o">=</span> <span class="mi">44000</span><span class="p">;</span>
+<span class="kd">const</span> <span class="nx">lowFrequency</span> <span class="o">=</span> <span class="mi">20</span><span class="p">;</span>
+<span class="kd">const</span> <span class="nx">highFrequency</span> <span class="o">=</span> <span class="mi">20000</span><span class="p">;</span>
+<span class="kd">const</span> <span class="nx">nPoints</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span>
+<span class="kd">const</span> <span class="nx">dataArray</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Uint8Array</span><span class="p">(</span><span class="nb">Array</span><span class="p">.</span><span class="k">from</span><span class="p">(</span><span class="nb">Array</span><span class="p">(</span><span class="nx">sampleRate</span> <span class="o">/</span> <span class="mi">2</span><span class="p">),</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">random</span><span class="p">()</span> <span class="o">*</span> <span class="mi">255</span><span class="p">));</span>
+<span class="kd">const</span> <span class="nx">output</span> <span class="o">=</span> <span class="nx">AudioVisualizerUtils</span><span class="p">.</span><span class="nx">getFrequencyInterval</span><span class="p">(</span><span class="nx">lowFrequency</span><span class="p">,</span> <span class="nx">highFrequency</span><span class="p">,</span> <span class="nx">nPoints</span><span class="p">,</span> <span class="nx">dataArray</span><span class="p">,</span> <span class="nx">sampleRate</span><span class="p">);</span>
+
+<span class="c1">// output: 3996 </span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">output</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>For an audio with sample rate of 44000Hz, filtered between 20Hz and 20000Hz, the function produces the value 3996, which means that if we want to divide the frequency data in 5 points we can iterate the <strong>dataArray</strong> with a 3996 interval.</p>
+:ET

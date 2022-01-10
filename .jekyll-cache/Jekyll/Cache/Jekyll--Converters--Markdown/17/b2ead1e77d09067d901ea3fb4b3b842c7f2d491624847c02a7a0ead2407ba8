@@ -1,0 +1,42 @@
+I"<h1 id="types">Types</h1>
+
+<p>A set of types exposed from react-audio-visualizers-core.</p>
+
+<ul>
+  <li><a href="#audio"><code class="language-plaintext highlighter-rouge">Audio</code></a></li>
+  <li><a href="#audiovisualizercommonprops"><code class="language-plaintext highlighter-rouge">AudioVisualizerCommonProps</code></a></li>
+  <li><a href="#audiovisualizerevents"><code class="language-plaintext highlighter-rouge">AudioVisualizerEvents</code></a></li>
+  <li><a href="#audiovisualizerstatus"><code class="language-plaintext highlighter-rouge">AudioVisualizerStatus</code></a></li>
+  <li><a href="#color"><code class="language-plaintext highlighter-rouge">Color</code></a></li>
+</ul>
+
+<h2 id="audio"><code class="language-plaintext highlighter-rouge">Audio</code></h2>
+
+<p>The <code class="language-plaintext highlighter-rouge">Audio</code> is a type used to describe what the library accepts as audio. It can either be a <code class="language-plaintext highlighter-rouge">string</code>, a <a href="https://developer.mozilla.org/en-US/docs/Web/API/File"><code class="language-plaintext highlighter-rouge">File</code></a> or an <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer"><code class="language-plaintext highlighter-rouge">ArrayBuffer</code></a>.</p>
+
+<h2 id="audiovisualizercommonprops"><code class="language-plaintext highlighter-rouge">AudioVisualizerCommonProps</code></h2>
+
+<p>The <code class="language-plaintext highlighter-rouge">AudioVisualizerCommonProps</code> is an interface with a list of common props shared between visualizers. See <a href="./AudioVisualizer.html"><code class="language-plaintext highlighter-rouge">&lt;AudioVisualizer&gt;</code></a> for a full list and description of each prop.</p>
+
+<h2 id="audiovisualizerevents"><code class="language-plaintext highlighter-rouge">AudioVisualizerEvents</code></h2>
+
+<p>A list of events that the audio visualizer can emit and can be accessed through <a href="./AudioVisualizer.html#onevent"><code class="language-plaintext highlighter-rouge">onEvent</code></a>.</p>
+
+<p>Here’s a full list of possible events:</p>
+
+<ul>
+  <li><strong>playing</strong></li>
+  <li><strong>paused</strong></li>
+  <li><strong>loading</strong></li>
+  <li><strong>loaded</strong></li>
+  <li><strong>error</strong></li>
+</ul>
+
+<h2 id="audiovisualizerstatus"><code class="language-plaintext highlighter-rouge">AudioVisualizerStatus</code></h2>
+
+<p>An enum with the possible audio visualizer status, <strong>playing</strong> or <strong>paused</strong>.</p>
+
+<h2 id="color"><code class="language-plaintext highlighter-rouge">Color</code></h2>
+
+<p>The <code class="language-plaintext highlighter-rouge">Color</code> is a type used to describe what the library accepts as color. It can either be a <code class="language-plaintext highlighter-rouge">string</code>, a <code class="language-plaintext highlighter-rouge">number</code> or a ThreeJS <a href="https://threejs.org/docs/#api/en/math/Color"><code class="language-plaintext highlighter-rouge">Color</code></a>.</p>
+:ET

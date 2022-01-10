@@ -1,0 +1,67 @@
+I"{<h1 id="waveformvisualizer"><code class="language-plaintext highlighter-rouge">&lt;WaveformVisualizer&gt;</code></h1>
+
+<p>The <code class="language-plaintext highlighter-rouge">&lt;WaveformVisualizer&gt;</code> component is an audio visualizer that streams the overall amplitude of the audio over time.</p>
+
+<p><img src="./img/waveform_squared.png" alt="WaveformVisualizer" /></p>
+
+<h2 id="usage">Usage</h2>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">{</span> <span class="nx">WaveformVisualizer</span><span class="p">,</span> <span class="nx">WaveformVisualizerTheme</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react-audio-visualizers</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="k">export</span> <span class="kd">const</span> <span class="nx">YourApp</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">(</span>
+  <span class="p">&lt;</span><span class="nc">WaveformVisualizer</span>
+    <span class="na">audio</span><span class="p">=</span><span class="s">"yourAudioFile"</span>
+    <span class="na">theme</span><span class="p">=</span><span class="si">{</span><span class="nx">WaveformVisualizerTheme</span><span class="p">.</span><span class="nx">squaredBars</span><span class="si">}</span>
+  <span class="p">/&gt;</span>
+<span class="p">);</span>
+</code></pre></div></div>
+
+<h2 id="props">Props</h2>
+
+<p><code class="language-plaintext highlighter-rouge">&lt;WaveformVisualizer&gt;</code> accepts all <a href="./Types.html#audiovisualizercommonprops"><code class="language-plaintext highlighter-rouge">AudioVisualizerCommonProps</code></a> described in <a href="./AudioVisualizer.html"><code class="language-plaintext highlighter-rouge">&lt;AudioVisualizer&gt;</code></a>.</p>
+
+<p>It also accepts some specific props listed bellow:</p>
+
+<ul>
+  <li><a href="#theme"><code class="language-plaintext highlighter-rouge">theme</code></a></li>
+  <li><a href="#colors"><code class="language-plaintext highlighter-rouge">colors</code></a></li>
+  <li><a href="#barmargin"><code class="language-plaintext highlighter-rouge">barMargin</code></a></li>
+  <li><a href="#barwidth"><code class="language-plaintext highlighter-rouge">barWidth</code></a></li>
+  <li><a href="#refreshrate"><code class="language-plaintext highlighter-rouge">refreshRate</code></a></li>
+</ul>
+
+<h3 id="theme"><code class="language-plaintext highlighter-rouge">theme</code></h3>
+
+<p>The <code class="language-plaintext highlighter-rouge">theme</code> prop changes the aspect of the visualizer and is required.</p>
+
+<p>It can be one of the following:</p>
+
+<ul>
+  <li><a href="#line"><code class="language-plaintext highlighter-rouge">line</code></a></li>
+  <li><a href="#squaredbars"><code class="language-plaintext highlighter-rouge">squaredBars</code></a></li>
+</ul>
+
+<h4 id="line">line</h4>
+
+<p><img src="./img/waveform_line.png" alt="LineWaveformVisualizer" /></p>
+
+<h4 id="squaredbars">squaredBars</h4>
+
+<p><img src="./img/waveform_squared.png" alt="SquaredBarsWaveformVisualizer" /></p>
+
+<h3 id="colors"><code class="language-plaintext highlighter-rouge">colors</code></h3>
+
+<p>An array with elements of type <a href="./Types.html#color">Color</a>. For the <a href="#squaredbars"><code class="language-plaintext highlighter-rouge">squaredBars</code></a> theme every color of the array is used to create a gradient, while for the <a href="#line"><code class="language-plaintext highlighter-rouge">line</code></a> theme only the first color is used. Defaults to white when no value is provided.</p>
+
+<h3 id="barmargin"><code class="language-plaintext highlighter-rouge">barMargin</code></h3>
+
+<p>The margin between bars, only available when the theme is <a href="#squaredbars"><code class="language-plaintext highlighter-rouge">squaredBars</code></a>. Defaults to 2.5 when no value is provided.</p>
+
+<h3 id="barwidth"><code class="language-plaintext highlighter-rouge">barWidth</code></h3>
+
+<p>The width of the bars in <a href="#squaredbars"><code class="language-plaintext highlighter-rouge">squaredBars</code></a> theme. Defaults to 10 when no value is provided.</p>
+
+<h3 id="refreshrate"><code class="language-plaintext highlighter-rouge">refreshRate</code></h3>
+
+<p>The time, in seconds, to rerender the visualizer. Defaults  to 0.025 when no value is provided.</p>
+:ET

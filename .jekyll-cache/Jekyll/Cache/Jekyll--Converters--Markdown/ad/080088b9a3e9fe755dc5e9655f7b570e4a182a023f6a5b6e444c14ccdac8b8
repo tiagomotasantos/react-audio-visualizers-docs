@@ -1,0 +1,145 @@
+I"�P<h1 id="architecture">Architecture</h1>
+
+<p>Architecture describes how the library is structured, the decisions that led to that structure, a typical flow of interaction between components, and how visualizer components are implemented inside react-audio-visualizers.</p>
+
+<h2 id="packages">Packages</h2>
+
+<p>React-audio-visualizers is divided in three main architecture level packages that are all available through npm.</p>
+
+<p><img src="./img/packages.jpg" alt="packages" /></p>
+
+<ul>
+  <li><strong>react-audio-visualizers-core</strong>: core funcionality to deal with audio (e.g. load, play, pause, …) and UI for the main play/pause action. Here you can find the core <code>&lt;AudioVisualizer&gt;</code> component, as well as helpful types, hooks and utilities to deal with audio.</li>
+  <li><strong>react-audio-visualizers</strong>: all standard and free visualizers are here. This is the main package of the library and the only one that is required to import to use visualizers. Only contains logic to render/draw visualizers and uses functionality from the core package.</li>
+  <li><strong>react-audio-visualizers-pro</strong>: paid package that contains extra visualizers. Like the main package it only contains render logic and uses the core package for the rest.</li>
+</ul>
+
+<p>There were three main reasons that led to this structure.</p>
+
+<p>The first reason is to facilitate users to use the library. It is only required to import one package, <strong>react-audio-visualizers</strong>, import the visualizer component from there and use it. Every visualizer component, like <code>&lt;SpectrumVisualizer&gt;</code>, uses the core <code>&lt;AudioVisualizer&gt;</code> component under the hood to deal with audio logic, so it has to accept all the common props that <code>&lt;AudioVisualizer&gt;</code> requires. The benefit here is that users don’t have to import this component themselves, making the library easy to use as this is done “automatically” by the visualizer component. The downside is that every visualizer has to duplicate a call to <code>&lt;AudioVisualizer&gt;</code>, but weighing the prons and cons it is worth it.</p>
+
+<p>The second reason is to facilitate developers to contribute to the library. To create new visualizers developers can either contribute to <strong>react-audio-visualizers</strong> or create their own project and use only <strong>react-audio-visualizers-core</strong> to get all audio features and maintain the same interface, thus is only required to implement the rendering for the visualizers.</p>
+
+<p>The third and last reason is to separate between free and paid content. As <strong>react-audio-visualizers</strong> is open source it is not possible to keep there paid visualizers, otherwise it would make little to no sense to pay for it’s content. While <strong>react-audio-visualizers-pro</strong> is not open source, so paying users can be sure of the exclusivity of it’s visualizers.</p>
+
+<h2 id="flow">Flow</h2>
+
+<p>The flow of interaction between components of the library is shown in the image below.</p>
+
+<p><img src="./img/flow.jpg" alt="flow" /></p>
+
+<ul>
+  <li>The user of react-audio-visualizers package imports any visualizer, such as <code>&lt;SpectrumVisualizer&gt;</code>, and adds it to the project.</li>
+  <li>The visualizer renders <code>&lt;AudioVisualizer&gt;</code> from the core passing common props as well as the rendering logic of the visualizer as children.</li>
+  <li><code>&lt;AudioVisualizer&gt;</code> then renders <code>&lt;AudioVisualizerScene&gt;</code> to render the HTML canvas, and <code>&lt;AudioVisualizerUI&gt;</code> to render UI for interacting with the audio.</li>
+  <li><code>&lt;AudioVisualizerScene&gt;</code> renders the rendering logic of <code>&lt;SpectrumVisualizer&gt;</code> that got passed as children, leveraging ThreeJS through react-three-fiber, and uses <code>&lt;useAudioVisualizerContext&gt;</code> hook to get audio data to animate the visualizer.</li>
+  <li><code>&lt;AudioVisualizerController&gt;</code> deals with loading the audio and changing it’s state, updating the context accordingly.</li>
+</ul>
+
+<h2 id="visualizer-component">Visualizer Component</h2>
+
+<p>The following snippet shows an example of an audio visualizer from react-audio-visualizers, in this case <code>&lt;LineSpectrumVisualizer&gt;</code>.</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">{</span> <span class="nx">useEffect</span><span class="p">,</span> <span class="nx">useMemo</span><span class="p">,</span> <span class="nx">useRef</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">BufferGeometry</span><span class="p">,</span> <span class="nx">Vector2</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">three</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">useFrame</span><span class="p">,</span> <span class="nx">useThree</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">@react-three/fiber</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span>
+  <span class="nx">AudioVisualizer</span><span class="p">,</span>
+  <span class="nx">AudioVisualizerCommonProps</span><span class="p">,</span>
+  <span class="nx">AudioVisualizerUtils</span><span class="p">,</span>
+  <span class="nx">Color</span><span class="p">,</span>
+  <span class="nx">useAudioVisualizerContext</span><span class="p">,</span>
+<span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react-audio-visualizers-core</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="c1">// constants hidden to save space</span>
+
+<span class="k">export</span> <span class="kr">interface</span> <span class="nx">LineSpectrumVisualizerProps</span> <span class="kd">extends</span> <span class="nx">AudioVisualizerCommonProps</span> <span class="p">{</span>
+  <span class="nx">colors</span><span class="p">?:</span> <span class="nx">Color</span><span class="p">[];</span>
+  <span class="nx">lowFrequency</span><span class="p">?:</span> <span class="nx">number</span><span class="p">;</span>
+  <span class="nx">highFrequency</span><span class="p">?:</span> <span class="nx">number</span><span class="p">;</span>
+  <span class="nx">numBars</span><span class="p">?:</span> <span class="nx">number</span>
+<span class="p">}</span>
+
+<span class="k">export</span> <span class="kd">const</span> <span class="nx">LineSpectrumVisualizer</span> <span class="o">=</span> <span class="p">(</span><span class="nx">props</span><span class="p">:</span> <span class="nx">LineSpectrumVisualizerProps</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="p">{</span>
+    <span class="nx">lowFrequency</span><span class="p">,</span>
+    <span class="nx">highFrequency</span><span class="p">,</span>
+    <span class="nx">numBars</span><span class="p">,</span>
+    <span class="nx">colors</span> <span class="o">=</span> <span class="p">[</span><span class="nx">DEFAULT_COLOR</span><span class="p">],</span>
+    <span class="p">...</span><span class="nx">audioVisualizerCommonProps</span>
+  <span class="p">}</span> <span class="o">=</span> <span class="nx">props</span><span class="p">;</span>
+  <span class="kd">const</span> <span class="nx">canvasProps</span> <span class="o">=</span> <span class="p">{</span> <span class="na">orthographic</span><span class="p">:</span> <span class="kc">true</span> <span class="p">};</span>
+
+  <span class="k">return</span> <span class="p">(</span>
+    <span class="p">&lt;</span><span class="nc">AudioVisualizer</span> <span class="na">canvasProps</span><span class="p">=</span><span class="si">{</span><span class="nx">canvasProps</span><span class="si">}</span> <span class="si">{</span><span class="p">...</span><span class="nx">audioVisualizerCommonProps</span><span class="si">}</span><span class="p">&gt;</span>
+      <span class="p">&lt;</span><span class="nc">LineSpectrumVisualizerRender</span>
+        <span class="na">numBars</span><span class="p">=</span><span class="si">{</span><span class="nx">numBars</span><span class="si">}</span>
+        <span class="na">lowFrequency</span><span class="p">=</span><span class="si">{</span><span class="nx">lowFrequency</span><span class="si">}</span>
+        <span class="na">highFrequency</span><span class="p">=</span><span class="si">{</span><span class="nx">highFrequency</span><span class="si">}</span>
+        <span class="na">color</span><span class="p">=</span><span class="si">{</span><span class="nx">colors</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span>
+      <span class="p">/&gt;</span>
+    <span class="p">&lt;/</span><span class="nc">AudioVisualizer</span><span class="p">&gt;</span>
+  <span class="p">);</span>
+<span class="p">};</span>
+
+<span class="kr">interface</span> <span class="nx">LineSpectrumVisualizerRenderProps</span> <span class="kd">extends</span> <span class="nx">Pick</span><span class="o">&lt;</span>
+  <span class="nx">LineSpectrumVisualizerProps</span><span class="p">,</span> <span class="dl">'</span><span class="s1">lowFrequency</span><span class="dl">'</span> <span class="o">|</span> <span class="dl">'</span><span class="s1">highFrequency</span><span class="dl">'</span> <span class="o">|</span> <span class="dl">'</span><span class="s1">numBars</span><span class="dl">'</span>
+<span class="o">&gt;</span> <span class="p">{</span>
+  <span class="nx">color</span><span class="p">?:</span> <span class="nx">Color</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">const</span> <span class="nx">LineSpectrumVisualizerRender</span> <span class="o">=</span> <span class="p">({</span>
+  <span class="nx">numBars</span><span class="p">,</span>
+  <span class="nx">color</span><span class="p">,</span>
+  <span class="nx">lowFrequency</span><span class="p">,</span>
+  <span class="nx">highFrequency</span><span class="p">,</span>
+<span class="p">}:</span> <span class="nx">LineSpectrumVisualizerRenderProps</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="p">{</span> <span class="nx">audioContext</span><span class="p">,</span> <span class="nx">analyser</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">useAudioVisualizerContext</span><span class="p">();</span>
+  <span class="kd">const</span> <span class="p">{</span> <span class="na">viewport</span><span class="p">:</span> <span class="p">{</span> <span class="na">width</span><span class="p">:</span> <span class="nx">viewportWidth</span><span class="p">,</span> <span class="na">height</span><span class="p">:</span> <span class="nx">viewportHeight</span> <span class="p">}</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">useThree</span><span class="p">();</span>
+  <span class="kd">const</span> <span class="nx">spectrumWidth</span> <span class="o">=</span> <span class="nx">viewportWidth</span> <span class="o">-</span> <span class="nx">DEFAULT_MARGIN_WIDTH</span><span class="p">;</span>
+  <span class="kd">const</span> <span class="nx">halfSpectrumWidth</span> <span class="o">=</span> <span class="nx">spectrumWidth</span> <span class="o">/</span> <span class="mi">2</span><span class="p">;</span>
+  <span class="kd">const</span> <span class="nx">halfSpectrumHeight</span> <span class="o">=</span> <span class="nx">viewportHeight</span> <span class="o">/</span> <span class="mi">2</span><span class="p">;</span>
+  <span class="kd">const</span> <span class="nx">nPoints</span> <span class="o">=</span> <span class="nx">numBars</span> <span class="o">||</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">round</span><span class="p">(</span><span class="nx">viewportWidth</span> <span class="o">*</span> <span class="nx">DEFAULT_NUM_BARS</span> <span class="o">/</span> <span class="nx">REFERENCE_SPECTRUM_WIDTH</span><span class="p">);</span>
+  <span class="kd">const</span> <span class="nx">spacing</span> <span class="o">=</span> <span class="nx">spectrumWidth</span> <span class="o">/</span> <span class="nx">nPoints</span><span class="p">;</span>
+  <span class="kd">const</span> <span class="nx">dataArray</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Uint8Array</span><span class="p">(</span><span class="nx">analyser</span> <span class="p">?</span> <span class="nx">analyser</span><span class="p">.</span><span class="nx">frequencyBinCount</span> <span class="p">:</span> <span class="mi">0</span><span class="p">);</span>
+  <span class="kd">const</span> <span class="nx">interval</span> <span class="o">=</span> <span class="nx">AudioVisualizerUtils</span><span class="p">.</span><span class="nx">getFrequencyInterval</span><span class="p">(</span><span class="nx">lowFrequency</span><span class="p">,</span> <span class="nx">highFrequency</span><span class="p">,</span> <span class="nx">nPoints</span><span class="p">,</span> <span class="nx">dataArray</span><span class="p">,</span>  <span class="nx">audioContext</span><span class="p">?.</span><span class="nx">sampleRate</span><span class="p">);</span>
+  <span class="kd">const</span> <span class="nx">ref</span> <span class="o">=</span> <span class="nx">useRef</span><span class="o">&lt;</span><span class="nx">BufferGeometry</span><span class="o">&gt;</span><span class="p">();</span>
+  <span class="kd">const</span> <span class="nx">line</span> <span class="o">=</span> <span class="nx">useMemo</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">(</span>
+    <span class="p">&lt;</span><span class="nt">line</span><span class="p">&gt;</span>
+      <span class="p">&lt;</span><span class="nt">bufferGeometry</span> <span class="na">ref</span><span class="p">=</span><span class="si">{</span><span class="nx">ref</span><span class="si">}</span> <span class="p">/&gt;</span>
+      <span class="p">&lt;</span><span class="nt">lineBasicMaterial</span> <span class="na">color</span><span class="p">=</span><span class="si">{</span><span class="nx">color</span><span class="si">}</span> <span class="p">/&gt;</span>
+    <span class="p">&lt;/</span><span class="nt">line</span><span class="p">&gt;</span>
+  <span class="p">),</span> <span class="p">[</span><span class="nx">ref</span><span class="p">,</span> <span class="nx">color</span><span class="p">]);</span>
+
+  <span class="nx">useEffect</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">ref</span><span class="p">.</span><span class="nx">current</span><span class="p">?.</span><span class="nx">setFromPoints</span><span class="p">(</span><span class="nb">Array</span><span class="p">.</span><span class="k">from</span><span class="p">(</span><span class="nb">Array</span><span class="p">(</span><span class="nx">nPoints</span><span class="p">),</span> <span class="p">(</span><span class="nx">_</span><span class="p">,</span> <span class="nx">i</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+      <span class="kd">const</span> <span class="nx">x</span> <span class="o">=</span> <span class="nx">spacing</span> <span class="o">*</span> <span class="nx">i</span> <span class="o">-</span> <span class="nx">halfSpectrumWidth</span><span class="p">;</span>
+      <span class="kd">const</span> <span class="nx">y</span> <span class="o">=</span> <span class="o">-</span><span class="nx">halfSpectrumHeight</span> <span class="o">+</span> <span class="nx">DEFAULT_MARGIN_HEIGHT_BOTTOM</span><span class="p">;</span>
+
+      <span class="k">return</span> <span class="k">new</span> <span class="nx">Vector2</span><span class="p">(</span><span class="nx">x</span><span class="p">,</span> <span class="nx">y</span><span class="p">);</span>
+    <span class="p">}));</span>
+  <span class="p">},</span> <span class="p">[</span><span class="nx">nPoints</span><span class="p">,</span> <span class="nx">spacing</span><span class="p">,</span> <span class="nx">halfSpectrumWidth</span><span class="p">,</span> <span class="nx">halfSpectrumHeight</span><span class="p">]);</span>
+
+  <span class="nx">useFrame</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">analyser</span> <span class="o">&amp;&amp;</span> <span class="nx">audioContext</span> <span class="o">&amp;&amp;</span> <span class="nx">ref</span><span class="p">.</span><span class="nx">current</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">analyser</span><span class="p">.</span><span class="nx">getByteFrequencyData</span><span class="p">(</span><span class="nx">dataArray</span><span class="p">);</span>
+      
+      <span class="kd">const</span> <span class="nx">filteredData</span> <span class="o">=</span> <span class="nx">AudioVisualizerUtils</span><span class="p">.</span><span class="nx">filterFrequencies</span><span class="p">(</span><span class="nx">lowFrequency</span><span class="p">,</span> <span class="nx">highFrequency</span><span class="p">,</span> <span class="nx">dataArray</span><span class="p">,</span> <span class="nx">audioContext</span><span class="p">.</span><span class="nx">sampleRate</span><span class="p">);</span>
+
+      <span class="k">for</span> <span class="p">(</span><span class="kd">let</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">nPoints</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kd">const</span> <span class="nx">height</span> <span class="o">=</span> <span class="nx">AudioVisualizerUtils</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">filteredData</span><span class="p">[</span><span class="nx">i</span> <span class="o">*</span> <span class="nx">interval</span><span class="p">],</span> <span class="nx">MIN_DECIBEL</span><span class="p">,</span> <span class="nx">MAX_DECIBEL</span><span class="p">,</span> <span class="nx">MIN_BAR_HEIGHT</span><span class="p">,</span> <span class="nx">viewportHeight</span> <span class="o">-</span> <span class="nx">DEFAULT_MARGIN_HEIGHT_TOP</span><span class="p">)</span> <span class="o">||</span> <span class="nx">MIN_BAR_HEIGHT</span><span class="p">;</span>
+
+        <span class="nx">ref</span><span class="p">.</span><span class="nx">current</span><span class="p">.</span><span class="nx">attributes</span><span class="p">.</span><span class="nx">position</span><span class="p">.</span><span class="nx">setY</span><span class="p">(</span><span class="nx">i</span><span class="p">,</span> <span class="nx">height</span> <span class="o">-</span> <span class="nx">halfSpectrumHeight</span><span class="p">);</span>
+        <span class="nx">ref</span><span class="p">.</span><span class="nx">current</span><span class="p">.</span><span class="nx">attributes</span><span class="p">.</span><span class="nx">position</span><span class="p">.</span><span class="nx">needsUpdate</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">});</span>
+
+  <span class="k">return</span> <span class="nx">line</span><span class="p">;</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p><code>&lt;LineSpectrumVisualizer&gt;</code> uses <code>&lt;AudioVisualizer&gt;</code> from the core and passes as children the component that will actually render the visualizer.
+Notice how <code>&lt;LineSpectrumVisualizerRender&gt;</code> is using <code>useFrame</code> from react-three-fiber to animate the visualizer each frame, by using the data that comes from <code>getByteFrequencyData</code> from Web Audio API. The analyser is an instance of <code>AnalyserNode</code> that is stored inside <code>&lt;AudioVisualizer&gt;</code> context and is obtained through the <code>useAudioVisualizerContext</code> hook.
+The rest is mainly leveraging ThreeJS through react-three-fiber to handle the drawing.</p>
+:ET

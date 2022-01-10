@@ -1,0 +1,30 @@
+I"®<h1 id="hooks">Hooks</h1>
+
+<p>A set of hooks exposed from react-audio-visualizers-core.</p>
+
+<ul>
+  <li><a href="#useaudiovisualizercontext"><code class="language-plaintext highlighter-rouge">useAudioVisualizerContext</code></a></li>
+</ul>
+
+<h2 id="useaudiovisualizercontext"><code class="language-plaintext highlighter-rouge">useAudioVisualizerContext</code></h2>
+
+<p>The <code class="language-plaintext highlighter-rouge">useAudioVisualizerContext</code> hook gives access to the context of the core <code class="language-plaintext highlighter-rouge">&lt;AudioVisualizer&gt;</code> by returning an object with <code class="language-plaintext highlighter-rouge">audioContext</code> of type <a href="https://developer.mozilla.org/en-US/docs/Web/API/AudioContext"><code class="language-plaintext highlighter-rouge">AudioContext</code></a>, <code class="language-plaintext highlighter-rouge">analyser</code> of type <a href="https://developer.mozilla.org/en-US/docs/Web/API/AnalyserNode"><code class="language-plaintext highlighter-rouge">AnalyserNode</code></a> and <code class="language-plaintext highlighter-rouge">status</code> of type <a href="./Types.html#audiovisualizertatus"><code class="language-plaintext highlighter-rouge">AudioVisualizerStatus</code></a>.</p>
+
+<p>See an usage example bellow:</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">{</span> <span class="nx">AudioVisualizerStatus</span><span class="p">,</span> <span class="nx">useAudioVisualizerContext</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react-audio-visualizers-core</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="k">export</span> <span class="kd">const</span> <span class="nx">YourVisualizer</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="p">{</span> <span class="nx">audioContext</span><span class="p">,</span> <span class="nx">analyser</span><span class="p">,</span> <span class="nx">status</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">useAudioVisualizerContext</span><span class="p">();</span>
+  <span class="kd">const</span> <span class="nx">dataArray</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Uint8Array</span><span class="p">(</span><span class="nx">analyser</span> <span class="p">?</span> <span class="nx">analyser</span><span class="p">.</span><span class="nx">frequencyBinCount</span> <span class="p">:</span> <span class="mi">0</span><span class="p">);</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="nx">analyser</span> <span class="o">&amp;&amp;</span> <span class="nx">audioContext</span> <span class="o">&amp;&amp;</span> <span class="nx">status</span> <span class="o">===</span> <span class="nx">AudioVisualizerStatus</span><span class="p">.</span><span class="nx">playing</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">analyser</span><span class="p">.</span><span class="nx">getByteTimeDomainData</span><span class="p">(</span><span class="nx">dataArray</span><span class="p">);</span>
+
+      <span class="c1">// do stuff with dataArray</span>
+    <span class="p">}</span>
+
+    <span class="c1">// render &lt;AudioVisualizer&gt; ...</span>
+<span class="p">};</span>
+</code></pre></div></div>
+:ET

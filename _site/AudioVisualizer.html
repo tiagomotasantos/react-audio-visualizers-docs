@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en-US">
+    <head>
+        <title>React Audio Visualizers</title>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+        <meta name="description" content="A library of audio visualizer components for React" />
+        <meta name="HandheldFriendly" content="true" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+        <link rel="manifest" href="assets/manifest.json">
+        <link rel="apple-touch-icon" sizes="180x180" href="assets/favicon/apple-touch-icon.png">
+        <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon/favicon-16x16.png">
+        <link
+            rel="canonical"
+            href="AudioVisualizer.html"
+        />
+        <link
+            rel="stylesheet"
+            href="css/materialize.min.css"
+        />
+        <link
+            rel="stylesheet"
+            href="css/style-v11.css"
+        />
+        <link rel="stylesheet" href="css/syntax.css" />
+        <link rel="stylesheet" href="css/prism.css" />
+        <link rel="stylesheet" href="css/tocbot.css" />
+        <link
+            rel="stylesheet"
+            href="https://fonts.googleapis.com/icon?family=Material+Icons"
+        />
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.12.0/tocbot.css"
+        />
+    </head>
+
+    <body>
+        <header>
+            <nav>
+                <a href="#" data-target="slide-out" class="sidenav-trigger"
+                    ><i class="material-icons">menu</i></a
+                >
+                <div
+                    class="nav-wrapper"
+                    style="
+                        background: linear-gradient(
+                            145deg,
+                            #BA66A9 11%,
+                            #75206D 75%
+                        );
+                    "
+                >
+                    <ul id="nav-mobile" class="hide-on-med-and-down">
+                        <li class="active">
+                            <a
+                                href="https://react-audio-visualizers.com/docs"
+                                >Documentation</a
+                            >
+                        </li>
+                        <li>
+                            <a href="https://react-audio-visualizers.com/demos"
+                                >Demos</a
+                            >
+                        </li>
+                        <li>
+                            <a href="https://github.com/tiagomotasantos/react-audio-visualizers">
+                                <svg
+                                    viewBox="0 0 256 250"
+                                    preserveAspectRatio="xMidYMid"
+                                    style="
+                                        height: 20px;
+                                        vertical-align: middle;
+                                        margin-right: 5px;
+                                        fill: #ffffff;
+                                    "
+                                >
+                                    <path
+                                        d="M128.001 0C57.317 0 0 57.307 0 128.001c0 56.554 36.676 104.535 87.535 121.46 6.397 1.185 8.746-2.777 8.746-6.158 0-3.052-.12-13.135-.174-23.83-35.61 7.742-43.124-15.103-43.124-15.103-5.823-14.795-14.213-18.73-14.213-18.73-11.613-7.944.876-7.78.876-7.78 12.853.902 19.621 13.19 19.621 13.19 11.417 19.568 29.945 13.911 37.249 10.64 1.149-8.272 4.466-13.92 8.127-17.116-28.431-3.236-58.318-14.212-58.318-63.258 0-13.975 5-25.394 13.188-34.358-1.329-3.224-5.71-16.242 1.24-33.874 0 0 10.749-3.44 35.21 13.121 10.21-2.836 21.16-4.258 32.038-4.307 10.878.049 21.837 1.47 32.066 4.307 24.431-16.56 35.165-13.12 35.165-13.12 6.967 17.63 2.584 30.65 1.255 33.873 8.207 8.964 13.173 20.383 13.173 34.358 0 49.163-29.944 59.988-58.447 63.157 4.591 3.972 8.682 11.762 8.682 23.704 0 17.126-.148 30.91-.148 35.126 0 3.407 2.304 7.398 8.792 6.14C219.37 232.5 256 184.537 256 128.002 256 57.307 198.691 0 128.001 0zm-80.06 182.34c-.282.636-1.283.827-2.194.39-.929-.417-1.45-1.284-1.15-1.922.276-.655 1.279-.838 2.205-.399.93.418 1.46 1.293 1.139 1.931zm6.296 5.618c-.61.566-1.804.303-2.614-.591-.837-.892-.994-2.086-.375-2.66.63-.566 1.787-.301 2.626.591.838.903 1 2.088.363 2.66zm4.32 7.188c-.785.545-2.067.034-2.86-1.104-.784-1.138-.784-2.503.017-3.05.795-.547 2.058-.055 2.861 1.075.782 1.157.782 2.522-.019 3.08zm7.304 8.325c-.701.774-2.196.566-3.29-.49-1.119-1.032-1.43-2.496-.726-3.27.71-.776 2.213-.558 3.315.49 1.11 1.03 1.45 2.505.701 3.27zm9.442 2.81c-.31 1.003-1.75 1.459-3.199 1.033-1.448-.439-2.395-1.613-2.103-2.626.301-1.01 1.747-1.484 3.207-1.028 1.446.436 2.396 1.602 2.095 2.622zm10.744 1.193c.036 1.055-1.193 1.93-2.715 1.95-1.53.034-2.769-.82-2.786-1.86 0-1.065 1.202-1.932 2.733-1.958 1.522-.03 2.768.818 2.768 1.868zm10.555-.405c.182 1.03-.875 2.088-2.387 2.37-1.485.271-2.861-.365-3.05-1.386-.184-1.056.893-2.114 2.376-2.387 1.514-.263 2.868.356 3.061 1.403z"
+                                    ></path>
+                                </svg>
+                                GitHub
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+            <ul id="slide-out" class="sidenav sidenav-fixed">
+                <li class="logo">
+                    <a href="./GettingStarted.html"
+                        ><img src="assets/logo.svg"
+                    /></a>
+                </li>
+                <li ><a href="./GettingStarted.html">Getting Started</a></li>
+<li ><a href="./Architecture.html">Architecture</a></li>
+
+<ul><div>Core</div>
+  <li  class="active" ><a href="./AudioVisualizer.html"><code>&lt;AudioVisualizer&gt;</code></a></li>
+  <li ><a href="./AudioVisualizerUtils.html"><code>AudioVisualizerUtils</code></a></li>
+  <li ><a href="./Hooks.html">Hooks</a></li>
+  <li ><a href="./Types.html">Types</a></li>
+</ul>
+
+<ul><div>Visualizers</div>
+  <li ><a href="./SpectrumVisualizer.html"><code>&lt;SpectrumVisualizer&gt;</code></a></li>
+  <li ><a href="./WaveformVisualizer.html"><code>&lt;WaveformVisualizer&gt;</code></a></li>
+</ul>
+
+            </ul>
+        </header>
+
+        <main>
+            <div class="container">
+                <div class="row">
+                    <div
+                        class="col s12 m8 offset-m1 xl7 offset-xl1 markdown-section toc-content"
+                    >
+                        <h1 id="audiovisualizer"><code class="language-plaintext highlighter-rouge">&lt;AudioVisualizer&gt;</code></h1>
+
+<p>The <code class="language-plaintext highlighter-rouge">&lt;AudioVisualizer&gt;</code> component is part of react-audio-visualizers-core package. It is responsible to place the visualizer rendering logic inside the canvas and mainly to take care of audio functionality through the Web Audio API, like loading the audio and interacting with it (e.g. play, pause, change volume, …).</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">{</span> <span class="nx">AudioVisualizer</span><span class="p">,</span> <span class="nx">AudioVisualizerCommonProps</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react-audio-visualizers-core</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="k">export</span> <span class="kd">const</span> <span class="nx">YourVisualizer</span> <span class="o">=</span> <span class="p">(</span><span class="nx">commonProps</span><span class="p">:</span> <span class="nx">AudioVisualizerCommonProps</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">(</span>
+    <span class="p">&lt;</span><span class="nc">AudioVisualizer</span> <span class="si">{</span><span class="p">...</span><span class="nx">commonProps</span><span class="si">}</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nc">YourVisualizerRenderComponent</span> <span class="p">/&gt;</span>
+    <span class="p">&lt;/</span><span class="nc">AudioVisualizer</span><span class="p">&gt;</span>
+<span class="p">);</span>
+</code></pre></div></div>
+
+<p>Every prop (besides children) that <code class="language-plaintext highlighter-rouge">&lt;AudioVisualizer&gt;</code> receives is passed from the visualizer component, so every visualizer should accept them. These are referred as common props (<a href="./Types.html#audiovisualizercommonprops"><code class="language-plaintext highlighter-rouge">AudioVisualizerCommonProps</code></a>).</p>
+
+<p>Here’s a list of common props:</p>
+
+<ul>
+  <li><a href="#children"><code class="language-plaintext highlighter-rouge">chidlren</code></a></li>
+  <li><a href="#audio"><code class="language-plaintext highlighter-rouge">audio</code></a></li>
+  <li><a href="#canvasprops"><code class="language-plaintext highlighter-rouge">canvasProps</code></a></li>
+  <li><a href="#smoothingtimeconstant"><code class="language-plaintext highlighter-rouge">smoothingTimeConstant</code></a></li>
+  <li><a href="#fftsize"><code class="language-plaintext highlighter-rouge">fftSize</code></a></li>
+  <li><a href="#volume"><code class="language-plaintext highlighter-rouge">volume</code></a></li>
+  <li><a href="#iconsColor"><code class="language-plaintext highlighter-rouge">iconsColor</code></a></li>
+  <li><a href="#showmainactionicon"><code class="language-plaintext highlighter-rouge">showMainActionIcon</code></a></li>
+  <li><a href="#showloadericon"><code class="language-plaintext highlighter-rouge">showLoaderIcon</code></a></li>
+  <li><a href="#backgroundcolor"><code class="language-plaintext highlighter-rouge">backgroundColor</code></a></li>
+  <li><a href="#backgroundimage"><code class="language-plaintext highlighter-rouge">backgroundImage</code></a></li>
+  <li><a href="#mainactionrender"><code class="language-plaintext highlighter-rouge">mainActionRender</code></a></li>
+  <li><a href="#onevent"><code class="language-plaintext highlighter-rouge">onEvent</code></a></li>
+</ul>
+
+<h2 id="children"><code class="language-plaintext highlighter-rouge">children</code></h2>
+
+<p>The <code class="language-plaintext highlighter-rouge">children</code> is required and is a <code class="language-plaintext highlighter-rouge">ReactElement</code> that is passed as children to the <code class="language-plaintext highlighter-rouge">Canvas</code> component of react-three-fiber and it should contain the rendering logic of the visualizer besides being a component that react-three-fiber can handle.</p>
+
+<h2 id="audio"><code class="language-plaintext highlighter-rouge">audio</code></h2>
+
+<p>The <code class="language-plaintext highlighter-rouge">audio</code> prop is required and can either be a JavaScript <code class="language-plaintext highlighter-rouge">File</code>, a <code class="language-plaintext highlighter-rouge">string</code> with a path/URL to the audio file or an <code class="language-plaintext highlighter-rouge">ArrayBuffer</code> with audio data.</p>
+
+<h2 id="canvasprops"><code class="language-plaintext highlighter-rouge">canvasProps</code></h2>
+
+<p>The <code class="language-plaintext highlighter-rouge">canvasProps</code> is an object which type comes from react-three-fiber and provides properties and methods from <a href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement"><code class="language-plaintext highlighter-rouge">HTMLCanvasElement</code></a>.</p>
+
+<h2 id="smoothingtimeconstant"><code class="language-plaintext highlighter-rouge">smoothingTimeConstant</code></h2>
+
+<p>A double value between 0 and 1 that averages the current buffer with the last buffer processed by the <code class="language-plaintext highlighter-rouge">AnalyserNode</code>. Check the offical <a href="https://developer.mozilla.org/en-US/docs/Web/API/AnalyserNode/smoothingTimeConstant">documentation</a> for more information.</p>
+
+<h2 id="fftsize"><code class="language-plaintext highlighter-rouge">fftSize</code></h2>
+
+<p>Property from the <code class="language-plaintext highlighter-rouge">AnalyserNode</code> that represents the number of samples used to perform a Fast Fourier Transform. Check the offical <a href="https://developer.mozilla.org/en-US/docs/Web/API/AnalyserNode/fftSize">documentation</a> for more information.</p>
+
+<h2 id="volume"><code class="language-plaintext highlighter-rouge">volume</code></h2>
+
+<p>A property from the <a href="https://developer.mozilla.org/en-US/docs/Web/API/GainNode"><code class="language-plaintext highlighter-rouge">GainNode</code></a> that represents the amount of gain to apply. Check the offical <a href="https://developer.mozilla.org/en-US/docs/Web/API/GainNode/gain">documentation</a> for more information.</p>
+
+<h2 id="iconscolor"><code class="language-plaintext highlighter-rouge">iconsColor</code></h2>
+
+<p>A <code class="language-plaintext highlighter-rouge">string</code> that accepts a <a href="https://www.w3schools.com/css/css_colors.asp">CSS color</a> used in the play, pause and loader icons.</p>
+
+<h2 id="showmainactionicon"><code class="language-plaintext highlighter-rouge">showMainActionIcon</code></h2>
+
+<p>A <code class="language-plaintext highlighter-rouge">boolean</code> value to show/hide the icons for the main play/pause action.</p>
+
+<h2 id="showloadericon"><code class="language-plaintext highlighter-rouge">showLoaderIcon</code></h2>
+
+<p>A <code class="language-plaintext highlighter-rouge">boolean</code> value to show/hide the icon for the loader.</p>
+
+<h2 id="backgroundcolor"><code class="language-plaintext highlighter-rouge">backgroundColor</code></h2>
+
+<p>A <code class="language-plaintext highlighter-rouge">string</code> that accepts a <a href="https://www.w3schools.com/css/css_colors.asp">CSS color</a> used as background color of the canvas. It overwrites the background color specified in <a href="#canvasprops"><code class="language-plaintext highlighter-rouge">canvasProps</code></a>.</p>
+
+<h2 id="backgroundimage"><code class="language-plaintext highlighter-rouge">backgroundImage</code></h2>
+
+<p>A <code class="language-plaintext highlighter-rouge">string</code> that accepts an URL pointing to an image to use as background. It overwrites the <a href="#backgroundcolor"><code class="language-plaintext highlighter-rouge">backgroundColor</code></a>.</p>
+
+<h2 id="mainactionrender"><code class="language-plaintext highlighter-rouge">mainActionRender</code></h2>
+
+<p>A function that receives an object with <code class="language-plaintext highlighter-rouge">play</code> and <code class="language-plaintext highlighter-rouge">pause</code> properties, and has to return an object with <code class="language-plaintext highlighter-rouge">id</code> and <code class="language-plaintext highlighter-rouge">node</code> properties. The <code class="language-plaintext highlighter-rouge">play</code> and <code class="language-plaintext highlighter-rouge">pause</code> are the functions used to trigger the main action. The returned <code class="language-plaintext highlighter-rouge">id</code> should be the element id of a container to render the <code class="language-plaintext highlighter-rouge">node</code>. This is used to add your own UI to the play/pause main action by overwriting the default UI.</p>
+
+<p>See an example bellow:</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">{</span> <span class="nx">AudioVisualizer</span><span class="p">,</span> <span class="nx">AudioVisualizerCommonProps</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react-audio-visualizers-core</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">const</span> <span class="nx">mainActionRender</span> <span class="o">=</span> <span class="p">({</span> <span class="nx">play</span><span class="p">,</span> <span class="nx">_</span> <span class="p">})</span> <span class="o">=&gt;</span> <span class="p">({</span>
+    <span class="na">id</span><span class="p">:</span> <span class="dl">'</span><span class="s1">mainActionContainer</span><span class="dl">'</span><span class="p">,</span>
+    <span class="na">node</span><span class="p">:</span> <span class="p">&lt;</span><span class="nt">button</span> <span class="na">onClick</span><span class="p">=</span><span class="si">{</span><span class="nx">play</span><span class="si">}</span><span class="p">&gt;</span>Play<span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;,</span>
+<span class="p">});</span>
+
+
+<span class="k">export</span> <span class="kd">const</span> <span class="nx">YourVisualizer</span> <span class="o">=</span> <span class="p">(</span><span class="nx">commonProps</span><span class="p">:</span> <span class="nx">AudioVisualizerCommonProps</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">(</span>
+    <span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nc">AudioVisualizer</span> <span class="si">{</span><span class="p">...</span><span class="nx">commonProps</span><span class="si">}</span> <span class="na">mainActionRender</span><span class="p">=</span><span class="si">{</span><span class="nx">mainActionRender</span><span class="si">}</span><span class="p">&gt;</span>
+            <span class="p">&lt;</span><span class="nc">YourVisualizerRenderComponent</span> <span class="p">/&gt;</span>
+        <span class="p">&lt;/</span><span class="nc">AudioVisualizer</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">div</span> <span class="na">id</span><span class="p">=</span><span class="s">"mainActionContainer"</span><span class="p">&gt;</span>
+        <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+    <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+<span class="p">);</span>
+</code></pre></div></div>
+
+<h2 id="onevent"><code class="language-plaintext highlighter-rouge">onEvent</code></h2>
+
+<p>A function that receives an event of type <code class="language-plaintext highlighter-rouge">AudioVisualizerEvents</code> and a payload with information of the event. This is used to execute custom logic when an event occurs inside the audio visualizer.</p>
+
+<p>See an example bellow:</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">{</span> <span class="nx">AudioVisualizer</span><span class="p">,</span> <span class="nx">AudioVisualizerCommonProps</span><span class="p">,</span> <span class="nx">AudioVisualizerEvents</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react-audio-visualizers-core</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">const</span> <span class="nx">onEvent</span> <span class="o">=</span> <span class="p">(</span><span class="nx">event</span><span class="p">,</span> <span class="nx">payload</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">event</span> <span class="o">===</span> <span class="nx">AudioVisualizerEvents</span><span class="p">.</span><span class="nx">PLAYING</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">The audio started playing!!</span><span class="dl">'</span><span class="p">);</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">event</span> <span class="o">===</span> <span class="nx">AudioVisualizerEvents</span><span class="p">.</span><span class="nx">ERROR</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">The following error occured:</span><span class="dl">'</span><span class="p">,</span> <span class="nx">payload</span><span class="p">);</span>
+    <span class="p">}</span> 
+<span class="p">};</span>
+
+<span class="k">export</span> <span class="kd">const</span> <span class="nx">YourVisualizer</span> <span class="o">=</span> <span class="p">(</span><span class="nx">commonProps</span><span class="p">:</span> <span class="nx">AudioVisualizerCommonProps</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">(</span>
+    <span class="p">&lt;</span><span class="nc">AudioVisualizer</span> <span class="si">{</span><span class="p">...</span><span class="nx">commonProps</span><span class="si">}</span> <span class="na">onEvent</span><span class="p">=</span><span class="si">{</span><span class="nx">onEvent</span><span class="si">}</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nc">YourVisualizerRenderComponent</span> <span class="p">/&gt;</span>
+    <span class="p">&lt;/</span><span class="nc">AudioVisualizer</span><span class="p">&gt;</span>
+<span class="p">);</span>
+</code></pre></div></div>
+
+                    </div>
+                    <div class="col hide-on-small-only m3 xl3 offset-xl1">
+                        <div class="toc"></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <script src="js/materialize.min.js"></script>
+        <script src="js/prism.js"></script>
+        <script>
+            function slugify(text) {
+                return text
+                    .toString()
+                    .toLowerCase()
+                    .replace(/\s+/g, '-') // Replace spaces with -
+                    .replace(/[^\w\-]+/g, '') // Remove all non-word chars
+                    .replace(/\-\-+/g, '-') // Replace multiple - with single -
+                    .replace(/^-+/, '') // Trim - from start of text
+                    .replace(/-+$/, ''); // Trim - from end of text
+            }
+            document.addEventListener('DOMContentLoaded', function () {
+                M.Sidenav.init(document.querySelectorAll('.sidenav'));
+                /* Generate table of contents */
+                tocbot.init({
+                    // Where to render the table of contents
+                    tocSelector: '.toc',
+                    positionFixedSelector: '.toc',
+                    // Where to grab the headings to build the table of contents
+                    contentSelector: '.toc-content',
+                    // More options
+                    headingSelector: 'h2, h3, h4',
+                    includeHtml: true,
+                    collapseDepth: 2,
+                    hasInnerContainers: true,
+                });
+            });
+        </script>
+        <script
+            src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.12.0/tocbot.min.js"
+            defer
+        ></script>
+    </body>
+</html>

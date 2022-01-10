@@ -1,0 +1,102 @@
+I"é<h1 id="spectrumvisualizer"><code class="language-plaintext highlighter-rouge">&lt;SpectrumVisualizer&gt;</code></h1>
+
+<p>The <code class="language-plaintext highlighter-rouge">&lt;SpectrumVisualizer&gt;</code> is an audio visualizer that shows the amplitude of the audio per frequency. The visualizer has the frequency on the horizontal axis and the amplitude on the vertical axis.</p>
+
+<p><img src="./img/spectrum_bars_rounded.png" alt="SpectrumVisualizer" /></p>
+
+<h2 id="usage">Usage</h2>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">{</span> <span class="nx">SpectrumVisualizer</span><span class="p">,</span> <span class="nx">SpectrumVisualizerTheme</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react-audio-visualizers</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="k">export</span> <span class="kd">const</span> <span class="nx">YourApp</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">(</span>
+  <span class="p">&lt;</span><span class="nc">SpectrumVisualizer</span>
+    <span class="na">audio</span><span class="p">=</span><span class="s">"yourAudioFile"</span>
+    <span class="na">theme</span><span class="p">=</span><span class="si">{</span><span class="nx">SpectrumVisualizerTheme</span><span class="p">.</span><span class="nx">roundBars</span><span class="si">}</span>
+  <span class="p">/&gt;</span>
+<span class="p">);</span>
+</code></pre></div></div>
+
+<h2 id="props">Props</h2>
+
+<p><code class="language-plaintext highlighter-rouge">&lt;SpectrumVisualizer&gt;</code> accepts all <a href="./Types.html#audiovisualizercommonprops"><code class="language-plaintext highlighter-rouge">AudioVisualizerCommonProps</code></a> described in <a href="./AudioVisualizer.html"><code class="language-plaintext highlighter-rouge">&lt;AudioVisualizer&gt;</code></a>.</p>
+
+<p>It also accepts some specific props listed bellow:</p>
+
+<ul>
+  <li><a href="#theme"><code class="language-plaintext highlighter-rouge">theme</code></a></li>
+  <li><a href="#colors"><code class="language-plaintext highlighter-rouge">colors</code></a></li>
+  <li><a href="#lowfrequency"><code class="language-plaintext highlighter-rouge">lowFrequency</code></a></li>
+  <li><a href="#highfrequency"><code class="language-plaintext highlighter-rouge">highFrequency</code></a></li>
+  <li><a href="#numbars"><code class="language-plaintext highlighter-rouge">numBars</code></a></li>
+  <li><a href="#radius"><code class="language-plaintext highlighter-rouge">radius</code></a></li>
+  <li><a href="#barWidth"><code class="language-plaintext highlighter-rouge">barWidth</code></a></li>
+  <li><a href="#startingangle"><code class="language-plaintext highlighter-rouge">startingAngle</code></a></li>
+  <li><a href="#mirror"><code class="language-plaintext highlighter-rouge">mirror</code></a></li>
+</ul>
+
+<h3 id="theme"><code class="language-plaintext highlighter-rouge">theme</code></h3>
+
+<p>The <code class="language-plaintext highlighter-rouge">theme</code> prop changes the aspect of the visualizer and is required.</p>
+
+<p>It can be one of the following:</p>
+
+<ul>
+  <li><a href="#line"><code class="language-plaintext highlighter-rouge">line</code></a></li>
+  <li><a href="#radialline"><code class="language-plaintext highlighter-rouge">radialLine</code></a></li>
+  <li><a href="#radialsquaredbars"><code class="language-plaintext highlighter-rouge">radialSquaredBars</code></a></li>
+  <li><a href="#roundbars"><code class="language-plaintext highlighter-rouge">roundBars</code></a></li>
+  <li><a href="#squaredbars"><code class="language-plaintext highlighter-rouge">squaredBars</code></a></li>
+</ul>
+
+<h4 id="line">line</h4>
+
+<p><img src="./img/spectrum_line.png" alt="LineSpectrumVisualizer" /></p>
+
+<h4 id="radialline">radialLine</h4>
+
+<p><img src="./img/spectrum_radial_line.png" alt="RadialLineSpectrumVisualizer" /></p>
+
+<h4 id="radialsquaredbars">radialSquaredBars</h4>
+
+<p><img src="./img/spectrum_radial_squared.png" alt="RadialSquaredBarsSpectrumVisualizer" /></p>
+
+<h4 id="roundbars">roundBars</h4>
+
+<p><img src="./img/spectrum_bars_rounded.png" alt="RoundBarsSpectrumVisualizer" /></p>
+
+<h4 id="squaredbars">squaredBars</h4>
+
+<p><img src="./img/spectrum_bars_squared.png" alt="SquaredBarsSpectrumVisualizer" /></p>
+
+<h3 id="colors"><code class="language-plaintext highlighter-rouge">colors</code></h3>
+
+<p>An array with elements of type <a href="./Types.html#color">Color</a>. Defaults to white when no value is provided.</p>
+
+<h3 id="lowfrequency"><code class="language-plaintext highlighter-rouge">lowFrequency</code></h3>
+
+<p>The lower value for the frequency in Hz to filter the audio. For example, if a value of 200 is passed no frequency bellow 200Hz will be shown. In other words is the frequency that the spectrum will start from. Defaults to 20 if no value is provided.</p>
+
+<h3 id="highfrequency"><code class="language-plaintext highlighter-rouge">highFrequency</code></h3>
+
+<p>The higher value for the frequency in Hz to filter the audio. For example, if a value of 5000 is passed no frequency above 5000Hz will be shown. In other words is the frequency that the spectrum will end in. Defaults to 20000 if no value is provided.</p>
+
+<h3 id="numbars"><code class="language-plaintext highlighter-rouge">numBars</code></h3>
+
+<p>The number of bars to draw, only available for themes with bars: <a href="#radialsquaredbars"><code class="language-plaintext highlighter-rouge">radialSquaredBars</code></a>, <a href="#roundbars"><code class="language-plaintext highlighter-rouge">roundBars</code></a> and <a href="#squaredbars"><code class="language-plaintext highlighter-rouge">squaredBars</code></a>. The default value depends on the theme and is adaptive to the screen size.</p>
+
+<h3 id="radius"><code class="language-plaintext highlighter-rouge">radius</code></h3>
+
+<p>The radius of the circle, only available for radial themes: <a href="#radialline"><code class="language-plaintext highlighter-rouge">radialLine</code></a> and <a href="#radialsquaredbars"><code class="language-plaintext highlighter-rouge">radialSquaredBars</code></a>. By default the value is adapted to the screen size.</p>
+
+<h3 id="barwidth"><code class="language-plaintext highlighter-rouge">barWidth</code></h3>
+
+<p>The width of the bars, only available for themes with bars: <a href="#radialsquaredbars"><code class="language-plaintext highlighter-rouge">radialSquaredBars</code></a>, <a href="#roundbars"><code class="language-plaintext highlighter-rouge">roundBars</code></a> and <a href="#squaredbars"><code class="language-plaintext highlighter-rouge">squaredBars</code></a>. By default it adapts this value to the screen size and the number of bars.</p>
+
+<h3 id="startingangle"><code class="language-plaintext highlighter-rouge">startingAngle</code></h3>
+
+<p>The angle, in radians, on the circle to start drawing from, only available for radial themes: <a href="#radialline"><code class="language-plaintext highlighter-rouge">radialLine</code></a> and <a href="#radialsquaredbars"><code class="language-plaintext highlighter-rouge">radialSquaredBars</code></a>. Defaults to PI.</p>
+
+<h3 id="mirror"><code class="language-plaintext highlighter-rouge">mirror</code></h3>
+
+<p>A <code class="language-plaintext highlighter-rouge">boolean</code> value that if is set to true mirrors the spectrum in two sides of the circle, only available for radial themes: <a href="#radialline"><code class="language-plaintext highlighter-rouge">radialLine</code></a> and <a href="#radialsquaredbars"><code class="language-plaintext highlighter-rouge">radialSquaredBars</code></a>. Instead of using the whole circle for the spectrum it divides the circle in two and shows the full frequency range for each part. Defaults to false.</p>
+:ET
