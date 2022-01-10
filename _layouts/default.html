@@ -10,25 +10,25 @@
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black" />
-        <link rel="manifest" href="/assets/manifest.json">
-        <link rel="apple-touch-icon" sizes="180x180" href="/assets/favicon/apple-touch-icon.png">
-        <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon/favicon-32x32.png">
-        <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon/favicon-16x16.png">
+        <link rel="manifest" href="assets/manifest.json">
+        <link rel="apple-touch-icon" sizes="180x180" href="assets/favicon/apple-touch-icon.png">
+        <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon/favicon-16x16.png">
         <link
             rel="canonical"
-            href="{{ page.name | replace: '.md', '.html' | relative_url }}"
+            href="{{ page.name | replace: '.md', '.html' }}"
         />
         <link
             rel="stylesheet"
-            href="{{ '/css/materialize.min.css' | relative_url }}"
+            href="css/materialize.min.css"
         />
         <link
             rel="stylesheet"
-            href="{{ '/css/style-v11.css' | relative_url }}"
+            href="css/style-v11.css"
         />
-        <link rel="stylesheet" href="{{ '/css/syntax.css' | relative_url }}" />
-        <link rel="stylesheet" href="{{ '/css/prism.css' | relative_url }}" />
-        <link rel="stylesheet" href="{{ '/css/tocbot.css' | relative_url }}" />
+        <link rel="stylesheet" href="css/syntax.css" />
+        <link rel="stylesheet" href="css/prism.css" />
+        <link rel="stylesheet" href="css/tocbot.css" />
         <link
             rel="stylesheet"
             href="https://fonts.googleapis.com/icon?family=Material+Icons"
@@ -91,8 +91,8 @@
             </nav>
             <ul id="slide-out" class="sidenav sidenav-fixed">
                 <li class="logo">
-                    <a href="{{ site.url }}"
-                        ><img src="{{ site.url }}/assets/logo.svg"
+                    <a href="./GettingStarted.html"
+                        ><img src="assets/logo.svg"
                     /></a>
                 </li>
                 {% include_relative navigation.html %}
@@ -114,8 +114,8 @@
             </div>
         </main>
 
-        <script src="{{ '/js/materialize.min.js' | relative_url }}"></script>
-        <script src="{{ 'js/prism.js' | relative_url }}"></script>
+        <script src="js/materialize.min.js"></script>
+        <script src="js/prism.js"></script>
         <script>
             function slugify(text) {
                 return text
