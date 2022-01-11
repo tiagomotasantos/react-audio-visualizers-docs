@@ -2,7 +2,7 @@
 
 <div align="center">
 
-Documentation for [react-audio-visualizers](https://github.com/tiagomotasantos/react-audio-visualizers) hosted at react-audio-visualizers [website](https://react-audio-visualizers.com/docs).
+Documentation for [react-audio-visualizers](https://github.com/tiagomotasantos/react-audio-visualizers) hosted at react-audio-visualizers [website](https://docs-react-audio-visualizers.vercel.app/GettingStarted.html).
 
 </div>
 
